@@ -1,0 +1,232 @@
+<!-- ========== 全屏 Loading ========== -->
+<view class="fullscreen-loading" wx:if="{{submitting}}">
+  <view class="loading-content">
+    <view class="loading-shield">
+      <image class="shield-icon" src="/images/Blockchain.png" mode="aspectFit"></image>
+    </view>
+    <view class="loading-spinner-ring"></view>
+    <text class="loading-title">正在提交</text>
+    <text class="loading-subtitle">正在提交检疫结果...</text>
+    <view class="loading-dots">
+      <view class="dot dot1"></view>
+      <view class="dot dot2"></view>
+      <view class="dot dot3"></view>
+    </view>
+  </view>
+</view>
+
+<!-- ========== 存证成功 - 数字证书页 ========== -->
+<view class="cert-page" wx:elif="{{submitSuccess}}">
+  <!-- 顶部盾牌 -->
+  <view class="cert-top">
+    <view class="cert-shield-wrap">
+      <view class="cert-shield">
+        <text class="cert-shield-check">✓</text>
+      </view>
+      <view class="cert-shield-ring"></view>
+    </view>
+    <text class="cert-top-title">提交成功</text>
+    <text class="cert-top-sub">检疫结果已保存，数据将在入库时统一上链存证</text>
+  </view>
+
+  <!-- 证书卡片 -->
+  <view class="cert-card">
+    <!-- 证书头部 -->
+    <view class="cert-card-header">
+      <view class="cert-line"></view>
+      <text class="cert-card-title">电子检疫合格存证</text>
+      <view class="cert-line"></view>
+    </view>
+
+    <!-- 证书照片缩略图 -->
+    <view class="cert-thumbs">
+      <image
+        class="cert-thumb"
+        wx:for="{{imageList}}"
+        wx:key="index"
+        src="{{item}}"
+        mode="aspectFill"
+        bindtap="previewSuccessImage"
+        data-idx="{{index}}"
+      ></image>
+    </view>
+
+    <!-- 批次信息 -->
+    <view class="cert-info-area">
+      <view class="cert-row">
+        <text class="cert-label">证书编号</text>
+        <text class="cert-val cert-mono">{{certificateNo}}</text>
+      </view>
+      <view class="cert-row">
+        <text class="cert-label">批次编号</text>
+        <text class="cert-val cert-mono">{{batchCode}}</text>
+      </view>
+      <view class="cert-row">
+        <text class="cert-label">产品名称</text>
+        <text class="cert-val">{{productName}}</text>
+      </view>
+      <view class="cert-row">
+        <text class="cert-label">送检企业</text>
+        <text class="cert-val">{{enterpriseName}}</text>
+      </view>
+      <view class="cert-row">
+        <text class="cert-label">检疫员</text>
+        <text class="cert-val">{{inspector}}</text>
+      </view>
+    </view>
+
+    <!-- 区块链存证信息（有上链数据时显示） -->
+    <view class="cert-blockchain-section" wx:if="{{txHash}}">
+      <text class="cert-blockchain-title">区块链存证信息</text>
+
+      <view class="cert-param-row" bindtap="copyTxHash">
+        <text class="cert-param-label">交易哈希</text>
+        <text class="cert-param-value">{{txHashShort}}</text>
+      </view>
+
+      <view class="cert-param-row" bindtap="copyDataHash">
+        <text class="cert-param-label">数据指纹</text>
+        <text class="cert-param-value">{{dataHashShort}}</text>
+      </view>
+
+      <view class="cert-param-meta">
+        <view class="cert-param-meta-item">
+          <text class="cert-param-meta-label">区块高度</text>
+          <text class="cert-param-meta-value">{{blockNumber}}</text>
+        </view>
+        <view class="cert-param-meta-item">
+          <text class="cert-param-meta-label">上链时间</text>
+          <text class="cert-param-meta-value">{{chainTime}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部提示 -->
+    <view class="cert-seal">
+      <text class="cert-seal-text" wx:if="{{txHash}}">本证书由以太坊智能合约自动签发，数据不可篡改</text>
+      <text class="cert-seal-text" wx:else>检疫结果已记录，待仓储入库时将统一上链存证</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="cert-actions">
+    <view class="cert-btn-outline" bindtap="resetPage">
+      <text>继续录入</text>
+    </view>
+    <view class="cert-btn-solid" bindtap="goBack">
+      <text>返回工作台</text>
+    </view>
+  </view>
+</view>
+
+<!-- ========== 采集页（表单态） ========== -->
+<view class="page-container" wx:elif="{{authorized}}">
+
+  <!-- 第一步：扫码关联批次 -->
+  <view class="section-card">
+    <view class="section-title-row">
+      <view class="step-badge">1</view>
+      <text class="section-title">扫码关联批次</text>
+      <view class="unlink-tag" wx:if="{{batchLinked}}" bindtap="unlinkBatch">
+        <text>重新关联</text>
+      </view>
+    </view>
+
+    <block wx:if="{{batchLinked}}">
+      <view class="linked-bar">
+        <text class="linked-check">✓</text>
+        <text class="linked-txt">已关联</text>
+      </view>
+      <view class="batch-info-grid">
+        <view class="bi-row">
+          <text class="bi-label">批次号</text>
+          <text class="bi-val bi-mono">{{batchCode}}</text>
+        </view>
+        <view class="bi-row">
+          <text class="bi-label">养殖场</text>
+          <text class="bi-val">{{enterpriseName}}</text>
+        </view>
+        <view class="bi-row">
+          <text class="bi-label">产品</text>
+          <text class="bi-val">{{productName}}</text>
+        </view>
+        <view class="bi-row">
+          <text class="bi-label">数量</text>
+          <text class="bi-val">{{quantity}} {{unit}}</text>
+        </view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="scan-btn-area" bindtap="startScan">
+        <image class="scan-btn-icon" src="/images/scan-icon.png" mode="aspectFit"></image>
+        <text class="scan-btn-text">扫码关联批次</text>
+        <text class="scan-btn-hint">扫描批次二维码 / 条形码</text>
+      </view>
+      <view class="or-divider">
+        <view class="or-line"></view>
+        <text class="or-text">或手动输入</text>
+        <view class="or-line"></view>
+      </view>
+      <view class="manual-row">
+        <input class="manual-input" placeholder="请输入批次编号" value="{{manualCode}}" bindinput="onManualInput" />
+        <view class="manual-btn" bindtap="confirmManualInput"><text>查询</text></view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 第二步：上传证书照片 -->
+  <view class="section-card">
+    <view class="section-title-row">
+      <view class="step-badge">2</view>
+      <text class="section-title">上传检疫证书原件</text>
+      <text class="img-count">{{imageList.length}}/{{maxImageCount}}</text>
+    </view>
+
+    <view class="img-grid">
+      <!-- 已选照片 -->
+      <view class="img-item" wx:for="{{imageList}}" wx:key="index">
+        <image class="img-preview" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-idx="{{index}}"></image>
+        <view class="img-delete" catchtap="deleteImage" data-idx="{{index}}">×</view>
+      </view>
+      <!-- 添加按钮 -->
+      <view class="img-add" wx:if="{{imageList.length < maxImageCount}}" bindtap="chooseImage">
+        <text class="img-add-icon">+</text>
+        <text class="img-add-text">拍摄/选择</text>
+      </view>
+    </view>
+    <text class="img-hint">请拍摄检疫合格证正面，确保文字清晰完整，最多{{maxImageCount}}张</text>
+  </view>
+
+  <!-- 第三步：补充信息 -->
+  <view class="section-card">
+    <view class="section-title-row">
+      <view class="step-badge">3</view>
+      <text class="section-title">补充信息</text>
+    </view>
+
+    <view class="form-item" wx:if="{{certificateNo}}">
+      <text class="form-label">证书编号</text>
+      <view class="autofill-field">
+        <text class="autofill-value">{{certificateNo}}</text>
+        <text class="autofill-tag">自动填充</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">备注说明</text>
+      <textarea class="form-textarea" placeholder="选填备注" value="{{remark}}" bindinput="onInput" data-field="remark" maxlength="200" />
+    </view>
+  </view>
+
+  <!-- 提交 -->
+  <view class="submit-area">
+    <view class="chain-notice">
+      <text class="notice-text">证书照片将存入服务器，检疫结果将在仓储入库时统一上链存证</text>
+    </view>
+    <view class="submit-btn {{batchLinked && imageList.length > 0 ? '' : 'submit-disabled'}}"
+      bindtap="{{batchLinked && imageList.length > 0 ? 'submitReport' : ''}}">
+      <text>提交检疫结果</text>
+    </view>
+  </view>
+</view>

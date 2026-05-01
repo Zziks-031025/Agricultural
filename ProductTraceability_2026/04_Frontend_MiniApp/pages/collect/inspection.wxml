@@ -1,0 +1,109 @@
+<view class="inspection-container">
+  <view class="input-mode-tabs">
+    <view class="tabs-container">
+      <view class="mode-tab {{inputMode === 'scan' ? 'active' : ''}}" bindtap="switchInputMode" data-mode="scan">
+        <text class="mode-text">扫码</text>
+      </view>
+      <view class="mode-tab {{inputMode === 'input' ? 'active' : ''}}" bindtap="switchInputMode" data-mode="input">
+        <text class="mode-text">输入</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">关联批次</view>
+
+    <view class="batch-input-area" wx:if="{{inputMode === 'scan' && !batchInfo}}">
+      <view class="scan-btn" bindtap="scanBatchCode">
+        <image class="scan-icon" src="/images/scan-icon.png" mode="aspectFit"></image>
+        <text class="scan-text">点击扫描批次码</text>
+      </view>
+    </view>
+
+    <view class="batch-input-area" wx:if="{{inputMode === 'input' && !batchInfo}}">
+      <view class="input-group">
+        <input class="batch-input" placeholder="请输入批次号" value="{{batchNo}}" bindinput="onBatchNoInput" />
+        <button class="confirm-btn" bindtap="confirmBatchNo">查询</button>
+      </view>
+    </view>
+
+    <view class="batch-info-card" wx:if="{{batchInfo}}">
+      <view class="info-row">
+        <text class="info-label">批次号</text>
+        <text class="info-value">{{batchNo}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">产品名称</text>
+        <text class="info-value">{{batchInfo.productName}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">品种</text>
+        <text class="info-value">{{batchInfo.breed}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">数量</text>
+        <text class="info-value">{{batchInfo.quantity}} {{batchInfo.unit}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">产地</text>
+        <text class="info-value">{{batchInfo.origin}}</text>
+      </view>
+      <view class="batch-change" bindtap="changeBatch">
+        <text class="change-text">更换批次</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Section 2: Apply Info -->
+  <view class="form-section">
+    <view class="section-title">检疫申报信息</view>
+
+    <view class="form-item">
+      <view class="form-label required">检疫企业</view>
+      <picker mode="selector" range="{{inspectionEnterpriseNames}}" value="{{selectedInspectionIndex}}" bindchange="onInspectionChange">
+        <view class="form-picker">
+          <text class="{{selectedInspectionIndex >= 0 ? '' : 'placeholder'}}">{{selectedInspectionIndex >= 0 ? inspectionEnterpriseNames[selectedInspectionIndex] : '请选择检疫企业'}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">申报数量</view>
+      <view class="input-with-unit">
+        <input class="form-input" type="digit" placeholder="请输入申报数量"
+          value="{{formData.applyQuantity}}" data-field="applyQuantity" bindinput="onInputChange" />
+        <text class="unit-text">{{batchInfo.unit || '只'}}</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">期望检疫日期</view>
+      <picker mode="date" value="{{formData.expectedDate}}" start="{{today}}" bindchange="onDateChange">
+        <view class="form-picker">
+          <text class="{{formData.expectedDate ? '' : 'placeholder'}}">{{formData.expectedDate || '请选择期望检疫日期'}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">申请备注</view>
+      <textarea class="form-textarea" placeholder="选填: 说明检疫需求、联系方式等"
+        value="{{formData.remark}}" data-field="remark" bindinput="onInputChange" maxlength="200"></textarea>
+    </view>
+  </view>
+
+  <!-- Tip -->
+  <view class="apply-tip-section">
+    <text class="apply-tip-text">提交后请等待检疫机构受理，检疫合格后方可出栏</text>
+  </view>
+
+  <!-- Action buttons -->
+  <view class="form-actions">
+    <button class="action-btn reset-btn" bindtap="resetForm" disabled="{{submitting}}">重置</button>
+    <button class="action-btn submit-btn" bindtap="submitForm" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : '提交申请'}}
+    </button>
+  </view>
+</view>

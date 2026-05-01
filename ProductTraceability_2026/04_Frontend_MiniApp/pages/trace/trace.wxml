@@ -1,0 +1,328 @@
+<view class="trace-page">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在获取溯源信息...</text>
+  </view>
+
+  <!-- 主内容区 -->
+  <scroll-view 
+    class="main-content" 
+    scroll-y 
+    wx:if="{{!loading && !loadError}}"
+    style="padding-bottom: 140rpx;"
+  >
+    <!-- ========== 头部产品大图 ========== -->
+    <view class="header-section">
+      <image 
+        class="product-banner" 
+        src="{{productInfo.imageUrl}}" 
+        mode="aspectFill"
+        wx:if="{{productInfo.imageUrl}}"
+      ></image>
+      <image 
+        class="product-banner" 
+        src="/images/agricultural.png" 
+        mode="aspectFill"
+        wx:if="{{!productInfo.imageUrl}}"
+      ></image>
+      <!-- 区块链徽章 -->
+      <view class="blockchain-badge">
+        <text class="badge-text">区块链加密保护中</text>
+      </view>
+      <!-- 渐变遮罩 -->
+      <view class="header-gradient"></view>
+    </view>
+
+    <!-- ========== 产品信息卡片 ========== -->
+    <view class="product-card">
+      <view class="card-header">
+        <text class="product-name">{{productInfo.productName || '农产品'}}</text>
+        <text class="batch-code">批次号：{{productInfo.batchCode || batchId}}</text>
+      </view>
+      
+      <!-- 核心参数网格 2x2 -->
+      <view class="params-grid">
+        <view class="param-item">
+          <text class="param-label">生产日期</text>
+          <text class="param-value">{{productInfo.productionDate || '--'}}</text>
+        </view>
+        <view class="param-item">
+          <text class="param-label">产品类型</text>
+          <text class="param-value">{{productInfo.productType || '--'}}</text>
+        </view>
+        <view class="param-item">
+          <text class="param-label">初始数量</text>
+          <text class="param-value">{{productInfo.initialQuantity || '--'}}{{productInfo.unit || ''}}</text>
+        </view>
+        <view class="param-item">
+          <text class="param-label">当前状态</text>
+          <view class="status-tag {{productInfo.status === 'ACTIVE' ? 'active' : (productInfo.status === 'COMPLETED' ? 'completed' : 'processing')}}">
+            {{productInfo.statusText || '流通中'}}
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ========== 溯源时间轴 ========== -->
+    <view class="timeline-section">
+      <view class="section-header">
+        <view class="section-icon">
+          <image src="/images/Traceability.png" mode="aspectFit"></image>
+        </view>
+        <text class="section-title">全生命周期溯源记录</text>
+      </view>
+
+      <view class="timeline-container">
+        <view 
+          class="timeline-item {{index === 0 ? 'first' : ''}} {{index === timelineList.length - 1 ? 'last' : ''}} {{item.isQuarantine ? 'quarantine-item' : ''}}"
+          wx:for="{{timelineList}}"
+          wx:key="id"
+        >
+          <!-- 时间轴线和节点 -->
+          <view class="timeline-left">
+            <view class="timeline-dot {{index === 0 ? 'active' : ''}} {{item.isQuarantine ? 'quarantine-dot' : ''}}"></view>
+            <view class="timeline-line" wx:if="{{index < timelineList.length - 1}}"></view>
+          </view>
+
+          <!-- 内容区 -->
+          <view class="timeline-content {{item.isQuarantine ? 'quarantine-content' : ''}}">
+            <!-- 标题行：环节名 + 来源标签 + 时间 -->
+            <view class="content-header">
+              <view class="header-left">
+                <text class="process-name">{{item.title}}</text>
+                <text class="node-type-tag {{item.nodeTypeClass}}" wx:if="{{item.nodeTypeLabel}}">{{item.nodeTypeLabel}}</text>
+              </view>
+              <text class="process-time">{{item.time}}</text>
+            </view>
+            
+            <view class="content-body">
+              <!-- ======== 检疫节点专属区域 ======== -->
+              <block wx:if="{{item.isQuarantine}}">
+                <!-- 检疫结果标签 -->
+                <view class="quarantine-result-row">
+                  <view class="result-tag {{item.resultTagClass}}">
+                    <text class="result-tag-text">{{item.resultTagText}}</text>
+                  </view>
+                  <text class="official-label" wx:if="{{item.isOfficial}}">官方背书</text>
+                </view>
+
+                <!-- 完整详情信息（遍历details） -->
+                <view class="details-list">
+                  <view class="info-row" wx:for="{{item.detailsArray}}" wx:key="label" wx:for-item="detail">
+                    <text class="info-label">{{detail.label}}</text>
+                    <text class="info-value {{detail.label === '检疫结果' ? (detail.value === '合格' ? 'result-pass' : 'result-fail') : ''}}">{{detail.value}}</text>
+                  </view>
+                </view>
+
+                <!-- 检疫证书缩略图 -->
+                <view class="certificate-preview" wx:if="{{item.hasCertificate}}">
+                  <view class="cert-thumb-wrap" bindtap="previewCertificate" data-url="{{item.certificateUrl}}">
+                    <image class="cert-thumb" src="{{item.certificateUrl}}" mode="aspectFill"></image>
+                    <view class="cert-overlay">
+                      <text class="cert-overlay-text">点击查看</text>
+                    </view>
+                    <view class="cert-badge">
+                      <text class="cert-badge-text">检疫证书</text>
+                    </view>
+                  </view>
+                </view>
+
+                <!-- 现场照片（检疫拍照） -->
+                <view class="photo-list" wx:if="{{item.hasImages && !item.hasCertificate}}">
+                  <image 
+                    class="photo-thumb" 
+                    wx:for="{{item.images}}" 
+                    wx:for-item="img"
+                    wx:for-index="imgIdx"
+                    wx:key="imgIdx"
+                    src="{{img}}" 
+                    mode="aspectFill"
+                    bindtap="previewImage"
+                    data-urls="{{item.images}}"
+                    data-current="{{img}}"
+                  ></image>
+                </view>
+              </block>
+
+              <!-- ======== 通用节点区域 ======== -->
+              <block wx:else>
+                <!-- 完整详情信息（遍历details） -->
+                <view class="details-list">
+                  <view class="info-row" wx:for="{{item.detailsArray}}" wx:key="label" wx:for-item="detail">
+                    <text class="info-label">{{detail.label}}</text>
+                    <text class="info-value">{{detail.value}}</text>
+                  </view>
+                </view>
+
+                <!-- 现场照片 -->
+                <view class="photo-list" wx:if="{{item.hasImages}}">
+                  <image 
+                    class="photo-thumb" 
+                    wx:for="{{item.images}}" 
+                    wx:for-item="img"
+                    wx:for-index="imgIdx"
+                    wx:key="imgIdx"
+                    src="{{img}}" 
+                    mode="aspectFill"
+                    bindtap="previewImage"
+                    data-urls="{{item.images}}"
+                    data-current="{{img}}"
+                  ></image>
+                </view>
+              </block>
+
+              <!-- ======== TxHash 外显 ======== -->
+              <view class="tx-hash-preview" wx:if="{{item.txHash}}">
+                <text class="tx-hash-text">Tx: {{item.txHashDisplay}}</text>
+                <text class="official-hash-badge" wx:if="{{item.isOfficial}}">官方背书</text>
+              </view>
+
+              <!-- ======== 区块链存证详情（可展开） ======== -->
+              <view class="chain-info" wx:if="{{item.txHash}}">
+                <view class="chain-toggle" bindtap="toggleChainInfo" data-index="{{index}}">
+                  <image class="chain-icon" src="/images/Blockchain-certificate.png" mode="aspectFit"></image>
+                  <text class="chain-label">{{item.isOfficial ? '官方区块链存证' : '区块链存证'}}</text>
+                  <text class="toggle-arrow {{item.showChainInfo ? 'expanded' : ''}}">></text>
+                </view>
+                <view class="chain-detail {{item.showChainInfo ? 'show' : ''}}">
+                  <view class="chain-row">
+                    <text class="chain-key">TxHash</text>
+                    <text class="chain-value" bindtap="copyText" data-text="{{item.txHash}}">{{item.txHashShort}}</text>
+                    <image class="copy-icon" src="/images/copy.png" mode="aspectFit"></image>
+                  </view>
+                  <view class="chain-row">
+                    <text class="chain-key">区块高度</text>
+                    <text class="chain-value">{{item.blockNumber || '--'}}</text>
+                  </view>
+                  <view class="chain-row" wx:if="{{item.isOfficial}}">
+                    <text class="chain-key">背书类型</text>
+                    <text class="chain-value official-value">检疫机构官方背书</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-timeline" wx:if="{{timelineList.length === 0}}">
+          <text class="empty-text">暂无溯源记录</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ========== 企业信息 ========== -->
+    <view class="enterprise-section" wx:if="{{enterpriseInfo}}">
+      <view class="section-header">
+        <view class="section-icon">
+          <image src="/images/enterprise-icon.png" mode="aspectFit"></image>
+        </view>
+        <text class="section-title">生产企业</text>
+      </view>
+
+      <view class="enterprise-card" bindtap="goToEnterpriseDetail" hover-class="card-hover">
+        <image 
+          class="enterprise-logo" 
+          src="{{enterpriseInfo.logo || '/images/enterprise-icon.png'}}" 
+          mode="aspectFit"
+        ></image>
+        <view class="enterprise-info">
+          <text class="enterprise-name">{{enterpriseInfo.name || '生产企业'}}</text>
+          <view class="verify-status">
+            <view class="verify-dot"></view>
+            <text class="verify-text">已核验</text>
+          </view>
+        </view>
+        <view class="enterprise-arrow">></view>
+      </view>
+      <!-- 企业详细信息 -->
+      <view class="enterprise-detail">
+        <view class="detail-item">
+          <text class="detail-label">联系电话</text>
+          <text class="detail-value">{{enterpriseInfo.contactPhone || '400-888-8888'}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">备案编号</text>
+          <text class="detail-value">{{enterpriseInfo.licenseNo || enterpriseInfo.enterpriseCode || '--'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部留白 -->
+    <view class="bottom-space"></view>
+  </scroll-view>
+
+  <!-- 加载失败 -->
+  <view class="error-container" wx:if="{{loadError}}">
+    <image class="error-icon" src="/images/Blockchain.png" mode="aspectFit"></image>
+    <text class="error-text">{{errorMsg || '加载失败'}}</text>
+    <view class="retry-btn" bindtap="loadData">
+      <text>重新加载</text>
+    </view>
+  </view>
+
+  <!-- ========== 固定底部按钮 ========== -->
+  <view class="fixed-bottom" wx:if="{{!loading && !loadError}}">
+    <view class="verify-btn" bindtap="startVerify" hover-class="btn-hover">
+      <text class="btn-text">区块链实时验真</text>
+    </view>
+  </view>
+
+  <!-- ========== 验真 Loading 遮罩 ========== -->
+  <view class="verify-loading" wx:if="{{verifying}}">
+    <view class="verify-loading-content">
+      <view class="loading-animation">
+        <view class="pulse-ring"></view>
+        <view class="pulse-ring delay-1"></view>
+        <view class="pulse-ring delay-2"></view>
+        <view class="loading-center-dot"></view>
+      </view>
+      <text class="loading-title">正在访问以太坊节点...</text>
+      <text class="loading-desc">验证全链路数据摘要与链上存证是否匹配</text>
+    </view>
+  </view>
+
+  <!-- ========== 验真结果弹窗 ========== -->
+  <view class="verify-result-modal" wx:if="{{showVerifyResult}}" bindtap="closeVerifyResult">
+    <view class="result-content {{verifySuccess ? 'success' : 'failed'}}" catchtap="stopPropagation">
+      <!-- 成功状态 -->
+      <view class="result-icon-wrapper" wx:if="{{verifySuccess}}">
+        <view class="result-icon success-icon">
+          <text class="icon-check">✓</text>
+        </view>
+        <view class="icon-glow success-glow"></view>
+      </view>
+      <!-- 失败状态 -->
+      <view class="result-icon-wrapper" wx:if="{{!verifySuccess}}">
+        <view class="result-icon failed-icon">
+          <text class="icon-warning">!</text>
+        </view>
+        <view class="icon-glow failed-glow"></view>
+      </view>
+
+      <text class="result-title">{{verifySuccess ? '验证通过' : '验证异常'}}</text>
+      <text class="result-desc">{{verifySuccess ? '该产品全链路数据摘要与以太坊公链存证完全匹配，未经人为篡改' : '检测到本地数据与链上存证不符，可能存在数据造假风险'}}</text>
+      
+      <!-- 验证详情 -->
+      <view class="verify-detail" wx:if="{{verifySuccess && verifyData}}">
+        <view class="detail-row">
+          <text class="detail-label">验证时间</text>
+          <text class="detail-value">{{verifyData.verifyTime}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">链上区块</text>
+          <text class="detail-value">{{verifyData.blockNumber}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">验证节点</text>
+          <text class="detail-value">{{verifyData.verifiedNodes}}/{{verifyData.totalNodes}} 个环节通过</text>
+        </view>
+      </view>
+
+      <view class="result-btn" bindtap="closeVerifyResult">
+        <text>我知道了</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,716 @@
+.workbench-container {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: 40rpx;
+}
+
+.user-card {
+  background: #4CAF50;
+  padding: 50rpx 30rpx 80rpx;
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.avatar {
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 55rpx;
+  border: 3rpx solid rgba(255, 255, 255, 0.3);
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.user-detail {
+  flex: 1;
+  min-width: 0;
+}
+
+.username {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 10rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.enterprise-name {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 10rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.enterprise-type-tag {
+  display: inline-flex;
+  align-items: center;
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  height: 36rpx;
+  padding: 0 16rpx;
+  border-radius: 18rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+.type-badge-text {
+  color: #FFFFFF;
+  font-size: 22rpx;
+  line-height: 1;
+}
+
+.stats-card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  margin: -60rpx 30rpx 0;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: space-around;
+}
+
+.stats-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stats-value {
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-bottom: 8rpx;
+}
+
+.stats-label {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.function-section {
+  margin: 30rpx 30rpx 0;
+}
+
+.section-header {
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.section-subtitle {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.function-grid-admin {
+  display: flex;
+  gap: 20rpx;
+  overflow-x: auto;
+  padding-bottom: 10rpx;
+}
+
+.function-item {
+  flex-shrink: 0;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  min-width: 140rpx;
+}
+
+.function-icon {
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+}
+
+.icon-purple {
+  background: linear-gradient(135deg, #E1BEE7, #CE93D8);
+}
+
+.icon-blue {
+  background: linear-gradient(135deg, #BBDEFB, #90CAF9);
+}
+
+.icon-green {
+  background: linear-gradient(135deg, #C8E6C9, #A5D6A7);
+}
+
+.icon-orange {
+  background: linear-gradient(135deg, #FFE0B2, #FFCC80);
+}
+
+.icon-transparent {
+  background: transparent;
+}
+
+.icon-text {
+  font-size: 42rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.icon-img {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.icon-img-common {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.function-name {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 6rpx;
+  white-space: nowrap;
+}
+
+.function-desc {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.function-grid-common {
+  display: flex;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.function-item-common {
+  flex: 1;
+  background: #FFFFFF;
+  border-radius: 12rpx;
+  padding: 20rpx 10rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.04);
+}
+
+.function-icon-common {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+}
+
+.icon-yellow {
+  background: linear-gradient(135deg, #FFF9C4, #FFF59D);
+}
+
+.icon-amber {
+  background: linear-gradient(135deg, #FFE082, #FFD54F);
+}
+
+.icon-teal {
+  background: linear-gradient(135deg, #B2DFDB, #80CBC4);
+}
+
+.icon-pink {
+  background: linear-gradient(135deg, #F8BBD0, #F48FB1);
+}
+
+.icon-text-small {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.function-name-common {
+  font-size: 24rpx;
+  color: #666;
+  text-align: center;
+}
+
+/* ========== 肉鸡养殖户(Type 1) 专属样式 ========== */
+.function-grid-farmer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+}
+
+.farmer-item {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+}
+
+.farmer-item:active {
+  transform: scale(0.96);
+}
+
+.farmer-icon {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+}
+
+.farmer-icon-img {
+  width: 52rpx;
+  height: 52rpx;
+}
+
+.farmer-info {
+  text-align: center;
+}
+
+.farmer-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.farmer-desc {
+  font-size: 20rpx;
+  color: #999;
+  line-height: 1.3;
+}
+
+/* 图标背景色 - 透明无背景 */
+.icon-gradient-green,
+.icon-gradient-blue,
+.icon-gradient-purple,
+.icon-gradient-teal,
+.icon-gradient-amber,
+.icon-gradient-orange {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ========== 检疫质检机构(Type 3) 专属样式 ========== */
+
+/* 检疫员头部卡片 - 保持绿色主题一致 */
+.inspector-card {
+  background: #4CAF50;
+}
+
+.consumer-user-card {
+  background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+}
+
+/* 检疫员认证徽章 */
+.inspector-badge {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1rpx solid rgba(255, 255, 255, 0.4);
+}
+
+/* 检疫员统计数值 - 待检数橙色高亮 */
+.inspector-pending {
+  color: #E65100;
+}
+
+/* 检疫员统计数值 - 今日已检绿色 */
+.inspector-checked {
+  color: #2E7D32;
+}
+
+/* 检疫功能图标背景 - 监管蓝/防护绿微渐变 */
+.inspector-icon-bg {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-radius: 16rpx;
+}
+
+.blockchain-section {
+  margin: 30rpx 30rpx 0;
+}
+
+.blockchain-card {
+  background: linear-gradient(90deg, #1B5E20 0%, #2E7D32 100%);
+  border-radius: 12rpx;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+}
+
+.blockchain-content {
+  flex: 1;
+}
+
+.blockchain-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 8rpx;
+}
+
+.blockchain-desc {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.blockchain-arrow {
+  font-size: 48rpx;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: 20rpx;
+}
+
+/* ========================================
+   未登录 - 游客引导页
+   ======================================== */
+.guest-page {
+  min-height: 100vh;
+  background: #F0F4F0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 顶部渐变装饰区 */
+.guest-header {
+  width: 100%;
+  height: 380rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 50%, #1B5E20 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.guest-header-circle {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.circle-1 {
+  width: 300rpx;
+  height: 300rpx;
+  background: rgba(255, 255, 255, 0.06);
+  top: -80rpx;
+  right: -60rpx;
+}
+
+.circle-2 {
+  width: 200rpx;
+  height: 200rpx;
+  background: rgba(255, 255, 255, 0.04);
+  top: 100rpx;
+  left: -40rpx;
+}
+
+.circle-3 {
+  width: 120rpx;
+  height: 120rpx;
+  background: rgba(255, 255, 255, 0.08);
+  bottom: 40rpx;
+  right: 120rpx;
+}
+
+/* 主卡片 - 浮在渐变区之上 */
+.guest-card {
+  width: calc(100% - 60rpx);
+  margin: -160rpx 30rpx 0;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 60rpx 40rpx 48rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 2;
+}
+
+/* 图标外环 */
+.guest-icon-ring {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.12) 0%, rgba(46, 125, 50, 0.06) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 36rpx;
+}
+
+.guest-icon-inner {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6rpx 20rpx rgba(76, 175, 80, 0.3);
+}
+
+/* 纯CSS锁图标 */
+.lock-icon-svg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lock-svg-shackle {
+  width: 36rpx;
+  height: 26rpx;
+  border: 5rpx solid #FFFFFF;
+  border-bottom: none;
+  border-radius: 22rpx 22rpx 0 0;
+  margin-bottom: -3rpx;
+}
+
+.lock-svg-body {
+  width: 52rpx;
+  height: 38rpx;
+  background: #FFFFFF;
+  border-radius: 6rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-svg-hole {
+  width: 10rpx;
+  height: 10rpx;
+  background: #4CAF50;
+  border-radius: 50%;
+  position: relative;
+}
+
+.lock-svg-hole::after {
+  content: '';
+  position: absolute;
+  top: 9rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6rpx;
+  height: 10rpx;
+  background: #4CAF50;
+  border-radius: 0 0 3rpx 3rpx;
+}
+
+/* 标题 */
+.guest-title {
+  font-size: 38rpx;
+  font-weight: bold;
+  color: #1B5E20;
+  margin-bottom: 16rpx;
+  letter-spacing: 1rpx;
+}
+
+/* 说明文案 */
+.guest-desc {
+  font-size: 26rpx;
+  color: #888888;
+  text-align: center;
+  line-height: 42rpx;
+  margin-bottom: 36rpx;
+}
+
+/* 功能标签 */
+.guest-tags {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 40rpx;
+}
+
+.guest-tag {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #F1F8E9 0%, #E8F5E9 100%);
+  padding: 14rpx 24rpx;
+  border-radius: 30rpx;
+  border: 1rpx solid rgba(76, 175, 80, 0.15);
+}
+
+.tag-dot {
+  width: 12rpx;
+  height: 12rpx;
+  background: linear-gradient(135deg, #4CAF50, #81C784);
+  border-radius: 50%;
+  margin-right: 10rpx;
+  flex-shrink: 0;
+}
+
+.tag-text {
+  font-size: 22rpx;
+  color: #2E7D32;
+  font-weight: 500;
+}
+
+/* 分割线 */
+.guest-divider {
+  width: 100%;
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent 0%, #E0E0E0 50%, transparent 100%);
+  margin-bottom: 40rpx;
+}
+
+/* 登录按钮 */
+.guest-login-btn {
+  width: 520rpx;
+  height: 92rpx;
+  background: linear-gradient(135deg, #43A047 0%, #66BB6A 60%, #81C784 100%);
+  border-radius: 46rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10rpx 36rpx rgba(76, 175, 80, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.guest-login-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  animation: btnShimmer 3s ease-in-out infinite;
+}
+
+@keyframes btnShimmer {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+.guest-login-btn-hover {
+  transform: scale(0.97);
+  opacity: 0.92;
+  box-shadow: 0 4rpx 16rpx rgba(76, 175, 80, 0.25);
+}
+
+.guest-login-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: 4rpx;
+}
+
+/* CSS箭头 */
+.guest-login-arrow {
+  width: 16rpx;
+  height: 16rpx;
+  border-top: 4rpx solid rgba(255, 255, 255, 0.8);
+  border-right: 4rpx solid rgba(255, 255, 255, 0.8);
+  transform: rotate(45deg);
+  margin-left: 14rpx;
+}
+
+/* 底部提示 */
+.guest-footer {
+  display: flex;
+  align-items: center;
+  margin-top: 60rpx;
+  padding: 0 40rpx;
+}
+
+.guest-footer-line {
+  flex: 1;
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent, #C8E6C9, transparent);
+}
+
+.guest-footer-hint {
+  font-size: 22rpx;
+  color: #A5D6A7;
+  padding: 0 20rpx;
+  white-space: nowrap;
+}
+
+.review-user-card {
+  padding-bottom: 50rpx;
+}
+
+.review-panel {
+  background: #ffffff;
+  border-radius: 18rpx;
+  margin: -30rpx 30rpx 0;
+  padding: 32rpx 28rpx;
+  box-shadow: 0 10rpx 24rpx rgba(0, 0, 0, 0.08);
+}
+
+.apply-guide-panel {
+  margin-top: -20rpx;
+}
+
+.review-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1f3b2d;
+  margin-bottom: 18rpx;
+}
+
+.review-desc {
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: #5b6b62;
+}
+
+.review-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  margin-top: 28rpx;
+}
+
+.review-btn {
+  width: 100%;
+  border-radius: 14rpx;
+  border: 1rpx solid #cfd9d3;
+  background: #ffffff;
+  color: #305240;
+  font-size: 28rpx;
+}
+
+.review-btn.primary {
+  background: #2f8d56;
+  color: #ffffff;
+  border-color: #2f8d56;
+}
+
+.review-btn.warn {
+  background: #fff4e5;
+  color: #b25a00;
+  border-color: #ffd5a8;
+}

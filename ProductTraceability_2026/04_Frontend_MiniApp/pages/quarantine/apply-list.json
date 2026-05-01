@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "申报接收",
+  "navigationBarBackgroundColor": "#4CAF50",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 100
+}

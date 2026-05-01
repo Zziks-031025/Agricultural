@@ -1,0 +1,206 @@
+<!-- 用户管理页面 -->
+<view class="container">
+  <!-- 顶部统计卡片 -->
+  <view class="stats-header">
+    <view class="stats-card">
+      <view class="stats-item">
+        <view class="stats-value">{{stats.total}}</view>
+        <view class="stats-label">用户总数</view>
+      </view>
+      <view class="stats-divider"></view>
+      <view class="stats-item">
+        <view class="stats-value active">{{stats.active}}</view>
+        <view class="stats-label">正常用户</view>
+      </view>
+      <view class="stats-divider"></view>
+      <view class="stats-item">
+        <view class="stats-value frozen">{{stats.frozen}}</view>
+        <view class="stats-label">已冻结</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选区域 -->
+  <view class="filter-section">
+    <!-- 搜索框 -->
+    <view class="search-box">
+      <image class="search-icon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E" mode="aspectFit"></image>
+      <input class="search-input" placeholder="搜索用户名/手机号/真实姓名" value="{{searchKeyword}}" bindinput="onSearchInput" />
+      <view class="search-clear" wx:if="{{searchKeyword}}" bindtap="clearSearch">×</view>
+    </view>
+    
+    <!-- 状态筛选Tab -->
+    <view class="filter-tabs">
+      <view class="tab-item {{currentStatus === 'all' ? 'active' : ''}}" bindtap="switchStatus" data-status="all">
+        <text>全部</text>
+      </view>
+      <view class="tab-item {{currentStatus === 'active' ? 'active' : ''}}" bindtap="switchStatus" data-status="active">
+        <text>正常</text>
+      </view>
+      <view class="tab-item {{currentStatus === 'frozen' ? 'active' : ''}}" bindtap="switchStatus" data-status="frozen">
+        <text>已冻结</text>
+      </view>
+    </view>
+    
+    <!-- 角色筛选 -->
+    <view class="role-filter" wx:if="{{showRoleFilter}}">
+      <view class="role-item {{currentRole === 'all' ? 'active' : ''}}" bindtap="switchRole" data-role="all">全部角色</view>
+      <view class="role-item {{currentRole === 1 ? 'active' : ''}}" bindtap="switchRole" data-role="1">管理员</view>
+      <view class="role-item {{currentRole === 2 ? 'active' : ''}}" bindtap="switchRole" data-role="2">企业用户</view>
+      <view class="role-item {{currentRole === 3 ? 'active' : ''}}" bindtap="switchRole" data-role="3">普通用户</view>
+    </view>
+  </view>
+
+  <!-- 用户列表 -->
+  <scroll-view class="user-list" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="loadMore">
+    <view class="user-card" wx:for="{{userList}}" wx:key="id" bindtap="goToUserDetail" data-item="{{item}}">
+      <!-- 卡片头部 -->
+      <view class="card-header">
+        <view class="user-info">
+          <view class="user-name-row">
+            <text class="user-name">{{item.realName || item.username}}</text>
+            <view class="status-indicator {{item.status === 1 ? 'active' : 'frozen'}}"></view>
+          </view>
+          <view class="user-meta">
+            <text class="user-account">@{{item.username}}</text>
+            <text class="meta-divider">|</text>
+            <text class="user-phone">{{item.phone || '-'}}</text>
+          </view>
+        </view>
+        <view class="role-tag role-{{item.userType}}">
+          {{item.userType === 1 ? '管理员' : item.userType === 2 ? '企业用户' : '普通用户'}}
+        </view>
+      </view>
+
+      <!-- 卡片内容 -->
+      <view class="card-body">
+        <view class="info-grid">
+          <view class="info-cell" wx:if="{{item.enterpriseName}}">
+            <text class="cell-label">所属企业</text>
+            <text class="cell-value">{{item.enterpriseName}}</text>
+          </view>
+          <view class="info-cell">
+            <text class="cell-label">最近登录</text>
+            <text class="cell-value">{{item.lastLoginTime || '从未登录'}}</text>
+          </view>
+          <view class="info-cell">
+            <text class="cell-label">注册时间</text>
+            <text class="cell-value">{{item.createTime}}</text>
+          </view>
+        </view>
+        
+        <!-- 冻结状态提示 -->
+        <view class="frozen-notice" wx:if="{{item.status === 0}}">
+          <text class="notice-text">该账号已被冻结</text>
+        </view>
+      </view>
+
+      <!-- 卡片操作区 -->
+      <view class="card-actions" catchtap="preventClose">
+        <view class="action-link" catchtap="resetPassword" data-item="{{item}}">重置密码</view>
+        <view class="action-divider"></view>
+        <view class="action-link" catchtap="changeRole" data-item="{{item}}">修改权限</view>
+        <view class="action-divider"></view>
+        <view class="action-link {{item.status === 1 ? 'danger' : 'success'}}" catchtap="toggleUserStatus" data-item="{{item}}">
+          {{item.status === 1 ? '冻结' : '解冻'}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{userList.length === 0 && !loading}}">
+      <image class="empty-icon" src="https://via.placeholder.com/200/F5F5F5/BDBDBD?text=Empty" mode="aspectFit"></image>
+      <view class="empty-text">暂无用户数据</view>
+      <view class="empty-hint" wx:if="{{searchKeyword}}">尝试更换搜索关键词</view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="no-more" wx:if="{{noMore && userList.length > 0}}">
+      <text>— 没有更多了 —</text>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 重置密码弹窗 -->
+<view class="modal-overlay" wx:if="{{showResetPwdModal}}" bindtap="closeResetPwdModal">
+  <view class="modal-content" catchtap="preventClose">
+    <view class="modal-header">
+      <text class="modal-title">重置密码</text>
+      <view class="modal-close" bindtap="closeResetPwdModal">×</view>
+    </view>
+    <view class="modal-body">
+      <view class="reset-user-name">{{currentUser.realName || currentUser.username}}</view>
+      <view class="reset-tips">
+        <text>重置后密码将变为默认密码：<text class="highlight">123456</text></text>
+      </view>
+      <view class="reset-warning">请提醒用户及时修改密码</view>
+    </view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="closeResetPwdModal">取消</view>
+      <view class="modal-btn confirm" bindtap="confirmResetPassword">确认重置</view>
+    </view>
+  </view>
+</view>
+
+<!-- 修改权限弹窗 -->
+<view class="modal-overlay" wx:if="{{showRoleModal}}" bindtap="closeRoleModal">
+  <view class="modal-content role-modal" catchtap="preventClose">
+    <view class="modal-header">
+      <text class="modal-title">修改权限</text>
+      <view class="modal-close" bindtap="closeRoleModal">×</view>
+    </view>
+    <view class="modal-body">
+      <view class="role-user-info">
+        <text class="role-user-name">{{currentUser.realName || currentUser.username}}</text>
+        <text class="role-user-current">当前角色：{{currentUser.userType === 1 ? '管理员' : currentUser.userType === 2 ? '企业用户' : '普通用户'}}</text>
+      </view>
+      
+      <view class="role-options">
+        <view class="role-title">选择新角色</view>
+        <view class="role-option {{selectedRole === 1 ? 'selected' : ''}}" bindtap="selectRole" data-role="1">
+          <view class="role-info">
+            <view class="role-name">系统管理员</view>
+            <view class="role-desc">拥有全部管理权限</view>
+          </view>
+          <view class="role-check" wx:if="{{selectedRole === 1}}">✓</view>
+        </view>
+        <view class="role-option {{selectedRole === 2 ? 'selected' : ''}}" bindtap="selectRole" data-role="2">
+          <view class="role-info">
+            <view class="role-name">企业用户</view>
+            <view class="role-desc">企业数据管理权限</view>
+          </view>
+          <view class="role-check" wx:if="{{selectedRole === 2}}">✓</view>
+        </view>
+        <view class="role-option {{selectedRole === 3 ? 'selected' : ''}}" bindtap="selectRole" data-role="3">
+          <view class="role-info">
+            <view class="role-name">普通用户</view>
+            <view class="role-desc">仅基础查看权限</view>
+          </view>
+          <view class="role-check" wx:if="{{selectedRole === 3}}">✓</view>
+        </view>
+      </view>
+      
+      <!-- 企业选择（仅企业用户需要） -->
+      <view class="enterprise-select" wx:if="{{selectedRole === 2}}">
+        <view class="select-title">关联企业</view>
+        <picker mode="selector" range="{{enterpriseOptions}}" range-key="name" bindchange="onEnterpriseChange">
+          <view class="select-value">
+            {{selectedEnterprise ? selectedEnterprise.name : '请选择关联企业'}}
+            <text class="select-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="closeRoleModal">取消</view>
+      <view class="modal-btn confirm" bindtap="confirmChangeRole">确认修改</view>
+    </view>
+  </view>
+</view>
+

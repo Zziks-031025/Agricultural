@@ -1,0 +1,27 @@
+<view class="container">
+  <view class="login-box">
+    <view class="title">登录</view>
+
+    <view class="form">
+      <view class="form-item">
+        <text class="label">用户名</text>
+        <input class="input" placeholder="请输入用户名" bindinput="onUsernameInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">密码</text>
+        <input class="input" password placeholder="请输入密码" bindinput="onPasswordInput" />
+      </view>
+
+      <button class="submit-btn" bindtap="handleSubmit">登录</button>
+
+      <view class="switch-mode" bindtap="switchMode">
+        <text>没有账号？普通用户注册</text>
+      </view>
+
+      <view class="enterprise-register-link" bindtap="goEnterpriseRegister">
+        <text>企业入驻申请</text>
+      </view>
+    </view>
+  </view>
+</view>

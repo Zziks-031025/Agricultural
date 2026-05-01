@@ -1,0 +1,138 @@
+<view class="receive-container">
+  <!-- Header status bar -->
+  <view class="status-bar">
+    <view class="status-step {{step === 'scan' ? 'active' : 'done'}}">
+      <view class="step-num">1</view>
+      <text class="step-text">扫码识别</text>
+    </view>
+    <view class="step-line {{step !== 'scan' ? 'active' : ''}}"></view>
+    <view class="status-step {{step === 'verify' ? 'active' : step === 'form' ? 'done' : ''}}">
+      <view class="step-num">2</view>
+      <text class="step-text">检疫核验</text>
+    </view>
+    <view class="step-line {{step === 'form' ? 'active' : ''}}"></view>
+    <view class="status-step {{step === 'form' ? 'active' : ''}}">
+      <view class="step-num">3</view>
+      <text class="step-text">确认接收</text>
+    </view>
+  </view>
+
+  <!-- Step 1: Scan -->
+  <view class="section-card" wx:if="{{step === 'scan'}}">
+    <view class="section-title">扫描养殖批次码</view>
+
+    <view class="scan-area" bindtap="startScan">
+      <image class="scan-icon-large" src="/images/scan-icon.png" mode="aspectFit"></image>
+      <text class="scan-tip">点击打开相机扫描</text>
+      <text class="scan-sub-tip">识别养殖批次二维码/条形码</text>
+    </view>
+
+    <view class="divider-row">
+      <view class="divider-line"></view>
+      <text class="divider-text">或手动输入</text>
+      <view class="divider-line"></view>
+    </view>
+
+    <view class="manual-input-row">
+      <input class="batch-input" placeholder="请输入批次编号" value="{{batchCode}}" bindinput="onBatchCodeInput" />
+      <button class="confirm-btn-small" bindtap="confirmManualInput">查询</button>
+    </view>
+
+    <!-- Mock debug buttons (only in mock mode) -->
+    <block wx:if="{{useMock}}">
+      <view class="mock-section">
+        <view class="mock-title">-- Debug Mock --</view>
+        <view class="mock-btn-row">
+          <button class="mock-btn mock-btn-pass" bindtap="mockScanPassed">模拟: 检疫合格批次</button>
+          <button class="mock-btn mock-btn-fail" bindtap="mockScanFailed">模拟: 未检疫批次</button>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- Step 2: Verifying (loading state) -->
+  <view class="section-card" wx:if="{{step === 'verify'}}">
+    <view class="section-title">检疫核验中</view>
+    <view class="verify-loading">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">正在核验批次 {{batchCode}} 的检疫状态...</text>
+    </view>
+  </view>
+
+  <!-- Step 3: Form (quarantine passed) -->
+  <block wx:if="{{step === 'form' && batchInfo}}">
+    <!-- Quarantine passed badge -->
+    <view class="quarantine-badge">
+      <view class="badge-icon-wrap">
+        <text class="badge-check">OK</text>
+      </view>
+      <view class="badge-info">
+        <text class="badge-title">检疫合格</text>
+        <text class="badge-detail">证书编号: {{batchInfo.certificateNo || '--'}}</text>
+      </view>
+    </view>
+
+    <!-- Batch info card -->
+    <view class="section-card">
+      <view class="section-title">批次信息</view>
+      <view class="info-grid">
+        <view class="info-item">
+          <text class="info-label">批次编号</text>
+          <text class="info-value highlight">{{batchInfo.batchCode}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">产品名称</text>
+          <text class="info-value">{{batchInfo.productName}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">当前数量</text>
+          <text class="info-value">{{batchInfo.currentQuantity || batchInfo.initQuantity}} {{batchInfo.unit}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">供应企业</text>
+          <text class="info-value">{{batchInfo.enterpriseName || '--'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">检疫日期</text>
+          <text class="info-value">{{batchInfo.inspectionDate || '--'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">检疫员</text>
+          <text class="info-value">{{batchInfo.inspector || '--'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Receive form -->
+    <view class="section-card">
+      <view class="section-title">接收信息</view>
+
+      <view class="form-item">
+        <view class="form-label required">接收数量</view>
+        <view class="input-with-unit">
+          <input class="form-input" type="digit" placeholder="请输入接收数量"
+            value="{{formData.receiveQuantity}}" bindinput="onQuantityInput" />
+          <text class="unit-text">{{batchInfo.unit || '只'}}</text>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <view class="form-label required">接收人</view>
+        <input class="form-input" placeholder="请输入接收人姓名"
+          value="{{formData.receiver}}" bindinput="onReceiverInput" />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">备注</view>
+        <textarea class="form-textarea" placeholder="选填备注信息"
+          value="{{remark}}" bindinput="onRemarkInput" maxlength="200"></textarea>
+      </view>
+    </view>
+
+    <!-- Action buttons -->
+    <view class="form-actions">
+      <button class="action-btn rescan-btn" bindtap="reScan">重新扫码</button>
+      <button class="action-btn submit-btn" bindtap="submitReceive">确认接收</button>
+    </view>
+  </block>
+</view>

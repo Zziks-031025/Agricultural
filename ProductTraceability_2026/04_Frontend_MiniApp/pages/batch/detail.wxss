@@ -1,0 +1,602 @@
+/* ========== 页面容器 ========== */
+.detail-container {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ========== 1. 头部区域：批次身份卡片 ========== */
+.batch-header {
+  background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+  padding: 32rpx;
+  padding-top: 40rpx;
+}
+
+.header-row-1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.batch-code {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  font-family: 'SF Mono', 'Consolas', monospace;
+  letter-spacing: 2rpx;
+}
+
+.status-badge {
+  font-size: 24rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-weight: 500;
+}
+
+.header-row-2 {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.qrcode-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 16rpx;
+}
+
+.qrcode-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.arrow-icon {
+  font-size: 36rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.header-row-3 {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12rpx;
+  padding: 20rpx 0;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.stat-unit {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-left: 4rpx;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 8rpx;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 60rpx;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ========== 2. 基础信息区 ========== */
+.info-section {
+  margin: 24rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.section-subtitle {
+  font-size: 22rpx;
+  color: #4CAF50;
+  background: #E8F5E9;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.section-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.readonly-tag {
+  font-size: 20rpx;
+  color: #FF9800;
+  background: #FFF3E0;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  font-weight: 500;
+}
+
+.section-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.info-card {
+  padding: 0 24rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.quantity-display {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.quantity-display .info-value {
+  margin-left: 0;
+}
+
+.quantity-diff {
+  font-size: 24rpx;
+  margin-left: 8rpx;
+  flex-shrink: 0;
+}
+
+.quantity-diff.positive {
+  color: #4CAF50;
+}
+
+.quantity-diff.negative {
+  color: #F44336;
+}
+
+/* 区块链存证栏 */
+.chain-bar {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  background: #FAFAFA;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.chain-bar .chain-label {
+  font-size: 22rpx;
+  color: #999;
+  margin-right: 8rpx;
+}
+
+.chain-bar .chain-hash {
+  flex: 1;
+  font-size: 22rpx;
+  color: #1976D2;
+  font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+.chain-bar .copy-icon {
+  width: 28rpx;
+  height: 28rpx;
+  opacity: 0.6;
+  margin-left: 8rpx;
+}
+
+.chain-bar.pending {
+  justify-content: center;
+}
+
+.chain-pending {
+  font-size: 24rpx;
+  color: #BDBDBD;
+}
+
+/* ========== 3. 生长记录时间轴 ========== */
+.timeline-section {
+  margin: 0 24rpx 24rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.timeline-container {
+  padding: 0 24rpx 24rpx;
+}
+
+.timeline-item {
+  display: flex;
+  position: relative;
+}
+
+.timeline-left {
+  width: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 8rpx;
+}
+
+/* 时间轴圆点 - 历史节点：空心灰点 */
+.timeline-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border: 3rpx solid #E0E0E0;
+  border-radius: 50%;
+  background: #FFFFFF;
+  z-index: 1;
+}
+
+/* 最新节点：实心绿点 */
+.timeline-dot.active {
+  width: 20rpx;
+  height: 20rpx;
+  border: none;
+  background: #4CAF50;
+  box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.4);
+}
+
+/* 时间轴连接线 - 虚线 */
+.timeline-line {
+  flex: 1;
+  width: 2rpx;
+  margin-top: 8rpx;
+  background: repeating-linear-gradient(
+    to bottom,
+    #E0E0E0 0,
+    #E0E0E0 8rpx,
+    transparent 8rpx,
+    transparent 16rpx
+  );
+  min-height: 40rpx;
+}
+
+.timeline-line.hidden {
+  visibility: hidden;
+}
+
+/* 记录卡片 */
+.record-card {
+  flex: 1;
+  margin-left: 16rpx;
+  margin-bottom: 20rpx;
+  background: #FAFAFA;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  border: 1rpx solid #F0F0F0;
+}
+
+.timeline-item.latest .record-card {
+  background: #F1F8E9;
+  border-color: #C8E6C9;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.record-type {
+  display: flex;
+  align-items: center;
+}
+
+.type-name {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.record-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.record-body {
+  margin-bottom: 12rpx;
+}
+
+.record-desc {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.5;
+}
+
+.record-images {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.thumb-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+  background: #F5F5F5;
+}
+
+.more-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 24rpx;
+}
+
+.record-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12rpx;
+  border-top: 1rpx dashed #E8E8E8;
+}
+
+.chain-status {
+  display: flex;
+  align-items: center;
+}
+
+.chain-status.chained .chain-text {
+  font-size: 22rpx;
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+.chain-status.pending .chain-text {
+  font-size: 22rpx;
+  color: #BDBDBD;
+}
+
+.record-operator {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 空状态 */
+.empty-timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 40rpx;
+}
+
+.empty-icon {
+  width: 160rpx;
+  height: 160rpx;
+  opacity: 0.5;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+}
+
+.empty-tip {
+  font-size: 24rpx;
+  color: #BDBDBD;
+}
+
+/* 底部占位 */
+.footer-placeholder {
+  height: 160rpx;
+}
+
+/* ========== 4. 底部操作栏 ========== */
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  padding: 20rpx 30rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: #FFFFFF;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.08);
+  gap: 20rpx;
+  z-index: 100;
+}
+
+.footer-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+  transition: all 0.2s;
+}
+
+.footer-btn:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+
+.footer-btn.secondary {
+  background: #FFFFFF;
+  color: #666;
+  border: 2rpx solid #E0E0E0;
+}
+
+.footer-btn.primary {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4rpx 16rpx rgba(76, 175, 80, 0.3);
+}
+
+.footer-btn.full {
+  flex: none;
+  width: 100%;
+}
+
+.fixed-footer.single {
+  padding: 20rpx 60rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+}
+
+/* ========== 二维码弹窗 ========== */
+.qrcode-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.qrcode-content {
+  width: 560rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  overflow: hidden;
+  animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.qrcode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28rpx 32rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.qrcode-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.qrcode-close {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  color: #999;
+}
+
+.qrcode-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx;
+}
+
+.qrcode-img {
+  width: 320rpx;
+  height: 320rpx;
+  margin-bottom: 24rpx;
+  border: 1rpx solid #F0F0F0;
+  border-radius: 12rpx;
+}
+
+.qrcode-batch {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 12rpx;
+  font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+.qrcode-tip {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.qrcode-footer {
+  padding: 24rpx 32rpx 32rpx;
+}
+
+.qrcode-save-btn {
+  height: 88rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  border-radius: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 500;
+}

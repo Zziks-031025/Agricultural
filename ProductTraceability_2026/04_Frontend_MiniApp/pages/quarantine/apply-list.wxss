@@ -1,0 +1,297 @@
+/* ========================================
+   申报接收列表 - 检疫质检机构专属
+   简洁列表布局 · 橙色待检提醒
+   ======================================== */
+
+.page-container {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+/* ========== 搜索栏 ========== */
+.search-bar {
+  padding: 20rpx 30rpx;
+  background: #FFFFFF;
+}
+
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  background: #F5F5F5;
+  border-radius: 40rpx;
+  padding: 0 24rpx;
+}
+
+.search-icon {
+  width: 32rpx;
+  height: 32rpx;
+  opacity: 0.4;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  padding: 16rpx 0;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* ========== Tab 切换 ========== */
+.tab-bar {
+  display: flex;
+  background: #FFFFFF;
+  padding: 0 30rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  color: #999;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.tab-active {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 4rpx;
+  background: #4CAF50;
+  border-radius: 2rpx;
+}
+
+.tab-count {
+  background: #E65100;
+  color: #FFFFFF;
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 16rpx;
+  min-width: 32rpx;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ========== 列表区域 ========== */
+.list-section {
+  padding: 20rpx 30rpx;
+}
+
+/* ========== 卡片 ========== */
+.apply-card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  /* 左边橙色竖条装饰 */
+  border-left: 6rpx solid #E65100;
+}
+
+.completed-card {
+  border-left-color: #4CAF50;
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 24rpx 16rpx;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
+  flex: 1;
+}
+
+.batch-code {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 产品类型标签 */
+.product-type-tag {
+  font-size: 20rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.type-tag-1 {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.type-tag-2 {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+/* 状态标签 */
+.status-tag {
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.pending-tag {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.completed-tag {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+/* 卡片内容 */
+.card-body {
+  padding: 8rpx 24rpx 16rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10rpx 0;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #333;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 400rpx;
+}
+
+.enterprise-name {
+  color: #333;
+  font-weight: 500;
+}
+
+.quantity-value {
+  color: #E65100;
+  font-weight: 600;
+}
+
+.time-value {
+  color: #999;
+  font-size: 24rpx;
+}
+
+.pass-text {
+  color: #2E7D32;
+  font-weight: 600;
+}
+
+.fail-text {
+  color: #C62828;
+  font-weight: 600;
+}
+
+.chain-text {
+  color: #1565C0;
+  font-weight: 500;
+}
+
+/* 卡片底部 */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 24rpx 20rpx;
+  border-top: 1rpx solid #F5F5F5;
+}
+
+.footer-hint {
+  font-size: 22rpx;
+  color: #CCCCCC;
+}
+
+.action-btn {
+  background: #4CAF50;
+  color: #FFFFFF;
+  font-size: 26rpx;
+  padding: 12rpx 36rpx;
+  border-radius: 32rpx;
+  font-weight: 500;
+}
+
+.action-btn:active {
+  opacity: 0.85;
+}
+
+/* ========== 加载状态 ========== */
+.loading-tip {
+  text-align: center;
+  padding: 40rpx 0;
+  color: #999;
+  font-size: 26rpx;
+}
+
+.no-more-tip {
+  text-align: center;
+  padding: 30rpx 0;
+  color: #CCCCCC;
+  font-size: 24rpx;
+}
+
+/* ========== 空状态 ========== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0 80rpx;
+}
+
+.empty-icon {
+  width: 120rpx;
+  height: 120rpx;
+  opacity: 0.3;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  color: #999;
+  margin-bottom: 10rpx;
+}
+
+.empty-hint {
+  font-size: 24rpx;
+  color: #CCCCCC;
+}

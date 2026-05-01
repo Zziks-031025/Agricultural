@@ -1,0 +1,227 @@
+<view class="detail-container">
+  <!-- ========== 1. 头部区域：批次身份卡片 ========== -->
+  <view class="batch-header">
+    <!-- 第一行：批次号 + 状态标签 -->
+    <view class="header-row-1">
+      <text class="batch-code">{{batchInfo.batchCode}}</text>
+      <view class="status-badge" style="background: {{batchInfo.statusColor}}20; color: {{batchInfo.statusColor}};">
+        {{batchInfo.statusText}}
+      </view>
+    </view>
+    
+    <!-- 第二行：二维码图标 -->
+    <view class="header-row-2" bindtap="showQrcode">
+      <image class="qrcode-icon" src="/images/QR-code.png" mode="aspectFit"></image>
+      <text class="qrcode-text">点击查看批次二维码</text>
+      <text class="arrow-icon">›</text>
+    </view>
+    
+    <!-- 第三行：统计数据 -->
+    <view class="header-row-3">
+      <view class="stat-item">
+        <text class="stat-value">{{batchInfo.currentQuantity}}</text>
+        <text class="stat-unit">{{batchInfo.unit}}</text>
+        <text class="stat-label">当前存栏</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{batchInfo.productionDate}}</text>
+        <text class="stat-label">入栏时间</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 2. 基础信息区 ========== -->
+  <view class="info-section">
+    <view class="section-header">
+      <text class="section-title">基础信息</text>
+      <text class="section-subtitle">{{batchInfo.productType === 2 ? '蔬菜种植模版' : '肉鸡养殖模版'}}</text>
+    </view>
+    
+    <view class="info-card">
+      <view class="info-row">
+        <text class="info-label">品种</text>
+        <text class="info-value">{{batchInfo.breed || batchInfo.productName}}</text>
+      </view>
+      <view class="info-row" wx:if="{{batchInfo.seedSource}}">
+        <text class="info-label">苗源地</text>
+        <text class="info-value">{{batchInfo.seedSource}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">初始数量</text>
+        <text class="info-value">{{batchInfo.initQuantity}} {{batchInfo.unit}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">当前数量</text>
+        <text class="info-value">{{batchInfo.currentQuantity}} {{batchInfo.unit}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">负责人</text>
+        <text class="info-value">{{batchInfo.operator || batchInfo.manager || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">所属企业</text>
+        <text class="info-value">{{batchInfo.enterpriseName}}</text>
+      </view>
+    </view>
+    
+    <!-- 区块链存证栏 -->
+    <view class="chain-bar" wx:if="{{batchInfo.txHash}}">
+      <text class="chain-label">初始化TxHash:</text>
+      <text class="chain-hash" bindtap="copyHash" data-hash="{{batchInfo.txHash}}">{{batchInfo.txHashShort}}</text>
+      <image class="copy-icon" src="/images/copy.png" mode="aspectFit" bindtap="copyHash" data-hash="{{batchInfo.txHash}}"></image>
+    </view>
+    <view class="chain-bar pending" wx:else>
+      <text class="chain-pending">待上链存证</text>
+    </view>
+  </view>
+
+  <!-- ========== 3. 生长记录时间轴 ========== -->
+  <view class="timeline-section">
+    <view class="section-header">
+      <text class="section-title">生长记录</text>
+      <view class="section-header-right">
+        <text class="readonly-tag" wx:if="{{enterpriseType === 2 || enterpriseType === 3}}">只读</text>
+        <text class="section-count">共 {{recordList.length}} 条</text>
+      </view>
+    </view>
+    
+    <view class="timeline-container" wx:if="{{recordList.length > 0}}">
+      <view 
+        class="timeline-item {{index === 0 ? 'latest' : ''}}" 
+        wx:for="{{recordList}}" 
+        wx:key="id"
+      >
+        <!-- 时间轴左侧 -->
+        <view class="timeline-left">
+          <view class="timeline-dot {{index === 0 ? 'active' : ''}}"></view>
+          <view class="timeline-line {{index === recordList.length - 1 ? 'hidden' : ''}}"></view>
+        </view>
+        
+        <!-- 记录卡片 -->
+        <view class="record-card">
+          <view class="record-header">
+            <view class="record-type">
+              <text class="type-name">{{item.typeName}}</text>
+            </view>
+            <text class="record-time">{{item.recordTime}}</text>
+          </view>
+          
+          <view class="record-body">
+            <text class="record-desc">{{item.description}}</text>
+            
+            <!-- 缩略图 -->
+            <view class="record-images" wx:if="{{item.images && item.images.length > 0}}">
+              <image 
+                class="thumb-img" 
+                wx:for="{{item.images}}" 
+                wx:for-item="img" 
+                wx:for-index="imgIdx"
+                wx:key="imgIdx"
+                wx:if="{{imgIdx < 3}}"
+                src="{{img}}" 
+                mode="aspectFill"
+                bindtap="previewImage"
+                data-urls="{{item.images}}"
+                data-current="{{img}}"
+              ></image>
+              <view class="more-img" wx:if="{{item.images.length > 3}}">+{{item.images.length - 3}}</view>
+            </view>
+          </view>
+          
+          <!-- 上链标识 -->
+          <view class="record-footer">
+            <view class="chain-status chained" wx:if="{{item.txHash}}">
+              <text class="chain-text">已上链</text>
+            </view>
+            <view class="chain-status pending" wx:else>
+              <text class="chain-text">待上链</text>
+            </view>
+            <text class="record-operator">{{item.operator}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 空状态 -->
+    <view class="empty-timeline" wx:else>
+      <image class="empty-icon" src="/images/batch-list.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无生长记录</text>
+      <text class="empty-tip" wx:if="{{enterpriseType !== 2 && enterpriseType !== 3}}">点击下方按钮添加第一条记录</text>
+      <text class="empty-tip" wx:else>养殖户尚未上传生长记录</text>
+    </view>
+  </view>
+
+  <!-- 底部占位，防止被固定栏遮挡 -->
+  <view class="footer-placeholder"></view>
+</view>
+
+<!-- ========== 4. 底部操作栏 (按身份隔离) ========== -->
+
+<!-- ===== 养殖户 (Type 1 / 管理员 Type 0) ===== -->
+<block wx:if="{{enterpriseType === 1 || enterpriseType === 0}}">
+  <!-- 状态 <= 2 (初始化/生长中)：添加记录 + 发起检疫 -->
+  <view class="fixed-footer" wx:if="{{batchInfo.status <= 2}}">
+    <view class="footer-btn secondary" bindtap="addRecord">
+      <text>添加生长记录</text>
+    </view>
+    <view class="footer-btn primary" bindtap="applyInspection">
+      <text>发起检疫申报</text>
+    </view>
+  </view>
+  <!-- 状态 > 2：查看溯源报告 -->
+  <view class="fixed-footer single" wx:else>
+    <view class="footer-btn primary full" bindtap="viewTraceReport">
+      <text>查看最终溯源报告</text>
+    </view>
+  </view>
+</block>
+
+<!-- ===== 加工厂 (Type 2) ===== -->
+<block wx:elif="{{enterpriseType === 2}}">
+  <!-- 批次未销售：加工录入 + 销售出库 -->
+  <view class="fixed-footer" wx:if="{{batchInfo.status !== 8}}">
+    <view class="footer-btn secondary" bindtap="goProcessing">
+      <text>加工录入</text>
+    </view>
+    <view class="footer-btn primary" bindtap="goSale">
+      <text>销售出库</text>
+    </view>
+  </view>
+  <!-- 批次已销售：查看溯源报告 -->
+  <view class="fixed-footer single" wx:else>
+    <view class="footer-btn primary full" bindtap="viewTraceReport">
+      <text>查看最终溯源报告</text>
+    </view>
+  </view>
+</block>
+
+<!-- ===== 检疫质检机构 (Type 3) ===== -->
+<view class="fixed-footer" wx:elif="{{enterpriseType === 3}}">
+  <view class="footer-btn secondary" bindtap="goQuarantineForm">
+    <text>检疫录入</text>
+  </view>
+  <view class="footer-btn primary" bindtap="goReportUpload">
+    <text>报告上传</text>
+  </view>
+</view>
+
+<!-- 二维码弹窗 -->
+<view class="qrcode-modal" wx:if="{{showQrcodeModal}}" bindtap="hideQrcode">
+  <view class="qrcode-content" catchtap="stopPropagation">
+    <view class="qrcode-header">
+      <text class="qrcode-title">批次二维码</text>
+      <view class="qrcode-close" bindtap="hideQrcode">×</view>
+    </view>
+    <view class="qrcode-body">
+      <image class="qrcode-img" src="{{qrcodeUrl}}" mode="aspectFit"></image>
+      <text class="qrcode-batch">{{batchInfo.batchCode}}</text>
+      <text class="qrcode-tip">下游企业扫码可接收此批次</text>
+    </view>
+    <view class="qrcode-footer">
+      <view class="qrcode-save-btn" bindtap="saveQrcode">
+        <text>保存到相册</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,123 @@
+<!-- 生长记录列表页 -->
+<view class="container">
+  <!-- 批次信息头部 -->
+  <view class="batch-header">
+    <view class="batch-info">
+      <view class="batch-code">{{batchInfo.batchCode}}</view>
+      <view class="batch-meta">
+        <text class="product-name">{{batchInfo.productName}}</text>
+        <text class="record-count">共 {{recordList.length}} 条记录</text>
+      </view>
+    </view>
+    <view class="add-btn" bindtap="goAddRecord">
+      <text>+</text>
+    </view>
+  </view>
+
+  <!-- 时间轴列表 -->
+  <scroll-view 
+    class="timeline-container" 
+    scroll-y 
+    wx:if="{{recordList.length > 0}}"
+    enhanced
+    show-scrollbar="{{false}}"
+  >
+    <view class="timeline">
+      <view 
+        class="timeline-item" 
+        wx:for="{{recordList}}" 
+        wx:key="id"
+        bindtap="viewRecordDetail"
+        data-item="{{item}}"
+      >
+        <!-- 时间轴线 -->
+        <view class="timeline-line">
+          <view class="timeline-dot {{item.hasChain ? 'chained' : ''}}"></view>
+          <view class="timeline-connector" wx:if="{{index < recordList.length - 1}}"></view>
+        </view>
+
+        <!-- 记录卡片 -->
+        <view class="record-card">
+          <!-- 卡片头部 -->
+          <view class="card-header">
+            <view class="record-type-tag {{item.recordTypeClass}}">{{item.recordTypeName}}</view>
+            <view class="record-time">{{item.recordTime}}</view>
+          </view>
+
+          <!-- 卡片内容 -->
+          <view class="card-body">
+            <view class="record-info">
+              <view class="info-row">
+                <text class="info-label">操作人</text>
+                <text class="info-value">{{item.operator}}</text>
+              </view>
+              <view class="info-row" wx:if="{{item.materialName}}">
+                <text class="info-label">{{item.materialLabel}}</text>
+                <text class="info-value">{{item.materialName}}</text>
+              </view>
+              <view class="info-row" wx:if="{{item.dosage}}">
+                <text class="info-label">用量</text>
+                <text class="info-value">{{item.dosage}} {{item.dosageUnit}}</text>
+              </view>
+              <view class="description" wx:if="{{item.description}}">
+                <text>{{item.description}}</text>
+              </view>
+            </view>
+
+            <!-- 缩略图 -->
+            <view class="record-images" wx:if="{{item.images && item.images.length > 0}}">
+              <image 
+                class="thumb-image" 
+                wx:for="{{item.images}}" 
+                wx:for-item="img" 
+                wx:key="*this"
+                wx:if="{{index < 3}}"
+                src="{{img}}" 
+                mode="aspectFill"
+                catchtap="previewImage"
+                data-urls="{{item.images}}"
+                data-current="{{img}}"
+              ></image>
+              <view class="more-images" wx:if="{{item.images.length > 3}}">
+                <text>+{{item.images.length - 3}}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 区块链信息 -->
+          <view class="card-footer" wx:if="{{item.txHash}}">
+            <view class="chain-info" catchtap="viewCertificate" data-item="{{item}}">
+              <image class="chain-icon" src="/images/Blockchain.png" mode="aspectFit"></image>
+              <text class="tx-hash">TxHash: {{item.txHashShort}}</text>
+              <text class="view-cert">查看存证</text>
+            </view>
+          </view>
+          <view class="card-footer pending" wx:else>
+            <text class="pending-text">待上链</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部提示 -->
+    <view class="list-footer">
+      <text>- 已加载全部记录 -</text>
+    </view>
+  </scroll-view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && recordList.length === 0}}">
+    <image class="empty-icon" src="/images/batch-list.png" mode="aspectFit"></image>
+    <view class="empty-title">暂无生长记录</view>
+    <view class="empty-desc">该批次尚未录入任何生长数据</view>
+    <view class="empty-action" bindtap="goAddRecord">
+      <text>立即添加记录</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+</view>

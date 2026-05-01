@@ -1,0 +1,151 @@
+<!-- ========== 首页 - 游客/企业 统一布局 ========== -->
+<view class="page-container">
+
+  <!-- ==================== 头部区域 ==================== -->
+
+  <!-- 游客头部：平台品牌 -->
+  <view class="brand-header" wx:if="{{!showEnterpriseHome}}">
+    <view class="header-content">
+      <view class="guest-brand">
+        <view class="guest-logo-row">
+          <image class="guest-logo" src="/images/agricultural.png" mode="aspectFit"></image>
+          <view class="guest-title-group">
+            <text class="guest-title">智农链溯源平台</text>
+            <text class="guest-subtitle">区块链保障舌尖安全</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 企业头部：企业名称 + 身份标签 -->
+  <view class="brand-header" wx:else>
+    <view class="header-content">
+      <view class="brand-info">
+        <view class="brand-name-row">
+          <text class="brand-name">{{enterpriseInfo.name}}</text>
+          <view class="certified-badge">
+            <text class="badge-icon">✓</text>
+            <text class="badge-text">{{badgeText}}</text>
+          </view>
+        </view>
+        <text class="brand-slogan">{{sloganText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 轮播图 ==================== -->
+  <view class="brand-swiper-card" wx:if="{{swiperItems.length > 0}}">
+    <swiper class="brand-swiper" indicator-dots="{{true}}" indicator-color="rgba(0,0,0,0.2)" indicator-active-color="#4CAF50" autoplay="{{true}}" interval="{{4000}}" duration="{{600}}" circular="{{true}}">
+      <swiper-item wx:for="{{swiperItems}}" wx:key="index">
+        <view class="swiper-item-content">
+          <image class="swiper-bg" src="{{item.image}}" mode="aspectFill"></image>
+          <view class="swiper-overlay">
+            <text class="swiper-title">{{item.title}}</text>
+            <text class="swiper-desc">{{item.desc}}</text>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
+  </view>
+
+  <!-- ==================== 数据统计卡片 ==================== -->
+
+  <!-- 游客统计：全平台存证数 + 入驻企业总数 -->
+  <view class="blockchain-dashboard" wx:if="{{!showEnterpriseHome}}">
+    <view class="dashboard-card">
+      <view class="card-info">
+        <text class="card-value">{{platformChainCount}}</text>
+        <text class="card-label">全平台存证数</text>
+      </view>
+    </view>
+    <view class="dashboard-divider"></view>
+    <view class="dashboard-card">
+      <view class="card-info">
+        <text class="card-value enterprise-value">{{enterpriseCount}}</text>
+        <text class="card-label">入驻企业总数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 企业统计：全平台存证数 + 本企业贡献数 -->
+  <view class="blockchain-dashboard" wx:else>
+    <view class="dashboard-card">
+      <view class="card-info">
+        <text class="card-value">{{platformChainCount}}</text>
+        <text class="card-label">全平台存证数</text>
+      </view>
+    </view>
+    <view class="dashboard-divider"></view>
+    <view class="dashboard-card">
+      <view class="card-info">
+        <text class="card-value contribute-value">{{contributeCount}}</text>
+        <text class="card-label">{{contributeLabel}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 扫码溯源（所有人可用） ==================== -->
+  <view class="scan-section">
+    <view class="scan-btn" bindtap="scanCode" hover-class="scan-btn-hover">
+      <image class="scan-icon-consumer" src="/images/scan-icon.png" mode="aspectFit"></image>
+      <text class="scan-text">扫码溯源</text>
+      <text class="scan-hint">扫描产品二维码查询溯源信息</text>
+    </view>
+  </view>
+
+  <!-- ==================== 平台简介（仅游客） ==================== -->
+  <view class="intro-section" wx:if="{{!showEnterpriseHome}}">
+    <view class="intro-header">
+      <view class="intro-line"></view>
+      <text class="intro-title">平台简介</text>
+      <view class="intro-line"></view>
+    </view>
+    <view class="intro-content">
+      <text class="intro-text">基于<text class="highlight">区块链技术</text>构建的农产品溯源平台，利用区块链<text class="highlight">不可篡改</text>、可追溯的特性，为消费者提供透明可信的<text class="highlight">农产品安全</text>保障。</text>
+      <view class="intro-features">
+        <view class="feature-tag">
+          <text class="feature-icon">✓</text>
+          <text class="feature-text">区块链存证</text>
+        </view>
+        <view class="feature-tag">
+          <text class="feature-icon">✓</text>
+          <text class="feature-text">数据不可篡改</text>
+        </view>
+        <view class="feature-tag">
+          <text class="feature-icon">✓</text>
+          <text class="feature-text">全程可追溯</text>
+        </view>
+        <view class="feature-tag">
+          <text class="feature-icon">✓</text>
+          <text class="feature-text">安全可信赖</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 底部导航（所有人可用，文案按企业类型适配） ==================== -->
+  <view class="bottom-nav">
+    <view class="nav-item" bindtap="goToEducation">
+      <view class="nav-icon-wrapper">
+        <image class="nav-icon" src="/images/education-icon.png" mode="aspectFit"></image>
+      </view>
+      <text class="nav-title">{{navEducationTitle}}</text>
+      <text class="nav-desc">{{navEducationDesc}}</text>
+    </view>
+    <view class="nav-divider"></view>
+    <view class="nav-item" bindtap="goToEnterprise">
+      <view class="nav-icon-wrapper">
+        <image class="nav-icon" src="/images/enterprise-icon.png" mode="aspectFit"></image>
+      </view>
+      <text class="nav-title">{{navEnterpriseTitle}}</text>
+      <text class="nav-desc">{{navEnterpriseDesc}}</text>
+    </view>
+  </view>
+
+  <!-- 底部标识 -->
+  <view class="brand-footer">
+    <text class="footer-text">区块链溯源 · 数据不可篡改</text>
+  </view>
+
+</view>

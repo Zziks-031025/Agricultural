@@ -1,0 +1,87 @@
+<!-- 认证企业列表页 - 消费者视角 -->
+<view class="container">
+  <!-- 页面头部 -->
+  <view class="page-header">
+    <view class="header-content">
+      <text class="header-title">认证企业公示</text>
+      <text class="header-desc">所有通过审核的溯源企业均在此公示</text>
+    </view>
+    <view class="header-stats">
+      <text class="stats-num">{{enterpriseList.length}}</text>
+      <text class="stats-text">家认证企业</text>
+    </view>
+  </view>
+
+  <!-- 类型筛选 -->
+  <view class="filter-section">
+    <view class="filter-item {{currentType === 'all' ? 'active' : ''}}" bindtap="switchType" data-type="all">
+      <text>全部</text>
+    </view>
+    <view class="filter-item {{currentType === 1 ? 'active' : ''}}" bindtap="switchType" data-type="1">
+      <image class="filter-icon" src="/images/agricultural.png" mode="aspectFit"></image>
+      <text>种植养殖</text>
+    </view>
+    <view class="filter-item {{currentType === 2 ? 'active' : ''}}" bindtap="switchType" data-type="2">
+      <image class="filter-icon" src="/images/meat-products.png" mode="aspectFit"></image>
+      <text>加工宰杀</text>
+    </view>
+    <view class="filter-item {{currentType === 3 ? 'active' : ''}}" bindtap="switchType" data-type="3">
+      <image class="filter-icon" src="/images/quarantine.png" mode="aspectFit"></image>
+      <text>检疫质检</text>
+    </view>
+  </view>
+
+  <!-- 企业列表 -->
+  <scroll-view class="enterprise-list" scroll-y bindscrolltolower="loadMore">
+    <view class="enterprise-card" wx:for="{{filteredList}}" wx:key="id" bindtap="goToDetail" data-item="{{item}}">
+      <!-- 企业类型图标 -->
+      <view class="card-logo type-{{item.enterpriseType}}">
+        <image class="logo-img" src="{{item.enterpriseType === 1 ? '/images/agricultural.png' : item.enterpriseType === 2 ? '/images/meat-products.png' : '/images/quarantine.png'}}" mode="aspectFit"></image>
+      </view>
+      
+      <!-- 企业信息 -->
+      <view class="card-info">
+        <view class="info-header">
+          <text class="enterprise-name">{{item.enterpriseName}}</text>
+          <view class="certified-tag">
+            <text class="tag-icon">V</text>
+            <text class="tag-text">已认证</text>
+          </view>
+        </view>
+        
+        <view class="info-meta">
+          <view class="meta-item">
+            <text class="meta-label">企业类型</text>
+            <text class="meta-value">{{item.enterpriseTypeName}}</text>
+          </view>
+          <view class="meta-item">
+            <text class="meta-label">存证数量</text>
+            <text class="meta-value highlight">{{item.chainCount}} 笔</text>
+          </view>
+        </view>
+        
+        <view class="info-footer">
+          <text class="location">{{item.province}}{{item.city}}</text>
+          <text class="view-detail">查看详情 ></text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{filteredList.length === 0 && !loading}}">
+      <image class="empty-icon" src="https://via.placeholder.com/200/F5F5F5/BDBDBD?text=Empty" mode="aspectFit"></image>
+      <text class="empty-text">暂无{{currentType !== 'all' ? '该类型的' : ''}}认证企业</text>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="no-more" wx:if="{{noMore && filteredList.length > 0}}">
+      <text>- 已展示全部认证企业 -</text>
+    </view>
+  </scroll-view>
+</view>

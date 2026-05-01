@@ -1,0 +1,155 @@
+<view class="storage-container">
+  <view class="input-mode-tabs">
+    <view class="tabs-container">
+      <view class="mode-tab {{inputMode === 'scan' ? 'active' : ''}}" bindtap="switchInputMode" data-mode="scan">
+        <text class="mode-text">扫码录入</text>
+      </view>
+      <view class="mode-tab {{inputMode === 'input' ? 'active' : ''}}" bindtap="switchInputMode" data-mode="input">
+        <text class="mode-text">手动输入</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">关联批次</view>
+    
+    <view class="batch-input-area" wx:if="{{inputMode === 'scan'}}">
+      <view class="scan-btn" bindtap="scanBatchCode">
+        <image class="scan-icon" src="/images/scan-icon.png" mode="aspectFit"></image>
+        <text class="scan-text">点击扫描批次码</text>
+      </view>
+    </view>
+
+    <view class="batch-input-area" wx:if="{{inputMode === 'input'}}">
+      <view class="input-group">
+        <input class="batch-input" placeholder="请输入批次号" value="{{batchNo}}" bindinput="onBatchNoInput" />
+        <button class="confirm-btn" bindtap="confirmBatchNo">确认</button>
+      </view>
+    </view>
+
+    <view class="batch-info-card" wx:if="{{batchInfo}}">
+      <view class="info-row">
+        <text class="info-label">批次号</text>
+        <text class="info-value">{{batchNo}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">产品名称</text>
+        <text class="info-value">{{batchInfo.productName}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">可入库</text>
+        <text class="info-value">{{batchInfo.availableInbound}} {{batchInfo.unit}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">可出库</text>
+        <text class="info-value">{{batchInfo.availableOutbound}} {{batchInfo.unit}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">当前库存</text>
+        <text class="info-value">{{batchInfo.currentStock}} {{batchInfo.unit}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">仓储信息</view>
+    
+    <view class="form-item">
+      <view class="form-label required">入库类型</view>
+      <picker class="form-picker" mode="selector" range="{{storageTypes}}" bindchange="onStorageTypeChange">
+        <view class="picker-value">{{formData.storageType || '请选择入库类型'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">仓储日期</view>
+      <picker mode="date" value="{{formData.storageDate}}" bindchange="onDateChange">
+        <view class="form-picker">
+          <text class="{{formData.storageDate ? '' : 'placeholder'}}">{{formData.storageDate || '请选择日期'}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">仓库名称</view>
+      <input class="form-input" placeholder="请输入仓库名称/库房编号" value="{{formData.warehouseName}}" data-field="warehouseName" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">仓库位置</view>
+      <view class="location-btn" bindtap="getLocation">
+        <image class="location-icon" src="/images/position.png" mode="aspectFit"></image>
+        <text class="location-text">{{locationText}}</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">仓储数量</view>
+      <input class="form-input" type="digit" placeholder="请输入仓储数量" value="{{formData.storageQuantity}}" data-field="storageQuantity" bindinput="onInputChange" />
+      <view class="quantity-hint-text" wx:if="{{availableHint}}">{{availableHint}}</view>
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">负责人</view>
+      <input class="form-input" placeholder="请输入负责人姓名" value="{{formData.operator}}" data-field="operator" bindinput="onInputChange" />
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">环境监测</view>
+    
+    <view class="form-item">
+      <view class="form-label required">仓库温度（℃）</view>
+      <input class="form-input" type="digit" placeholder="请输入温度" value="{{formData.temperature}}" data-field="temperature" bindinput="onInputChange" />
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">仓库湿度（%）</view>
+      <input class="form-input" type="digit" placeholder="请输入湿度" value="{{formData.humidity}}" data-field="humidity" bindinput="onInputChange" />
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label">存储条件</view>
+      <input class="form-input" placeholder="如: 冷藏保鲜、常温干燥、-18度急冻" value="{{formData.storageCondition}}" data-field="storageCondition" bindinput="onInputChange" />
+    </view>
+
+    <view class="environment-tip">
+      <text class="tip-text">冷链管控：温度应保持在 -18℃ 至 4℃，湿度应保持在 45% 至 75%</text>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="form-item">
+      <view class="form-label">备注</view>
+      <textarea class="form-textarea" placeholder="其他备注信息" value="{{formData.remark}}" data-field="remark" bindinput="onInputChange" maxlength="200" />
+      <view class="textarea-count">{{formData.remark.length || 0}}/200</view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">库房实景</view>
+    
+    <view class="photo-area">
+      <view class="image-list">
+        <view class="image-item" wx:for="{{warehousePhotos}}" wx:key="index">
+          <image class="photo-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}"></image>
+          <view class="delete-btn" catchtap="deleteImage" data-index="{{index}}">
+            <text class="delete-icon">×</text>
+          </view>
+        </view>
+        
+        <view class="upload-btn" wx:if="{{warehousePhotos.length < 5}}" bindtap="takePhoto">
+          <image class="camera-icon" src="/images/take-photo.png" mode="aspectFit"></image>
+          <text class="upload-text">拍摄</text>
+        </view>
+      </view>
+      <view class="upload-tip">请拍摄清晰的库房实景照片（最多5张）</view>
+    </view>
+  </view>
+
+  <view class="form-actions">
+    <button class="action-btn reset-btn" bindtap="resetForm">重置</button>
+    <button class="action-btn submit-btn" bindtap="submitForm">提交并上链</button>
+  </view>
+</view>

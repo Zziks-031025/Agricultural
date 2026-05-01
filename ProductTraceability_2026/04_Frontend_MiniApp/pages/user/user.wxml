@@ -1,0 +1,286 @@
+<view class="user-container">
+  <!-- ========== 肉鸡养殖户(Type 1) 专属头部 ========== -->
+  <view class="farmer-header" wx:if="{{isLogin && isFarmer}}">
+    <view class="farmer-info-card">
+      <view class="farmer-logo-wrap" bindtap="changeLogo">
+        <image class="farmer-logo" src="{{enterpriseInfo.logo || 'https://via.placeholder.com/150/4CAF50/FFFFFF?text=Logo'}}" mode="aspectFill"></image>
+        <view class="logo-edit-hint">
+          <text class="edit-text">更换</text>
+        </view>
+      </view>
+      <view class="farmer-detail">
+        <view class="farmer-name">{{enterpriseInfo.name || '养殖场'}}</view>
+        <view class="farmer-role-tag">
+          <text class="farmer-badge">✓ 认证养殖户</text>
+        </view>
+        <view class="enterprise-code-row" bindtap="copyEnterpriseCode">
+          <text class="code-label">企业识别码:</text>
+          <text class="code-value">{{enterpriseInfo.enterpriseCode}}</text>
+          <image class="copy-icon" src="/images/copy.png" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 宰杀加工企业(Type 2) 专属头部 ========== -->
+  <view class="farmer-header" wx:elif="{{isLogin && isProcessor}}">
+    <view class="farmer-info-card">
+      <view class="farmer-logo-wrap" bindtap="changeLogo">
+        <image class="farmer-logo" src="{{enterpriseInfo.logo || 'https://via.placeholder.com/150/4CAF50/FFFFFF?text=Logo'}}" mode="aspectFill"></image>
+        <view class="logo-edit-hint">
+          <text class="edit-text">更换</text>
+        </view>
+      </view>
+      <view class="farmer-detail">
+        <view class="farmer-name">{{enterpriseInfo.name || '加工厂'}}</view>
+        <view class="farmer-role-tag">
+          <text class="farmer-badge processor-badge">✓ 认证加工企业</text>
+        </view>
+        <view class="enterprise-code-row" bindtap="copyEnterpriseCode">
+          <text class="code-label">企业识别码:</text>
+          <text class="code-value">{{enterpriseInfo.enterpriseCode}}</text>
+          <image class="copy-icon" src="/images/copy.png" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 检疫质检机构(Type 3) 专属头部 ========== -->
+  <view class="farmer-header" wx:elif="{{isLogin && isQuarantine}}">
+    <view class="farmer-info-card">
+      <view class="farmer-logo-wrap" bindtap="changeLogo">
+        <image class="farmer-logo" src="{{enterpriseInfo.logo || 'https://via.placeholder.com/150/4CAF50/FFFFFF?text=Logo'}}" mode="aspectFill"></image>
+        <view class="logo-edit-hint">
+          <text class="edit-text">更换</text>
+        </view>
+      </view>
+      <view class="farmer-detail">
+        <view class="farmer-name">{{enterpriseInfo.name || '检疫机构'}}</view>
+        <view class="farmer-role-tag">
+          <text class="farmer-badge quarantine-badge">✓ 认证检疫机构</text>
+        </view>
+        <view class="enterprise-code-row" bindtap="copyEnterpriseCode">
+          <text class="code-label">企业识别码:</text>
+          <text class="code-value">{{enterpriseInfo.enterpriseCode}}</text>
+          <image class="copy-icon" src="/images/copy.png" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 其他用户类型的头部 -->
+  <view class="user-header" wx:elif="{{isLogin}}">
+    <view class="user-info-card">
+      <image class="avatar" src="{{userInfo.avatar || 'https://via.placeholder.com/150/4CAF50/FFFFFF?text=User'}}" mode="aspectFill"></image>
+      <view class="user-detail">
+        <view class="username">{{userInfo.realName || userInfo.username || '未设置昵称'}}</view>
+        <view class="user-role-tag">
+          <text class="role-badge role-{{userType === 1 ? 'admin' : (userType === 2 ? 'enterprise' : 'consumer')}}">{{roleName}}</text>
+        </view>
+        <view class="enterprise-info" wx:if="{{isEnterprise}}">
+          <text class="enterprise-name">{{userInfo.enterpriseName || ''}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="guest-header" wx:else>
+    <view class="guest-card">
+      <image class="guest-avatar" src="https://via.placeholder.com/150/E0E0E0/999?text=Guest" mode="aspectFill"></image>
+      <view class="guest-info">
+        <view class="guest-title">您还未登录</view>
+        <view class="guest-subtitle">登录后可使用更多功能</view>
+      </view>
+      <view class="login-btn" bindtap="goToLogin">
+        <text class="login-text">立即登录</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="audit-notice" wx:if="{{isLogin && isEnterprise && auditStatus === 0}}">
+    <view class="notice-icon">
+      <image class="icon-img" src="https://via.placeholder.com/60/FF9800/FFFFFF?text=!" mode="aspectFit"></image>
+    </view>
+    <view class="notice-content">
+      <view class="notice-title">入驻申请审核中</view>
+      <view class="notice-desc">您的入驻申请正在审核中，请耐心等待。审核通过后即可使用工作台功能。</view>
+    </view>
+  </view>
+
+  <view class="audit-notice notice-reject" wx:if="{{isLogin && isEnterprise && auditStatus === 2}}">
+    <view class="notice-icon">
+      <image class="icon-img" src="https://via.placeholder.com/60/F44336/FFFFFF?text=X" mode="aspectFit"></image>
+    </view>
+    <view class="notice-content">
+      <view class="notice-title">入驻申请被拒绝</view>
+      <view class="notice-desc">{{auditRemark || '审核未通过，请联系管理员了解详情'}}</view>
+    </view>
+  </view>
+
+  <!-- ========== 区块 A：管理员专属功能 ========== -->
+  <view class="section-label" wx:if="{{isLogin && isAdmin}}">管理功能</view>
+  <view class="menu-section" wx:if="{{isLogin && isAdmin}}">
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/admin/enterprise-list?source=profile">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/enterprise-manage.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">企业管理</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/admin/user-list?source=profile">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/user-manage.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">用户管理</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/admin/blockchain">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/Blockchain.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">区块链管理</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- ========== 区块 B：养殖企业专属功能 (enterpriseType === 1) ========== -->
+  <view class="section-label" wx:if="{{isLogin && enterpriseType === 1}}">合规档案</view>
+  <view class="menu-section" wx:if="{{isLogin && enterpriseType === 1}}">
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/enterprise/license?type=business">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/enterprise-icon.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">营业执照</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/enterprise/license?type=production">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/quarantine.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">行业许可证</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/blockchain/record-list">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/Blockchain-certificate.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">存证证书</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- ========== 区块 B2：加工企业专属功能 (enterpriseType === 2) ========== -->
+  <view class="section-label" wx:if="{{isLogin && enterpriseType === 2}}">合规档案</view>
+  <view class="menu-section" wx:if="{{isLogin && enterpriseType === 2}}">
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/enterprise/license?type=business">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/enterprise-icon.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">营业执照</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/enterprise/license?type=food-production">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/processing.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">行业许可证</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/blockchain/record-list">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/Blockchain-certificate.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">存证证书</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- ========== 区块 B3：检疫质检机构专属功能 (enterpriseType === 3) ========== -->
+  <view class="section-label" wx:if="{{isLogin && enterpriseType === 3}}">合规档案</view>
+  <view class="menu-section" wx:if="{{isLogin && enterpriseType === 3}}">
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/enterprise/license?type=business">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/enterprise-icon.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">营业执照</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/enterprise/license?type=authority">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/inspection-icon.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">机构执业资质</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/blockchain/record-list">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/Blockchain-certificate.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">存证证书</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- ========== 区块 C：公用功能 ========== -->
+  <view class="section-label" wx:if="{{isLogin}}">{{isAdmin ? '系统设置' : '账号设置'}}</view>
+  <view class="menu-section" wx:if="{{isLogin}}">
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/user/profile">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/personal-information.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">{{(enterpriseType === 1 || enterpriseType === 2 || enterpriseType === 3) ? '企业/个人信息' : '个人信息'}}</text>
+      </view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/user/messages">
+      <view class="menu-icon icon-transparent">
+        <image class="menu-icon-img" src="/images/message.png" mode="aspectFit"></image>
+      </view>
+      <view class="menu-content">
+        <text class="menu-title">我的消息</text>
+      </view>
+      <view class="menu-badge" wx:if="{{unreadCount > 0}}">{{unreadCount}}</view>
+      <view class="menu-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="action-section" wx:if="{{!isLogin}}">
+    <view class="action-btn primary-btn" bindtap="goToLogin">
+      <text class="btn-text">企业用户登录</text>
+    </view>
+    <view class="action-btn secondary-btn" bindtap="goToRegister">
+      <text class="btn-text">企业入驻申请</text>
+    </view>
+  </view>
+
+  <view class="action-section" wx:else>
+    <view class="action-btn logout-btn" bindtap="handleLogout">
+      <text class="btn-text">退出登录</text>
+    </view>
+  </view>
+</view>

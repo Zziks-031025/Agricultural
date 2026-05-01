@@ -1,0 +1,146 @@
+<view class="processing-container">
+  <!-- Section 1: Linked Batch -->
+  <view class="form-section">
+    <view class="section-title">关联批次</view>
+
+    <!-- Batch already loaded -->
+    <block wx:if="{{sourceBatchInfo}}">
+      <view class="batch-card">
+        <view class="batch-header">
+          <view class="batch-tag">加工中</view>
+          <text class="batch-code">{{sourceBatchCode}}</text>
+        </view>
+        <view class="batch-grid">
+          <view class="batch-field">
+            <text class="field-label">产品</text>
+            <text class="field-value">{{sourceBatchInfo.productName}}</text>
+          </view>
+          <view class="batch-field">
+            <text class="field-label">数量</text>
+            <text class="field-value">{{sourceBatchInfo.currentQuantity}} {{sourceBatchInfo.unit}}</text>
+          </view>
+          <view class="batch-field">
+            <text class="field-label">供应企业</text>
+            <text class="field-value">{{sourceBatchInfo.supplierName}}</text>
+          </view>
+          <view class="batch-field">
+            <text class="field-label">生产日期</text>
+            <text class="field-value">{{sourceBatchInfo.productionDate}}</text>
+          </view>
+        </view>
+        <view class="batch-change" bindtap="changeBatch">
+          <text class="change-text">更换批次</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- Batch not loaded yet -->
+    <block wx:else>
+      <view class="scan-area" bindtap="scanBatchCode">
+        <image class="scan-icon" src="/images/scan-icon.png" mode="aspectFit"></image>
+        <text class="scan-tip">扫描原料批次码</text>
+      </view>
+      <view class="divider-row">
+        <view class="divider-line"></view>
+        <text class="divider-text">或手动输入</text>
+        <view class="divider-line"></view>
+      </view>
+      <view class="manual-input-row">
+        <input class="batch-input" placeholder="请输入批次编号" value="{{sourceBatchCode}}" bindinput="onBatchCodeInput" />
+        <button class="confirm-btn-small" bindtap="confirmBatchCode">查询</button>
+      </view>
+    </block>
+  </view>
+
+  <!-- Section 2: Processing Info -->
+  <view class="form-section">
+    <view class="section-title">加工信息 (肉鸡加工模版)</view>
+
+    <view class="form-item">
+      <view class="form-label required">加工日期</view>
+      <picker class="form-picker" mode="date" value="{{formData.processingDate}}" bindchange="onDateChange">
+        <view class="picker-value {{formData.processingDate ? '' : 'placeholder'}}">
+          {{formData.processingDate || '请选择加工日期'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">加工方式</view>
+      <picker class="form-picker" mode="selector" range="{{methodList}}" value="{{methodIndex}}" bindchange="onMethodChange">
+        <view class="picker-value {{formData.processingMethod ? '' : 'placeholder'}}">
+          {{formData.processingMethod || '请选择: 屠宰 / 分割 / 冷冻 / 熟制'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">包装规格</view>
+      <input class="form-input" placeholder="例如: 500g/袋、1kg/盒"
+        value="{{formData.packagingSpec}}" data-field="packagingSpec" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">操作员</view>
+      <input class="form-input" placeholder="请输入操作员姓名"
+        value="{{formData.operator}}" data-field="operator" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">投入数量</view>
+      <view class="input-with-unit">
+        <input class="form-input" type="digit" placeholder="请输入投入数量"
+          value="{{formData.inputQuantity}}" data-field="inputQuantity" bindinput="onInputChange" />
+        <picker class="unit-picker" mode="selector" range="{{unitList}}" value="{{inputUnitIndex}}" bindchange="onInputUnitChange">
+          <text class="unit-text unit-selectable">{{formData.inputUnit || '只'}} ▾</text>
+        </picker>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">产出数量</view>
+      <view class="input-with-unit">
+        <input class="form-input" type="digit" placeholder="请输入产出数量"
+          value="{{formData.outputQuantity}}" data-field="outputQuantity" bindinput="onInputChange" />
+        <picker class="unit-picker" mode="selector" range="{{unitList}}" value="{{outputUnitIndex}}" bindchange="onOutputUnitChange">
+          <text class="unit-text unit-selectable">{{formData.outputUnit || 'kg'}} ▾</text>
+        </picker>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">备注</view>
+      <textarea class="form-textarea" placeholder="选填: 加工环境、温度、备注等信息"
+        value="{{remark}}" bindinput="onRemarkInput" maxlength="200"></textarea>
+    </view>
+  </view>
+
+  <!-- Section 3: On-site Photos -->
+  <view class="form-section">
+    <view class="section-title">现场照片</view>
+    <view class="photo-tip">请拍摄包装好的成品照片（最多{{maxPhotos}}张）</view>
+
+    <view class="photo-grid">
+      <view class="photo-item" wx:for="{{photoList}}" wx:key="index">
+        <image class="photo-img" src="{{item}}" mode="aspectFill" bindtap="previewPhoto" data-url="{{item}}"></image>
+        <view class="photo-delete" catchtap="deletePhoto" data-index="{{index}}">
+          <text class="delete-x">x</text>
+        </view>
+      </view>
+
+      <!-- Camera / Album button -->
+      <view class="photo-add" wx:if="{{photoList.length < maxPhotos}}" bindtap="takePhoto">
+        <image class="camera-icon" src="/images/take-photo.png" mode="aspectFit"></image>
+        <text class="add-text">拍摄/相册</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Action buttons -->
+  <view class="form-actions">
+    <button class="action-btn reset-btn" bindtap="resetForm" disabled="{{submitting}}">重置</button>
+    <button class="action-btn submit-btn" bindtap="submitForm" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : '提交记录'}}
+    </button>
+  </view>
+</view>

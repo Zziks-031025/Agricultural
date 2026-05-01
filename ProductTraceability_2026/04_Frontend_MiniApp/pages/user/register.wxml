@@ -1,0 +1,60 @@
+<view class="register-container">
+  <view class="form-section">
+    <view class="section-title">普通用户注册</view>
+    <view class="section-desc">注册后可使用首页浏览、扫码溯源、消息查看等公开功能。</view>
+
+    <view class="form-item">
+      <view class="label">
+        <text class="label-text">用户名</text>
+        <text class="required">*</text>
+      </view>
+      <input class="input" placeholder="请输入用户名" value="{{formData.username}}" bindinput="onInput" data-field="username" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">
+        <text class="label-text">真实姓名</text>
+        <text class="required">*</text>
+      </view>
+      <input class="input" placeholder="请输入真实姓名" value="{{formData.realName}}" bindinput="onInput" data-field="realName" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">
+        <text class="label-text">手机号</text>
+        <text class="required">*</text>
+      </view>
+      <input class="input" type="number" maxlength="11" placeholder="请输入11位手机号" value="{{formData.phone}}" bindinput="onInput" data-field="phone" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">
+        <text class="label-text">密码</text>
+        <text class="required">*</text>
+      </view>
+      <input class="input" type="password" password placeholder="请设置登录密码" value="{{formData.password}}" bindinput="onInput" data-field="password" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">
+        <text class="label-text">确认密码</text>
+        <text class="required">*</text>
+      </view>
+      <input class="input" type="password" password placeholder="请再次输入密码" value="{{formData.confirmPassword}}" bindinput="onInput" data-field="confirmPassword" />
+    </view>
+  </view>
+
+  <view class="agreement-section">
+    <view class="agreement-check" bindtap="toggleAgreement">
+      <view class="checkbox {{agreed ? 'checked' : ''}}">
+        <text class="check-icon" wx:if="{{agreed}}">✓</text>
+      </view>
+      <text class="agreement-text">我已阅读并同意</text>
+      <text class="agreement-link" catchtap="viewAgreement">《用户注册说明》</text>
+    </view>
+  </view>
+
+  <view class="submit-section">
+    <button class="submit-btn" bindtap="handleSubmit" loading="{{submitting}}">完成注册</button>
+  </view>
+</view>

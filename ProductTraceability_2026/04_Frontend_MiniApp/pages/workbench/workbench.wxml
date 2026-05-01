@@ -1,0 +1,316 @@
+<view class="workbench-container" wx:if="{{isLogin}}">
+  <block wx:if="{{isEnterpriseReview}}">
+    <view class="user-card review-user-card">
+      <view class="user-info">
+        <image class="avatar" src="{{userInfo.avatar || 'https://via.placeholder.com/120/4CAF50/FFFFFF?text=U'}}" mode="aspectFill"></image>
+        <view class="user-detail">
+          <view class="username">{{userInfo.realName || userInfo.username || '用户'}}</view>
+          <view class="enterprise-name">{{userInfo.enterpriseName || '企业申请用户'}}</view>
+          <view class="enterprise-type-tag">
+            <view class="type-badge">
+              <text class="type-badge-text">{{enterpriseTypeName || '企业申请中'}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="review-panel">
+      <view class="review-title">{{reviewStatus === 2 ? '企业申请已被驳回' : '企业申请审核中'}}</view>
+      <view class="review-desc" wx:if="{{reviewStatus === 2}}">
+        {{reviewRemark || '请根据审核意见完善资料后重新提交审核。'}}
+      </view>
+      <view class="review-desc" wx:else>
+        当前企业仍在审核流程中，审核通过后系统会自动开放完整企业工作台。
+      </view>
+      <view class="review-actions">
+        <button class="review-btn primary" bindtap="goToUserCenter">前往我的页面</button>
+        <button class="review-btn" bindtap="goToMessages">查看消息通知</button>
+        <button class="review-btn warn" wx:if="{{reviewStatus === 2}}" bindtap="handleReapply">重新提交审核</button>
+      </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{hasWorkbenchAccess}}">
+    <view class="user-card {{isInspector ? 'inspector-card' : ''}}">
+      <view class="user-info">
+        <image class="avatar" src="{{userInfo.avatar || 'https://via.placeholder.com/120/4CAF50/FFFFFF?text=U'}}" mode="aspectFill"></image>
+        <view class="user-detail">
+          <view class="username">{{userInfo.realName || userInfo.username || '用户'}}</view>
+          <view class="enterprise-name">{{userInfo.enterpriseName || '未绑定企业'}}</view>
+          <view class="enterprise-type-tag">
+            <view class="type-badge {{isInspector ? 'inspector-badge' : ''}}">
+              <text class="type-badge-text">{{isInspector ? '认证检疫员' : enterpriseTypeName}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="stats-card">
+      <view class="stats-grid">
+        <view class="stats-item">
+          <view class="stats-value {{isInspector ? 'inspector-pending' : ''}}">{{isInspector ? pendingCount : recordCount}}</view>
+          <view class="stats-label">{{isInspector ? '待检数' : '记录数'}}</view>
+        </view>
+        <view class="stats-item">
+          <view class="stats-value {{isInspector ? 'inspector-checked' : ''}}">{{isInspector ? todayChecked : batchCount}}</view>
+          <view class="stats-label">{{isInspector ? '今日已检' : '批次数'}}</view>
+        </view>
+        <view class="stats-item">
+          <view class="stats-value">{{chainCount}}</view>
+          <view class="stats-label">上链数</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-section" wx:if="{{enterpriseType === 0}}">
+      <view class="section-header">
+        <view class="section-title">管理功能</view>
+      </view>
+      <view class="function-grid-admin">
+        <view class="function-item" bindtap="navigateTo" data-url="/pages/admin/enterprise-list?source=workbench">
+          <view class="function-icon icon-transparent">
+            <image class="icon-img" src="/images/enterprise-manage.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name">企业管理</view>
+          <view class="function-desc">审核企业</view>
+        </view>
+        <view class="function-item" bindtap="navigateTo" data-url="/pages/admin/user-list?source=workbench">
+          <view class="function-icon icon-transparent">
+            <image class="icon-img" src="/images/user-manage.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name">用户管理</view>
+          <view class="function-desc">管理用户</view>
+        </view>
+        <view class="function-item" bindtap="navigateTo" data-url="/pages/batch/create">
+          <view class="function-icon icon-transparent">
+            <image class="icon-img" src="/images/init-icon.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name">初始化</view>
+          <view class="function-desc">创建批次</view>
+        </view>
+        <view class="function-item" bindtap="navigateTo" data-url="/pages/collect/inspection">
+          <view class="function-icon icon-transparent">
+            <image class="icon-img" src="/images/inspection-icon.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name">检疫申报</view>
+          <view class="function-desc">发起检疫</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-section" wx:if="{{enterpriseType === 1}}">
+      <view class="section-header">
+        <view class="section-title">生产核心功能</view>
+      </view>
+      <view class="function-grid-common">
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/batch/create">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/init-icon.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">养殖初始化</view>
+        </view>
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/batch/batch?action=add-record">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/sales-report.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">生长记录</view>
+        </view>
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/collect/inspection">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/quarantine.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">检疫申报</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-section" wx:if="{{enterpriseType === 2}}">
+      <view class="section-header">
+        <view class="section-title">生产核心功能</view>
+      </view>
+      <view class="function-grid-common">
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/collect/receive">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/Scan-code.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">扫码接收</view>
+        </view>
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/collect/processing">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/processing.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">加工录入</view>
+        </view>
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/collect/sale">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/sales-report.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">销售记录</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-section" wx:if="{{enterpriseType === 3}}">
+      <view class="section-header">
+        <view class="section-title">检疫核心功能</view>
+      </view>
+      <view class="function-grid-common">
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/quarantine/apply-list">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/inspection-icon.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">申报接收</view>
+        </view>
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/quarantine/result-form">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/quarantine.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">检疫录入</view>
+        </view>
+        <view class="function-item-common" bindtap="uploadReport">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/take-photo.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">报告上传</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-section" wx:if="{{isInspector}}">
+      <view class="section-header">
+        <view class="section-title">业务管理功能</view>
+      </view>
+      <view class="function-grid-common">
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/batch/batch">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/batch-list.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">批次列表</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-section" wx:elif="{{!isInspector}}">
+      <view class="section-header">
+        <view class="section-title">业务管理功能</view>
+      </view>
+      <view class="function-grid-common">
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/batch/batch">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/batch-list.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">批次列表</view>
+        </view>
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/collect/storage">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/Warehousing-records.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">仓储记录</view>
+        </view>
+        <view class="function-item-common" bindtap="navigateTo" data-url="/pages/collect/transport">
+          <view class="function-icon-common icon-transparent">
+            <image class="icon-img-common" src="/images/shipping-report.png" mode="aspectFit"></image>
+          </view>
+          <view class="function-name-common">运输记录</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="blockchain-section">
+      <view class="blockchain-card" bindtap="goToBlockchain">
+        <view class="blockchain-content">
+          <view class="blockchain-title">区块链上链</view>
+        </view>
+        <view class="blockchain-arrow">></view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{showApplyGuide}}">
+    <view class="user-card consumer-user-card">
+      <view class="user-info">
+        <image class="avatar" src="{{userInfo.avatar || 'https://via.placeholder.com/120/4CAF50/FFFFFF?text=U'}}" mode="aspectFill"></image>
+        <view class="user-detail">
+          <view class="username">{{userInfo.realName || userInfo.username || '用户'}}</view>
+          <view class="enterprise-name">普通用户</view>
+          <view class="enterprise-type-tag">
+            <view class="type-badge">
+              <text class="type-badge-text">未提交企业入驻申请</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="review-panel apply-guide-panel">
+      <view class="review-title">普通用户工作台</view>
+      <view class="review-desc">
+        当前账号还没有企业入驻申请。您可以先提交企业入驻申请，审核通过后再使用企业工作台功能。
+      </view>
+      <view class="review-actions">
+        <button class="review-btn primary" bindtap="goToEnterpriseApply">申请企业入驻</button>
+        <button class="review-btn" bindtap="goToMessages">查看消息通知</button>
+        <button class="review-btn" bindtap="goToUserCenter">前往我的页面</button>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="guest-card">
+    <text class="guest-title">当前账号暂无企业工作台权限</text>
+    <text class="guest-desc">普通用户可继续使用首页与扫码溯源等公开能力，企业工作台仅对管理员与认证企业开放。</text>
+  </view>
+</view>
+
+<view class="guest-page" wx:else>
+  <view class="guest-header">
+    <view class="guest-header-circle circle-1"></view>
+    <view class="guest-header-circle circle-2"></view>
+    <view class="guest-header-circle circle-3"></view>
+  </view>
+
+  <view class="guest-card">
+    <view class="guest-icon-ring">
+      <view class="guest-icon-inner">
+        <view class="lock-icon-svg">
+          <view class="lock-svg-shackle"></view>
+          <view class="lock-svg-body">
+            <view class="lock-svg-hole"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <text class="guest-title">企业专属工作台</text>
+    <text class="guest-desc">此处仅供认证企业员工及监管人员录入数据使用</text>
+
+    <view class="guest-tags">
+      <view class="guest-tag">
+        <view class="tag-dot"></view>
+        <text class="tag-text">批次管理</text>
+      </view>
+      <view class="guest-tag">
+        <view class="tag-dot"></view>
+        <text class="tag-text">数据采集</text>
+      </view>
+      <view class="guest-tag">
+        <view class="tag-dot"></view>
+        <text class="tag-text">区块链存证</text>
+      </view>
+    </view>
+
+    <view class="guest-divider"></view>
+
+    <view class="guest-login-btn" bindtap="goToLogin" hover-class="guest-login-btn-hover">
+      <text class="guest-login-text">前往登录</text>
+      <view class="guest-login-arrow"></view>
+    </view>
+  </view>
+
+  <view class="guest-footer">
+    <view class="guest-footer-line"></view>
+    <text class="guest-footer-hint">消费者可通过首页“扫码溯源”查询产品信息</text>
+    <view class="guest-footer-line"></view>
+  </view>
+</view>

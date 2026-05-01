@@ -1,0 +1,183 @@
+<view class="audit-container">
+  <view class="enterprise-header">
+    <view class="header-content">
+      <view class="enterprise-avatar">
+        <image class="avatar-img" src="{{enterpriseInfo.avatar || '/images/enterprise-icon.png'}}" mode="aspectFit"></image>
+      </view>
+      <view class="header-info">
+        <view class="enterprise-name">{{enterpriseInfo.enterpriseName}}</view>
+        <view class="audit-status status-{{enterpriseInfo.auditStatus}}">{{enterpriseInfo.auditStatusText}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="info-section">
+    <view class="section-title">基本信息</view>
+    <view class="info-row">
+      <text class="info-label">企业名称</text>
+      <text class="info-value">{{enterpriseInfo.enterpriseName}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">企业类型</text>
+      <text class="info-value">{{enterpriseInfo.enterpriseTypeName}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">统一社会信用代码</text>
+      <text class="info-value">{{enterpriseInfo.creditCode}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">法人代表</text>
+      <text class="info-value">{{enterpriseInfo.legalPerson}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">联系电话</text>
+      <text class="info-value clickable" bindtap="callPhone" data-phone="{{enterpriseInfo.contactPhone}}">{{enterpriseInfo.contactPhone}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">企业地址</text>
+      <text class="info-value">{{enterpriseInfo.address}}</text>
+    </view>
+    <view class="info-row" wx:if="{{enterpriseInfo.introduction}}">
+      <text class="info-label">企业简介</text>
+      <text class="info-value intro">{{enterpriseInfo.introduction}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">申请时间</text>
+      <text class="info-value">{{enterpriseInfo.applyTime}}</text>
+    </view>
+  </view>
+
+  <view class="info-section">
+    <view class="section-title">资质证件</view>
+    
+    <view class="certificate-item">
+      <view class="cert-label">营业执照</view>
+      <view class="cert-images">
+        <view class="cert-img-item" wx:for="{{enterpriseInfo.businessLicense}}" wx:key="index">
+          <image class="cert-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" data-urls="{{enterpriseInfo.businessLicense}}"></image>
+        </view>
+      </view>
+    </view>
+    
+    <view class="certificate-item">
+      <view class="cert-label">行业许可证</view>
+      <view class="cert-images">
+        <view class="cert-img-item" wx:for="{{enterpriseInfo.productionLicense}}" wx:key="index">
+          <image class="cert-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" data-urls="{{enterpriseInfo.productionLicense}}"></image>
+        </view>
+      </view>
+    </view>
+    
+    <view class="certificate-item" wx:if="{{enterpriseInfo.otherCertificates && enterpriseInfo.otherCertificates.length > 0}}">
+      <view class="cert-label">其他证件</view>
+      <view class="cert-images">
+        <view class="cert-img-item" wx:for="{{enterpriseInfo.otherCertificates}}" wx:key="index">
+          <image class="cert-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" data-urls="{{enterpriseInfo.otherCertificates}}"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 区块链存证统计（已通过企业显示） -->
+  <view class="info-section" wx:if="{{enterpriseInfo.auditStatus === 1}}">
+    <view class="section-title">区块链存证</view>
+    <view class="chain-stats">
+      <view class="stat-item">
+        <text class="stat-value">{{enterpriseInfo.chainCount || 0}}</text>
+        <text class="stat-label">存证笔数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{enterpriseInfo.batchCount || 0}}</text>
+        <text class="stat-label">溯源批次</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{enterpriseInfo.productCount || 0}}</text>
+        <text class="stat-label">产品种类</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 拒绝原因（已拒绝状态显示） -->
+  <view class="info-section" wx:if="{{enterpriseInfo.auditStatus === 2}}">
+    <view class="section-title">拒绝原因</view>
+    <view class="reject-reason">{{enterpriseInfo.rejectReason}}</view>
+  </view>
+
+  <!-- 底部操作按钮 -->
+  <!-- 待审核状态：显示审核按钮 -->
+  <view class="audit-actions" wx:if="{{enterpriseInfo.auditStatus === 0}}">
+    <button class="action-btn reject-btn" bindtap="showRejectDialog">拒绝</button>
+    <button class="action-btn approve-btn" bindtap="approveAudit">通过</button>
+  </view>
+
+  <!-- 已通过状态：显示编辑信息按钮 -->
+  <view class="audit-actions" wx:if="{{enterpriseInfo.auditStatus === 1}}">
+    <button class="action-btn edit-btn" bindtap="openEditModal">编辑信息</button>
+  </view>
+
+  <!-- 已拒绝状态：提示信息 -->
+  <view class="audit-actions disabled-hint" wx:if="{{enterpriseInfo.auditStatus === 2}}">
+    <view class="hint-text">该企业申请已被拒绝，无法进行编辑操作</view>
+  </view>
+</view>
+
+<!-- 拒绝原因弹窗 -->
+<view class="modal-overlay" wx:if="{{showRejectModal}}" catchtouchmove="preventTouchMove">
+  <view class="modal-content" catchtouchmove="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">拒绝原因</text>
+      <view class="modal-close" bindtap="hideRejectDialog">x</view>
+    </view>
+    <view class="modal-body">
+      <textarea class="reject-textarea" placeholder="请输入拒绝原因" value="{{rejectReason}}" bindinput="onRejectReasonInput" maxlength="200"></textarea>
+    </view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="hideRejectDialog">取消</view>
+      <view class="modal-btn confirm" bindtap="confirmReject">确定</view>
+    </view>
+  </view>
+</view>
+
+<!-- 编辑信息弹窗 -->
+<view class="modal-overlay" wx:if="{{showEditModal}}" catchtouchmove="preventTouchMove">
+  <view class="modal-content edit-modal" catchtouchmove="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">编辑企业信息</text>
+      <view class="modal-close" bindtap="closeEditModal">x</view>
+    </view>
+    <scroll-view class="modal-body edit-body" scroll-y>
+      <!-- 企业头像 -->
+      <view class="edit-item">
+        <text class="edit-label">企业头像</text>
+        <view class="avatar-edit" bindtap="chooseAvatar">
+          <image class="edit-avatar" src="{{editForm.avatar || '/images/enterprise-icon.png'}}" mode="aspectFill"></image>
+          <view class="avatar-mask">
+            <image class="camera-icon" src="/images/take-photo.png" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 企业简介 -->
+      <view class="edit-item">
+        <text class="edit-label">企业简介</text>
+        <textarea class="edit-textarea" placeholder="请输入企业简介" value="{{editForm.introduction}}" bindinput="onEditInput" data-field="introduction" maxlength="500"></textarea>
+      </view>
+      
+      <!-- 联系电话 -->
+      <view class="edit-item">
+        <text class="edit-label">联系电话</text>
+        <input class="edit-input" placeholder="请输入联系电话" value="{{editForm.contactPhone}}" bindinput="onEditInput" data-field="contactPhone" type="number" maxlength="11"></input>
+      </view>
+      
+      <!-- 企业地址 -->
+      <view class="edit-item">
+        <text class="edit-label">企业地址</text>
+        <input class="edit-input" placeholder="请输入企业地址" value="{{editForm.address}}" bindinput="onEditInput" data-field="address" maxlength="100"></input>
+      </view>
+    </scroll-view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="closeEditModal">取消</view>
+      <view class="modal-btn confirm" bindtap="saveEdit">保存</view>
+    </view>
+  </view>
+</view>

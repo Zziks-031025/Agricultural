@@ -1,0 +1,93 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/index/farmer",
+    "pages/index/enterprise-list",
+    "pages/index/enterprise-detail",
+    "pages/scan/scan",
+    "pages/trace/trace",
+    "pages/enterprise/enterprise",
+    "pages/enterprise/audit",
+    "pages/enterprise/license",
+    "pages/education/education",
+    "pages/user/user",
+    "pages/user/register",
+    "pages/user/manage",
+    "pages/login/login",
+    "pages/login/register",
+    "pages/workbench/workbench",
+    "pages/batch/batch",
+    "pages/batch/create",
+    "pages/batch/detail",
+    "pages/batch/add-record",
+    "pages/batch/record-list",
+    "pages/batch/record-detail",
+    "pages/collect/process",
+    "pages/collect/processing",
+    "pages/collect/inspection",
+    "pages/collect/storage",
+    "pages/collect/transport",
+    "pages/collect/sale",
+    "pages/collect/receive",
+    "pages/quarantine/apply-list",
+    "pages/quarantine/result-form",
+    "pages/quarantine/report-upload",
+    "pages/blockchain/certificate",
+    "pages/blockchain/record-list",
+    "pages/admin/enterprise-list",
+    "pages/admin/user-list",
+    "pages/admin/user-detail",
+    "pages/admin/blockchain",
+    "pages/user/messages",
+    "pages/user/message-detail",
+    "pages/user/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#4CAF50",
+    "navigationBarTitleText": "农产品溯源",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#E8F5E9"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#4CAF50",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab-home-1.png",
+        "selectedIconPath": "images/tab-home.png"
+      },
+      {
+        "pagePath": "pages/workbench/workbench",
+        "text": "工作台",
+        "iconPath": "images/tab-workspace-1.png",
+        "selectedIconPath": "images/tab-workspace.png"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "text": "我的",
+        "iconPath": "images/tab-mine-1.png",
+        "selectedIconPath": "images/tab-mine.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "您的位置信息将用于记录溯源数据的地理位置"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation"
+  ],
+  "networkTimeout": {
+    "request": 30000,
+    "downloadFile": 30000
+  },
+  "debug": false,
+  "sitemapLocation": "sitemap.json"
+}

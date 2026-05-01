@@ -1,0 +1,22 @@
+# Java / Maven
+02_Backend/target/
+*.class
+*.jar
+*.war
+
+# Logs
+02_Backend/backend-restart.log
+*.log
+
+# Node
+03_Frontend_Web/node_modules/
+03_Frontend_Web/dist/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,85 @@
+server:
+  port: 8888
+  address: 0.0.0.0
+
+spring:
+  application:
+    name: agricultural-trace-system
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/agricultural?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.agricultural.trace.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 文件上传配置
+file:
+  upload-dir: ./uploads
+  access-path: /uploads/**
+
+# 区块链配置
+blockchain:
+  # 以太坊节点RPC地址（Ganache本地测试网）
+  rpc-url: http://127.0.0.1:8545
+  
+  # 智能合约地址
+  contract-address: ${BLOCKCHAIN_CONTRACT_ADDRESS:0x2108e5E84c27f5820c17B64dcBE8e0674517591F}
+  
+  # 方式1（开发环境）：直接使用 Ganache unlocked 账户地址，无需本地签名
+  account-address: ${BLOCKCHAIN_ACCOUNT_ADDRESS:0x8e198b9Fb91eE472B4cE4eebD42131b828feEfe3}
+  
+  # 方式2：使用私钥（生产环境，配合环境变量）
+  # private-key: ${BLOCKCHAIN_PRIVATE_KEY:}
+  
+  # 方式3：使用钱包文件
+  # wallet-path: ${BLOCKCHAIN_WALLET_PATH:}
+  # wallet-password: ${BLOCKCHAIN_WALLET_PASSWORD:}
+  
+  # Gas配置
+  gas-limit: 3000000
+  gas-price: 20
+
+# 日志配置
+logging:
+  level:
+    com.agricultural.trace: debug
+    org.web3j: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"

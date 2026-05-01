@@ -1,0 +1,200 @@
+<!-- 肉鸡养殖户专属首页 -->
+<view class="farmer-container">
+  <!-- 身份确认区 -->
+  <view class="identity-section">
+    <view class="identity-bg"></view>
+    <view class="identity-content">
+      <view class="welcome-row">
+        <view class="welcome-text">
+          <text class="welcome-label">欢迎回来</text>
+          <text class="enterprise-name">{{enterpriseInfo.name || '阳光肉鸡养殖场'}}</text>
+        </view>
+        <image class="enterprise-logo" src="{{enterpriseInfo.logo || '/images/agricultural.png'}}" mode="aspectFill"></image>
+      </view>
+      <view class="identity-tags">
+        <view class="certified-tag" wx:if="{{enterpriseInfo.auditStatus === 1}}">
+          <text class="tag-icon">✓</text>
+          <text class="tag-text">认证养殖户</text>
+        </view>
+        <view class="type-tag">
+          <text class="type-text">肉鸡养殖</text>
+        </view>
+        <view class="chain-tag">
+          <text class="chain-icon">⛓</text>
+          <text class="chain-text">区块链溯源</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 区块链数据看板 -->
+  <view class="stats-dashboard">
+    <view class="stats-card platform-stats">
+      <view class="stats-icon-wrapper">
+        <image class="stats-icon" src="/images/Blockchain.png" mode="aspectFit"></image>
+      </view>
+      <view class="stats-info">
+        <text class="stats-label">全平台存证总数</text>
+        <view class="stats-value-row">
+          <text class="stats-value">{{platformChainCount}}</text>
+          <text class="stats-unit">条</text>
+        </view>
+        <view class="stats-trend">
+          <text class="trend-icon">↑</text>
+          <text class="trend-text">今日新增 {{todayChainIncrement}} 条</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="stats-card farm-stats">
+      <view class="stats-icon-wrapper farm-icon">
+        <image class="stats-icon" src="/images/Full-traceability.png" mode="aspectFit"></image>
+      </view>
+      <view class="stats-info">
+        <text class="stats-label">本农场今日采集</text>
+        <view class="stats-value-row">
+          <text class="stats-value farm-value">{{todayCollectCount}}</text>
+          <text class="stats-unit">条</text>
+        </view>
+        <view class="stats-detail">
+          <text class="detail-text">累计采集 {{totalCollectCount}} 条数据</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 核心交互 - 扫码溯源 -->
+  <view class="scan-section">
+    <view class="scan-ring scan-ring-outer"></view>
+    <view class="scan-ring scan-ring-middle"></view>
+    <view class="scan-ring scan-ring-inner"></view>
+    <view class="scan-btn" bindtap="scanTrace">
+      <view class="scan-pulse"></view>
+      <view class="scan-pulse scan-pulse-delay"></view>
+      <view class="scan-content">
+        <image class="scan-icon" src="/images/Scan-code.png" mode="aspectFit"></image>
+        <text class="scan-text">扫码溯源</text>
+        <text class="scan-hint">查看产品全程追溯</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷功能入口 -->
+  <view class="quick-actions">
+    <view class="action-item" bindtap="navigateTo" data-url="/pages/batch/create">
+      <view class="action-icon-wrapper action-green">
+        <image class="action-icon" src="/images/init-icon.png" mode="aspectFit"></image>
+      </view>
+      <text class="action-name">养殖初始化</text>
+      <text class="action-desc">创建新批次</text>
+    </view>
+    <view class="action-item" bindtap="navigateTo" data-url="/pages/batch/batch?action=add-record">
+      <view class="action-icon-wrapper action-blue">
+        <image class="action-icon" src="/images/Full-traceability.png" mode="aspectFit"></image>
+      </view>
+      <text class="action-name">生长记录</text>
+      <text class="action-desc">日常数据采集</text>
+    </view>
+    <view class="action-item" bindtap="navigateTo" data-url="/pages/batch/batch">
+      <view class="action-icon-wrapper action-orange">
+        <image class="action-icon" src="/images/batch-list.png" mode="aspectFit"></image>
+      </view>
+      <text class="action-name">批次管理</text>
+      <text class="action-desc">查看所有批次</text>
+    </view>
+  </view>
+
+  <!-- 内容引导 - 九宫格 -->
+  <view class="content-section">
+    <view class="section-header">
+      <view class="header-line"></view>
+      <text class="header-title">肉鸡养殖服务</text>
+      <view class="header-line"></view>
+    </view>
+    
+    <view class="grid-container">
+      <!-- 第一行 -->
+      <view class="grid-item" bindtap="goToEducation" data-type="vaccine">
+        <view class="grid-icon-wrapper grid-green">
+          <image class="grid-icon" src="/images/quarantine.png" mode="aspectFit"></image>
+        </view>
+        <text class="grid-name">防疫规范</text>
+        <text class="grid-desc">肉鸡疫苗接种指南</text>
+      </view>
+      
+      <view class="grid-item" bindtap="goToEducation" data-type="feeding">
+        <view class="grid-icon-wrapper grid-yellow">
+          <image class="grid-icon" src="/images/meat-products.png" mode="aspectFit"></image>
+        </view>
+        <text class="grid-name">科学喂养</text>
+        <text class="grid-desc">饲料配比与投喂</text>
+      </view>
+      
+      <view class="grid-item" bindtap="goToEducation" data-type="environment">
+        <view class="grid-icon-wrapper grid-blue">
+          <image class="grid-icon" src="/images/Warehousing-records.png" mode="aspectFit"></image>
+        </view>
+        <text class="grid-name">环境管理</text>
+        <text class="grid-desc">温湿度光照控制</text>
+      </view>
+      
+      <!-- 第二行 -->
+      <view class="grid-item" bindtap="goToEnterprise">
+        <view class="grid-icon-wrapper grid-purple">
+          <image class="grid-icon" src="/images/enterprise-icon.png" mode="aspectFit"></image>
+        </view>
+        <text class="grid-name">企业信息</text>
+        <text class="grid-desc">查看企业档案</text>
+      </view>
+      
+      <view class="grid-item" bindtap="goToEducation" data-type="disease">
+        <view class="grid-icon-wrapper grid-red">
+          <image class="grid-icon" src="/images/inspection-icon.png" mode="aspectFit"></image>
+        </view>
+        <text class="grid-name">疾病防控</text>
+        <text class="grid-desc">常见疾病诊断</text>
+      </view>
+      
+      <view class="grid-item" bindtap="goToEducation" data-type="standard">
+        <view class="grid-icon-wrapper grid-teal">
+          <image class="grid-icon" src="/images/Blockchain-certificate.png" mode="aspectFit"></image>
+        </view>
+        <text class="grid-name">养殖标准</text>
+        <text class="grid-desc">行业规范指引</text>
+      </view>
+      
+      <!-- 第三行 -->
+      <view class="grid-item" bindtap="navigateTo" data-url="/pages/collect/storage">
+        <view class="grid-icon-wrapper grid-amber">
+          <image class="grid-icon" src="/images/Warehousing-records.png" mode="aspectFit"></image>
+        </view>
+        <text class="grid-name">仓储管理</text>
+        <text class="grid-desc">入库出库记录</text>
+      </view>
+      
+      <view class="grid-item" bindtap="navigateTo" data-url="/pages/collect/transport">
+        <view class="grid-icon-wrapper grid-indigo">
+          <image class="grid-icon" src="/images/shipping-report.png" mode="aspectFit"></image>
+        </view>
+        <text class="grid-name">运输追踪</text>
+        <text class="grid-desc">物流轨迹查询</text>
+      </view>
+      
+      <view class="grid-item" bindtap="goToBlockchain">
+        <view class="grid-icon-wrapper grid-dark-green">
+          <image class="grid-icon" src="/images/Blockchain.png" mode="aspectFit"></image>
+        </view>
+        <text class="grid-name">区块链存证</text>
+        <text class="grid-desc">查看上链记录</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部安全提示 -->
+  <view class="footer-tips">
+    <view class="tips-content">
+      <text class="tips-icon">🔒</text>
+      <text class="tips-text">所有数据均已通过区块链加密存证，确保信息真实可溯</text>
+    </view>
+  </view>
+</view>

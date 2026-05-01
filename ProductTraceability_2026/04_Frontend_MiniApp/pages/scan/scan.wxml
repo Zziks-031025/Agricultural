@@ -1,0 +1,272 @@
+<view class="scan-page">
+  <!-- ========== 底层：背景层 ========== -->
+  <!-- 绿色渐变背景（相机关闭时显示） -->
+  <view class="bg-layer gradient-bg" wx:if="{{!isCameraOpen && !showResultPanel}}">
+    <view class="bg-glow"></view>
+  </view>
+  
+  <!-- 相机背景（相机开启时显示） -->
+  <camera 
+    wx:if="{{isCameraOpen}}"
+    class="bg-layer camera-bg"
+    mode="scanCode"
+    resolution="high"
+    bindscancode="handleScanSuccess"
+    binderror="handleCameraError"
+  ></camera>
+
+  <!-- ========== 中层：UI 叠加层（始终显示，位置固定） ========== -->
+  <!-- 当相机关闭时，使用普通 view -->
+  <view class="ui-overlay" wx:if="{{!isCameraOpen && !showResultPanel}}">
+    <!-- 顶部标题 -->
+    <view class="header-section">
+      <text class="main-title">扫码溯源</text>
+      <text class="sub-title">区块链可信验证</text>
+    </view>
+
+    <!-- 扫码框 -->
+    <view class="scan-box">
+      <view class="scan-line"></view>
+      <view class="center-icon">
+        <image src="/images/scan-icon.png" mode="aspectFit" class="icon-img"></image>
+      </view>
+    </view>
+
+    <!-- 提示文字 -->
+    <view class="tips-section">
+      <text class="tips-main">对准产品包装二维码</text>
+      <text class="tips-sub">验证区块链存证信息</text>
+    </view>
+  </view>
+
+  <!-- 当相机开启时，使用 cover-view 覆盖原生组件 -->
+  <cover-view class="ui-overlay" wx:if="{{isCameraOpen}}">
+    <!-- 顶部标题 -->
+    <cover-view class="header-section">
+      <cover-view class="main-title camera-text">扫码溯源</cover-view>
+      <cover-view class="sub-title camera-text">将二维码置于框内自动识别</cover-view>
+    </cover-view>
+
+    <!-- 扫码框 -->
+    <cover-view class="scan-box scan-box-camera">
+      <cover-view class="scan-line"></cover-view>
+    </cover-view>
+
+    <!-- 提示文字 -->
+    <cover-view class="tips-section">
+      <cover-view class="tips-main camera-text">对准产品包装二维码，验证区块链存证信息</cover-view>
+    </cover-view>
+  </cover-view>
+
+  <!-- ========== 顶层：控制按钮层 ========== -->
+  <!-- 相机关闭时的按钮 -->
+  <view class="control-layer" wx:if="{{!isCameraOpen && !showResultPanel}}">
+    <view class="action-btn primary-btn" bindtap="openCamera" hover-class="btn-active">
+      <text class="btn-text">开启扫码溯源</text>
+    </view>
+    <view class="manual-link" bindtap="showInputModal">
+      <text class="link-text">手动输入批次号</text>
+    </view>
+
+    <!-- Mock debug buttons (processor only) -->
+    <view class="mock-debug-section" wx:if="{{useMock && isProcessor}}">
+      <view class="mock-debug-title">-- Debug Mock (仅开发阶段) --</view>
+      <view class="mock-btn mock-btn-green" bindtap="mockScanBatchPassed">模拟: 检疫合格批次</view>
+      <view class="mock-btn mock-btn-red" bindtap="mockScanBatchFailed">模拟: 未检疫批次</view>
+      <view class="mock-btn mock-btn-blue" bindtap="mockScanTraceCode">模拟: 成品溯源码</view>
+    </view>
+  </view>
+
+  <!-- 相机开启时的按钮（cover-view） -->
+  <cover-view class="control-layer" wx:if="{{isCameraOpen}}">
+    <cover-view class="action-btn close-btn" bindtap="closeCamera">
+      <cover-view class="btn-text">关闭相机</cover-view>
+    </cover-view>
+    <cover-view class="manual-link" bindtap="showInputModal">
+      <cover-view class="link-text camera-text">手动输入批次号</cover-view>
+    </cover-view>
+  </cover-view>
+
+  <!-- ========== 加工企业(Type 2) 扫码结果面板 ========== -->
+  <view class="result-panel" wx:if="{{showResultPanel}}">
+    
+    <!-- Loading: 正在核验 -->
+    <view class="verify-loading" wx:if="{{isVerifying}}">
+      <view class="verify-loading-bg">
+        <view class="verify-spinner"></view>
+        <text class="verify-loading-text">正在核验区块链存证状态...</text>
+        <text class="verify-loading-sub">请稍候，正在链上查询数据</text>
+      </view>
+    </view>
+
+    <!-- Result: Batch quarantine PASSED -->
+    <view class="result-content" wx:if="{{!isVerifying && scanResultType === 'batch' && quarantinePassed}}">
+      <view class="result-header result-header-pass">
+        <view class="result-status-icon pass-icon">
+          <text class="status-icon-text">P</text>
+        </view>
+        <view class="result-status-info">
+          <text class="result-status-title">检疫合格</text>
+          <text class="result-status-desc">该批次已通过检疫，允许入厂加工</text>
+        </view>
+      </view>
+
+      <!-- Batch details -->
+      <view class="result-detail-card">
+        <view class="detail-section-title">养殖批次详情</view>
+        <view class="detail-row">
+          <text class="detail-label">批次编号</text>
+          <text class="detail-value highlight-code">{{batchInfo.batchCode}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">产品名称</text>
+          <text class="detail-value">{{batchInfo.productName}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">养殖场</text>
+          <text class="detail-value">{{batchInfo.enterpriseName}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">数量</text>
+          <text class="detail-value">{{batchInfo.currentQuantity}} {{batchInfo.unit}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">入栏日期</text>
+          <text class="detail-value">{{batchInfo.createTime}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">养殖天数</text>
+          <text class="detail-value">{{batchInfo.breedDays}} 天</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">饲料类型</text>
+          <text class="detail-value">{{batchInfo.feedType}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">疫苗接种</text>
+          <text class="detail-value">{{batchInfo.vaccinationCount}} 次</text>
+        </view>
+
+        <view class="detail-divider"></view>
+        <view class="detail-section-title">检疫信息</view>
+        <view class="detail-row">
+          <text class="detail-label">检疫证号</text>
+          <text class="detail-value highlight-code">{{batchInfo.certificateNo}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">检疫日期</text>
+          <text class="detail-value">{{batchInfo.inspectionDate}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">检疫员</text>
+          <text class="detail-value">{{batchInfo.inspector}}</text>
+        </view>
+      </view>
+
+      <!-- Action buttons -->
+      <view class="result-actions">
+        <view class="result-btn result-btn-secondary" bindtap="closeResultPanel">
+          <text class="result-btn-text">返回扫码</text>
+        </view>
+        <view class="result-btn result-btn-primary" bindtap="goToReceive">
+          <text class="result-btn-text-white">去接收加工</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Result: Batch quarantine FAILED -->
+    <view class="result-content" wx:if="{{!isVerifying && scanResultType === 'batch' && !quarantinePassed}}">
+      <view class="result-header result-header-fail">
+        <view class="result-status-icon fail-icon">
+          <text class="status-icon-text">X</text>
+        </view>
+        <view class="result-status-info">
+          <text class="result-status-title fail-title">检疫不合格</text>
+          <text class="result-status-desc fail-desc">该批次未获得检疫合格证</text>
+        </view>
+      </view>
+
+      <!-- Warning block -->
+      <view class="warning-block">
+        <view class="warning-icon-wrap">
+          <text class="warning-icon-text">!</text>
+        </view>
+        <view class="warning-content">
+          <text class="warning-title">警告：该批次未获得检疫合格证，禁止入厂加工！</text>
+          <text class="warning-desc">根据《食品安全法》及相关法规，未经检疫合格的禽类产品严禁进入加工环节。请联系养殖方补充检疫流程。</text>
+        </view>
+      </view>
+
+      <!-- Batch basic info (limited) -->
+      <view class="result-detail-card fail-card">
+        <view class="detail-section-title">批次基本信息</view>
+        <view class="detail-row">
+          <text class="detail-label">批次编号</text>
+          <text class="detail-value highlight-code">{{batchInfo.batchCode}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">产品名称</text>
+          <text class="detail-value">{{batchInfo.productName}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">养殖场</text>
+          <text class="detail-value">{{batchInfo.enterpriseName}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">数量</text>
+          <text class="detail-value">{{batchInfo.currentQuantity}} {{batchInfo.unit}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">当前状态</text>
+          <text class="detail-value fail-value">尚未通过检疫</text>
+        </view>
+      </view>
+
+      <!-- Action buttons -->
+      <view class="result-actions">
+        <view class="result-btn result-btn-full-secondary" bindtap="closeResultPanel">
+          <text class="result-btn-text">返回重新扫码</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 手动输入弹窗 -->
+<view class="modal-overlay" wx:if="{{showModal}}" bindtap="hideInputModal" catchtouchmove="preventTouchMove">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">手动输入批次号</text>
+      <view class="modal-close" bindtap="hideInputModal">x</view>
+    </view>
+    <view class="modal-body">
+      <view class="input-wrapper">
+        <input 
+          class="batch-input" 
+          placeholder="请输入产品批次号" 
+          placeholder-class="input-placeholder"
+          value="{{inputBatchCode}}"
+          bindinput="onInputChange"
+          focus="{{showModal}}"
+          confirm-type="search"
+          bindconfirm="confirmInput"
+        />
+        <view class="input-clear" wx:if="{{inputBatchCode}}" bindtap="clearInput">x</view>
+      </view>
+      <view class="input-hint" wx:if="{{isProcessor}}">养殖批次号格式如: BATCH000001 | 溯源码格式如: TRACE000001</view>
+      <view class="input-hint" wx:else>批次号格式如：BATCH000001</view>
+    </view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="hideInputModal">取消</view>
+      <view class="modal-btn confirm" bindtap="confirmInput">查询</view>
+    </view>
+  </view>
+</view>
+
+<!-- 扫描成功提示 -->
+<view class="success-toast" wx:if="{{showSuccessToast}}">
+  <view class="success-content">
+    <text class="success-icon">P</text>
+    <text class="success-text">扫描成功，正在跳转...</text>
+  </view>
+</view>

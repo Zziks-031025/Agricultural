@@ -1,0 +1,35 @@
+{
+  "name": "agricultural-trace-web",
+  "version": "1.0.0",
+  "description": "基于区块链的农产品溯源模版系统 - 管理端",
+  "author": "Agricultural Trace Team",
+  "private": true,
+  "scripts": {
+    "dev": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
+    "axios": "^1.6.2",
+    "echarts": "^5.4.3",
+    "element-ui": "^2.15.13",
+    "js-cookie": "^3.0.5",
+    "nprogress": "^0.2.0",
+    "qrcodejs2": "^0.0.2",
+    "vue": "^2.6.14",
+    "vue-router": "^3.5.3",
+    "vuex": "^3.6.2",
+    "web3": "^1.10.3"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.8",
+    "sass": "^1.69.5",
+    "sass-loader": "^13.3.2",
+    "vue-template-compiler": "^2.6.14"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}

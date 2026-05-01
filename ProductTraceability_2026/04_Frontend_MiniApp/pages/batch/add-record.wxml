@@ -1,0 +1,190 @@
+<!-- 添加生长记录页面 -->
+<view class="container">
+  <!-- 批次信息卡片 -->
+  <view class="batch-info-card">
+    <view class="batch-header">
+      <view class="batch-code">{{batchInfo.batchCode}}</view>
+      <view class="product-tag {{productType === '1' ? 'chicken' : 'tomato'}}">
+        {{productConfig.label}}
+      </view>
+    </view>
+    <view class="batch-meta">
+      <text class="meta-item">产品：{{batchInfo.productName}}</text>
+      <text class="meta-divider">|</text>
+      <text class="meta-item">企业：{{batchInfo.enterpriseName}}</text>
+    </view>
+  </view>
+
+  <!-- 表单卡片 -->
+  <view class="form-card">
+    <!-- 记录类型 -->
+    <view class="form-section">
+      <view class="section-title">记录类型</view>
+      <view class="record-type-tabs">
+        <view 
+          class="type-tab {{formData.recordType === item.value ? 'active' : ''}}"
+          wx:for="{{recordTypes}}"
+          wx:key="value"
+          bindtap="selectRecordType"
+          data-value="{{item.value}}"
+        >
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 动态表单字段（根据产品类型和记录类型显示） -->
+    <view class="form-section">
+      <view class="section-title">{{productConfig.sectionTitle}}</view>
+      
+      <!-- 物料名称输入框（根据配置动态显示） -->
+      <view class="form-item" wx:if="{{currentFieldConfig.materialLabel}}">
+        <view class="form-label required">{{currentFieldConfig.materialLabel}}</view>
+        <input 
+          class="form-input" 
+          placeholder="{{currentFieldConfig.materialPlaceholder}}" 
+          value="{{formData.materialName}}"
+          bindinput="onInputChange"
+          data-field="materialName"
+        />
+      </view>
+      
+      <!-- 用量输入框（根据配置动态显示） -->
+      <view class="form-item" wx:if="{{currentFieldConfig.unit}}">
+        <view class="form-label">用量</view>
+        <view class="input-with-unit">
+          <input 
+            class="form-input" 
+            type="digit"
+            placeholder="请输入用量" 
+            value="{{formData.dosage}}"
+            bindinput="onInputChange"
+            data-field="dosage"
+          />
+          <text class="unit">{{currentFieldConfig.unit}}</text>
+        </view>
+      </view>
+
+      <!-- 通用字段：操作说明 -->
+      <view class="form-item">
+        <view class="form-label required">操作说明</view>
+        <textarea 
+          class="form-textarea" 
+          placeholder="请详细描述操作内容，如操作方式、注意事项等" 
+          value="{{formData.description}}"
+          bindinput="onInputChange"
+          data-field="description"
+          maxlength="500"
+        />
+        <view class="char-count">{{formData.description.length || 0}}/500</view>
+      </view>
+
+      <!-- 记录日期 -->
+      <view class="form-item">
+        <view class="form-label required">记录日期</view>
+        <picker mode="date" value="{{formData.recordDate}}" end="{{today}}" bindchange="onDateChange">
+          <view class="form-picker">
+            <text class="{{formData.recordDate ? '' : 'placeholder'}}">{{formData.recordDate || '请选择日期'}}</text>
+            <text class="picker-arrow">></text>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 操作人 -->
+      <view class="form-item">
+        <view class="form-label required">操作人</view>
+        <input 
+          class="form-input" 
+          placeholder="请输入操作人姓名" 
+          value="{{formData.operator}}"
+          bindinput="onInputChange"
+          data-field="operator"
+        />
+      </view>
+    </view>
+
+    <!-- 现场照片 -->
+    <view class="form-section">
+      <view class="section-title">现场照片</view>
+      <view class="section-subtitle">拍摄现场作业照片，增强数据可信度</view>
+      
+      <view class="image-upload">
+        <view class="image-list">
+          <view class="image-item" wx:for="{{formData.images}}" wx:key="index">
+            <image class="preview-image" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}"></image>
+            <view class="image-delete" catchtap="deleteImage" data-index="{{index}}">x</view>
+          </view>
+          
+          <view class="image-add" bindtap="chooseImage" wx:if="{{formData.images.length < 9}}">
+            <image class="add-icon" src="/images/take-photo.png" mode="aspectFit"></image>
+            <text class="add-text">添加照片</text>
+          </view>
+        </view>
+        <view class="image-tip">最多上传9张照片，建议拍摄作业现场、投入品包装等</view>
+      </view>
+    </view>
+
+    <!-- 地理位置 -->
+    <view class="form-section">
+      <view class="section-title">作业位置</view>
+
+      <view class="form-item">
+        <view class="form-label">位置描述</view>
+        <input class="form-input" placeholder="如: 3号鸡舍、A区温室大棚" value="{{formData.locationText}}" data-field="locationText" bindinput="onInputChange" />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">定位</view>
+        <view class="location-btn" bindtap="chooseLocation">
+          <image class="location-icon" src="/images/position.png" mode="aspectFit"></image>
+          <text class="location-text">{{locationDisplayText}}</text>
+        </view>
+      </view>
+
+      <view class="location-coords-info" wx:if="{{formData.location}}">
+        <text class="coords-text">经度: {{formData.location.longitude}} | 纬度: {{formData.location.latitude}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部提交按钮 -->
+  <view class="submit-section">
+    <view class="blockchain-tip">
+      <text>数据将在入库时统一上链存证</text>
+    </view>
+    <button class="submit-btn" bindtap="submitForm" disabled="{{submitting}}">
+      <text wx:if="{{!submitting}}">提交记录</text>
+      <text wx:else>{{submitStatus}}</text>
+    </button>
+  </view>
+</view>
+
+<!-- 提交加载弹窗 -->
+<view class="loading-modal" wx:if="{{showLoadingModal}}">
+  <view class="loading-mask"></view>
+  <view class="loading-content">
+    <view class="loading-animation">
+      <view class="loading-circle"></view>
+      <view class="loading-circle delay1"></view>
+      <view class="loading-circle delay2"></view>
+    </view>
+    <view class="loading-text">{{loadingText}}</view>
+    <view class="loading-step">{{loadingStep}}</view>
+  </view>
+</view>
+
+<!-- 提交成功弹窗 -->
+<view class="success-modal" wx:if="{{showSuccessModal}}">
+  <view class="success-mask" bindtap="closeSuccessModal"></view>
+  <view class="success-content">
+    <view class="success-icon">
+      <image src="/images/Blockchain-certificate.png" mode="aspectFit"></image>
+    </view>
+    <view class="success-title">记录提交成功</view>
+    <view class="success-desc">生长记录已保存，数据将在入库时统一上链存证</view>
+    
+    <view class="success-actions">
+      <button class="action-btn primary" bindtap="closeSuccessModal">完成</button>
+    </view>
+  </view>
+</view>

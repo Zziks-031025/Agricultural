@@ -1,0 +1,43 @@
+<!-- 消息详情页面 -->
+<view class="container">
+  <!-- 消息头部 -->
+  <view class="message-header">
+    <view class="header-icon {{messageType === 'system' ? 'icon-system' : 'icon-business'}}">
+      <image wx:if="{{messageType === 'system'}}" class="icon-img" src="/images/Systemnotification.png" mode="aspectFit"></image>
+      <image wx:else class="icon-img" src="/images/Businessnotification.png" mode="aspectFit"></image>
+    </view>
+    <view class="header-info">
+      <text class="message-title">{{messageDetail.title}}</text>
+      <view class="message-meta">
+        <text class="type-tag {{messageType}}">{{messageType === 'system' ? '系统通知' : '业务提醒'}}</text>
+        <text class="message-time">{{messageDetail.createTime}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 消息内容 -->
+  <view class="message-body">
+    <text class="message-content">{{messageDetail.content}}</text>
+  </view>
+
+  <!-- 相关操作（业务消息特有） -->
+  <view class="action-section" wx:if="{{messageType === 'business' && messageDetail.actionUrl}}">
+    <view class="action-card" bindtap="goToAction">
+      <view class="action-info">
+        <text class="action-title">{{messageDetail.actionTitle || '查看详情'}}</text>
+        <text class="action-desc">{{messageDetail.actionDesc || '点击前往相关页面'}}</text>
+      </view>
+      <view class="action-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="footer-btns">
+    <view class="footer-btn delete-btn" bindtap="deleteMessage">
+      <text>删除消息</text>
+    </view>
+    <view class="footer-btn back-btn" bindtap="goBack">
+      <text>返回列表</text>
+    </view>
+  </view>
+</view>

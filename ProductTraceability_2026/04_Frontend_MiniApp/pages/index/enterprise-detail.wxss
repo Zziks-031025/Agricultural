@@ -1,0 +1,386 @@
+.container {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: 40rpx;
+}
+
+/* 企业头部 */
+.enterprise-header {
+  position: relative;
+  height: 400rpx;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+}
+
+.header-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  padding: 60rpx 30rpx 30rpx;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+.enterprise-logo {
+  width: 100rpx;
+  height: 100rpx;
+  background: #FFFFFF;
+  overflow: hidden;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
+}
+
+.logo-img {
+  width: 100%;
+  height: 100%;
+}
+
+.enterprise-title {
+  flex: 1;
+}
+
+.enterprise-name {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 8rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+}
+
+.certified-badge {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.badge-icon {
+  width: 28rpx;
+  height: 28rpx;
+  background: #FFFFFF;
+  border-radius: 50%;
+  font-size: 18rpx;
+  color: #4CAF50;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8rpx;
+}
+
+.badge-text {
+  font-size: 22rpx;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+/* 区块链信用背书 */
+.blockchain-credit {
+  background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #388E3C 100%);
+  margin: -20rpx 20rpx 20rpx;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 8rpx 24rpx rgba(27, 94, 32, 0.3);
+}
+
+.credit-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.credit-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 12rpx;
+}
+
+.credit-title {
+  font-size: 28rpx;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.credit-stats {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-item.main {
+  flex: 1.5;
+}
+
+.stat-value {
+  display: block;
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 4rpx;
+}
+
+.stat-item.main .stat-value {
+  font-size: 56rpx;
+  color: #A5D6A7;
+}
+
+.stat-label {
+  display: block;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 60rpx;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.credit-footer {
+  margin-top: 16rpx;
+}
+
+.credit-note {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  display: block;
+}
+
+/* 信息区域 */
+.info-section {
+  margin: 0 20rpx 20rpx;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.section-line {
+  width: 6rpx;
+  height: 32rpx;
+  background: linear-gradient(180deg, #4CAF50 0%, #81C784 100%);
+  border-radius: 3rpx;
+  margin-right: 12rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.info-card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.info-row {
+  display: flex;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #999;
+  width: 200rpx;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #333;
+  flex: 1;
+  text-align: right;
+}
+
+.info-value.mono {
+  font-family: 'Courier New', monospace;
+  font-size: 24rpx;
+}
+
+.info-value.intro {
+  text-align: left;
+  line-height: 1.6;
+  color: #666;
+}
+
+/* 资质证件 */
+.license-card {
+  display: flex;
+  gap: 20rpx;
+}
+
+.license-item {
+  flex: 1;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.license-img {
+  width: 100%;
+  height: 180rpx;
+}
+
+.license-label {
+  padding: 16rpx;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.license-label text:first-child {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.view-hint {
+  font-size: 20rpx;
+  color: #4CAF50;
+  margin-top: 4rpx;
+}
+
+/* 联系信息 */
+.contact-card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 8rpx 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.contact-item:last-child {
+  border-bottom: none;
+}
+
+.contact-item.clickable {
+  cursor: pointer;
+}
+
+.contact-icon-wrapper {
+  width: 64rpx;
+  height: 64rpx;
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+}
+
+.contact-icon-wrapper.phone {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+}
+
+.contact-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.contact-info {
+  flex: 1;
+}
+
+.contact-label {
+  display: block;
+  font-size: 22rpx;
+  color: #999;
+  margin-bottom: 4rpx;
+}
+
+.contact-value {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.contact-value.phone {
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+.call-btn {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  padding: 12rpx 32rpx;
+  border-radius: 24rpx;
+}
+
+.call-btn text {
+  font-size: 26rpx;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+/* 底部声明 */
+.footer-statement {
+  display: flex;
+  align-items: flex-start;
+  margin: 20rpx;
+  padding: 20rpx;
+  background: #FFFFFF;
+  border-radius: 12rpx;
+  border-left: 6rpx solid #BDBDBD;
+}
+
+.statement-icon {
+  width: 32rpx;
+  height: 32rpx;
+  background: #BDBDBD;
+  color: #FFFFFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: bold;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.statement-text {
+  font-size: 24rpx;
+  color: #999999;
+  line-height: 1.6;
+}

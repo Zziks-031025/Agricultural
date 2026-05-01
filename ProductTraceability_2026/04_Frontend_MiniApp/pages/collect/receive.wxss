@@ -1,0 +1,448 @@
+.receive-container {
+  min-height: 100vh;
+  background: #F1F8E9;
+  padding: 20rpx;
+  padding-bottom: 200rpx;
+  box-sizing: border-box;
+}
+
+/* ========== Status Bar (Steps) ========== */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30rpx 20rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.status-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.step-num {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #E0E0E0;
+  color: #999;
+  font-size: 24rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-step.active .step-num {
+  background: #4CAF50;
+  color: #FFFFFF;
+}
+
+.status-step.done .step-num {
+  background: #81C784;
+  color: #FFFFFF;
+}
+
+.step-text {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.status-step.active .step-text {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.status-step.done .step-text {
+  color: #81C784;
+}
+
+.step-line {
+  width: 60rpx;
+  height: 4rpx;
+  background: #E0E0E0;
+  margin: 0 12rpx;
+  margin-bottom: 28rpx;
+  border-radius: 2rpx;
+}
+
+.step-line.active {
+  background: #81C784;
+}
+
+/* ========== Section Card ========== */
+.section-card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2E7D32;
+  margin-bottom: 24rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid #E8F5E9;
+}
+
+/* ========== Scan Area ========== */
+.scan-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50rpx 20rpx;
+  background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+  border: 2rpx dashed #4CAF50;
+  border-radius: 16rpx;
+  margin-bottom: 30rpx;
+}
+
+.scan-icon-large {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 20rpx;
+}
+
+.scan-tip {
+  font-size: 30rpx;
+  color: #2E7D32;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.scan-sub-tip {
+  font-size: 24rpx;
+  color: #81C784;
+}
+
+/* ========== Divider ========== */
+.divider-row {
+  display: flex;
+  align-items: center;
+  margin: 24rpx 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1rpx;
+  background: #E0E0E0;
+}
+
+.divider-text {
+  font-size: 24rpx;
+  color: #999;
+  padding: 0 20rpx;
+}
+
+/* ========== Manual Input ========== */
+.manual-input-row {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+}
+
+.batch-input {
+  flex: 1;
+  background: #F5F5F5;
+  border-radius: 8rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.confirm-btn-small {
+  width: 140rpx;
+  height: 80rpx;
+  background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: bold;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  line-height: 80rpx;
+}
+
+/* ========== Verify Loading ========== */
+.verify-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 0;
+}
+
+.loading-spinner {
+  width: 64rpx;
+  height: 64rpx;
+  border: 6rpx solid #E8F5E9;
+  border-top: 6rpx solid #4CAF50;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 24rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* ========== Quarantine Badge ========== */
+.quarantine-badge {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border: 2rpx solid #81C784;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.15);
+}
+
+.badge-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #4CAF50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.badge-check {
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.badge-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.badge-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #2E7D32;
+}
+
+.badge-detail {
+  font-size: 24rpx;
+  color: #558B2F;
+}
+
+/* ========== Info Grid ========== */
+.info-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.info-item {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+  box-sizing: border-box;
+}
+
+.info-item:nth-child(odd) {
+  padding-right: 12rpx;
+}
+
+.info-item:nth-child(even) {
+  padding-left: 12rpx;
+}
+
+.info-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 6rpx;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-value.highlight {
+  color: #2E7D32;
+  font-weight: bold;
+}
+
+/* ========== Form ========== */
+.form-item {
+  margin-bottom: 24rpx;
+  box-sizing: border-box;
+}
+
+.form-item:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.form-label.required::before {
+  content: '*';
+  color: #FF5252;
+  margin-right: 4rpx;
+}
+
+.input-with-unit {
+  display: flex;
+  align-items: center;
+  background: #F5F5F5;
+  border-radius: 8rpx;
+  padding-right: 24rpx;
+  height: 88rpx;
+}
+
+.input-with-unit .form-input {
+  flex: 1;
+  background: transparent;
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0 24rpx;
+  min-width: 0;
+}
+
+.unit-text {
+  font-size: 28rpx;
+  color: #999;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+
+.form-input {
+  background: #F5F5F5;
+  border-radius: 8rpx;
+  padding: 0 24rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.form-textarea {
+  background: #F5F5F5;
+  border-radius: 8rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  min-height: 140rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ========== Actions ========== */
+.form-actions {
+  display: flex;
+  gap: 20rpx;
+  padding: 30rpx 0;
+  box-sizing: border-box;
+}
+
+.action-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-sizing: border-box;
+}
+
+.rescan-btn {
+  background: #FFFFFF;
+  color: #666;
+  border: 2rpx solid #E0E0E0;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.3);
+}
+
+/* ========== Mock Debug Section ========== */
+.mock-section {
+  margin-top: 30rpx;
+  padding: 20rpx;
+  background: #FFFFFF;
+  border: 2rpx dashed #BDBDBD;
+  border-radius: 12rpx;
+}
+
+.mock-title {
+  text-align: center;
+  font-size: 24rpx;
+  color: #999999;
+  margin-bottom: 16rpx;
+  font-weight: bold;
+}
+
+.mock-btn-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.mock-btn {
+  flex: 1;
+  height: 72rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  line-height: 72rpx;
+}
+
+.mock-btn-pass {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 2rpx solid #81C784;
+}
+
+.mock-btn-fail {
+  background: #FFEBEE;
+  color: #C62828;
+  border: 2rpx solid #EF9A9A;
+}

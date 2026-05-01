@@ -1,0 +1,234 @@
+<view class="register-container">
+  <view class="reapply-banner" wx:if="{{isReapply}}">
+    <view class="reapply-title">驳回后重新提交</view>
+    <view class="reapply-desc">请先修改企业资料，再重新提交审核。提交后会回到“审核中”状态。</view>
+  </view>
+
+  <!-- 步骤指示 -->
+  <view class="steps-bar">
+    <view class="step-item {{currentStep >= 1 ? 'active' : ''}}">
+      <view class="step-num">1</view>
+      <text class="step-text">基本信息</text>
+    </view>
+    <view class="step-line {{currentStep >= 2 ? 'active' : ''}}"></view>
+    <view class="step-item {{currentStep >= 2 ? 'active' : ''}}">
+      <view class="step-num">2</view>
+      <text class="step-text">证照上传</text>
+    </view>
+    <view class="step-line {{currentStep >= 3 ? 'active' : ''}}"></view>
+    <view class="step-item {{currentStep >= 3 ? 'active' : ''}}">
+      <view class="step-num">3</view>
+      <text class="step-text">账号设置</text>
+    </view>
+  </view>
+
+  <!-- Step 1: 基本信息 -->
+  <view class="form-section" wx:if="{{currentStep === 1}}">
+    <view class="section-title">企业基本信息</view>
+
+    <view class="form-item">
+      <view class="form-label required">企业名称</view>
+      <input class="form-input" placeholder="请输入企业全称" value="{{form.enterpriseName}}" data-field="enterpriseName" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">统一社会信用代码</view>
+      <input class="form-input" placeholder="18位统一社会信用代码" maxlength="18" value="{{form.enterpriseCode}}" data-field="enterpriseCode" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">企业类型</view>
+      <picker mode="selector" range="{{enterpriseTypes}}" value="{{selectedTypeIndex}}" bindchange="onTypeChange">
+        <view class="form-picker">
+          <text class="{{selectedTypeIndex >= 0 ? '' : 'placeholder'}}">{{selectedTypeIndex >= 0 ? enterpriseTypes[selectedTypeIndex] : '请选择企业类型'}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">法人代表</view>
+      <input class="form-input" placeholder="法人代表姓名" value="{{form.legalPerson}}" data-field="legalPerson" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">联系人</view>
+      <input class="form-input" placeholder="联系人姓名" value="{{form.contactPerson}}" data-field="contactPerson" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">联系电话</view>
+      <input class="form-input" type="number" maxlength="11" placeholder="11位手机号" value="{{form.contactPhone}}" data-field="contactPhone" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">联系邮箱</view>
+      <input class="form-input" placeholder="企业邮箱（选填）" value="{{form.contactEmail}}" data-field="contactEmail" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">所在省份</view>
+      <input class="form-input" placeholder="如：山东省" value="{{form.province}}" data-field="province" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">所在城市</view>
+      <input class="form-input" placeholder="如：济南市" value="{{form.city}}" data-field="city" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">所在区县</view>
+      <input class="form-input" placeholder="如：历下区" value="{{form.district}}" data-field="district" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">详细地址</view>
+      <input class="form-input" placeholder="详细街道地址" value="{{form.address}}" data-field="address" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">定位选择</view>
+      <view class="location-row" bindtap="chooseLocation">
+        <text class="location-text {{locationText ? '' : 'placeholder'}}">
+          {{locationText || '点击定位自动识别省市区'}}
+        </text>
+        <text class="location-arrow">›</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">企业简介</view>
+      <textarea class="form-textarea" placeholder="企业简介（选填）" maxlength="500" value="{{form.introduction}}" data-field="introduction" bindinput="onInputChange"></textarea>
+    </view>
+  </view>
+
+  <!-- Step 2: 证照上传 -->
+  <view class="form-section" wx:if="{{currentStep === 2}}">
+    <view class="section-title">上传企业证照</view>
+
+    <view class="form-item">
+      <view class="form-label">企业Logo</view>
+      <view class="upload-area" bindtap="chooseImage" data-field="logo">
+        <image wx:if="{{logoUrl}}" src="{{logoUrl}}" class="upload-preview" mode="aspectFill" />
+        <view wx:else class="upload-placeholder">
+          <image class="upload-icon-img" src="/images/take-photo.png" mode="aspectFit" />
+          <text class="upload-text">上传Logo</text>
+        </view>
+      </view>
+      <text class="upload-hint">建议尺寸 200x200</text>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">营业执照</view>
+      <view class="upload-area upload-license" bindtap="chooseImage" data-field="businessLicense">
+        <image wx:if="{{businessLicenseUrl}}" src="{{businessLicenseUrl}}" class="upload-preview license-preview" mode="aspectFill" />
+        <view wx:else class="upload-placeholder license-placeholder">
+          <image class="upload-icon-img" src="/images/take-photo.png" mode="aspectFit" />
+          <text class="upload-text">上传营业执照</text>
+        </view>
+      </view>
+      <text class="upload-hint">请上传清晰的营业执照照片</text>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">行业许可证</view>
+      <view class="upload-area upload-license" bindtap="chooseImage" data-field="productionLicense">
+        <image wx:if="{{productionLicenseUrl}}" src="{{productionLicenseUrl}}" class="upload-preview license-preview" mode="aspectFill" />
+        <view wx:else class="upload-placeholder license-placeholder">
+          <image class="upload-icon-img" src="/images/take-photo.png" mode="aspectFit" />
+          <text class="upload-text">上传行业许可证</text>
+        </view>
+      </view>
+      <text class="upload-hint">食品经营许可证/动物防疫条件合格证等</text>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">企业背景图</view>
+      <view class="upload-area upload-cover" bindtap="chooseImage" data-field="coverImage">
+        <image wx:if="{{coverImageUrl}}" src="{{coverImageUrl}}" class="upload-preview cover-preview" mode="aspectFill" />
+        <view wx:else class="upload-placeholder cover-placeholder">
+          <image class="upload-icon-img" src="/images/take-photo.png" mode="aspectFit" />
+          <text class="upload-text">上传背景图（选填）</text>
+        </view>
+      </view>
+      <text class="upload-hint">建议尺寸 750x400</text>
+    </view>
+  </view>
+
+  <!-- Step 3: 账号设置 -->
+  <view class="form-section" wx:if="{{currentStep === 3}}">
+    <view class="section-title">{{isReapply ? '确认修改内容' : '设置管理员账号'}}</view>
+
+    <!-- 已登录用户入驻：显示当前账号（只读） -->
+    <view wx:if="{{isLoggedInApply}}">
+      <view class="reapply-note">
+        将使用您当前登录的账号绑定该企业，审核通过后自动升级为企业用户。
+      </view>
+      <view class="form-item">
+        <view class="form-label">当前账号</view>
+        <input class="form-input" disabled="{{true}}" value="{{form.username}}" style="color:#999;background:#f5f5f5;" />
+      </view>
+      <view class="form-item">
+        <view class="form-label">登录密码</view>
+        <input class="form-input" disabled="{{true}}" type="password" value="{{form.password}}" style="color:#999;background:#f5f5f5;" />
+      </view>
+    </view>
+
+    <!-- 未登录用户入驻：需要填写新账号 -->
+    <view class="form-item" wx:if="{{!isReapply && !isLoggedInApply}}">
+      <view class="form-label required">管理员账号</view>
+      <input class="form-input" placeholder="用于登录系统的账号（3-20位）" value="{{form.username}}" data-field="username" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item" wx:if="{{!isReapply && !isLoggedInApply}}">
+      <view class="form-label required">登录密码</view>
+      <input class="form-input" type="password" placeholder="不少于6位" value="{{form.password}}" data-field="password" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item" wx:if="{{!isReapply && !isLoggedInApply}}">
+      <view class="form-label required">确认密码</view>
+      <input class="form-input" type="password" placeholder="再次输入密码" value="{{form.confirmPassword}}" data-field="confirmPassword" bindinput="onInputChange" />
+    </view>
+
+    <view class="reapply-note" wx:if="{{isReapply}}">
+      当前为驳回后重新提交，不需要重新设置账号和密码，系统将继续使用您现有的登录账号。
+    </view>
+
+    <view class="summary-card">
+      <view class="summary-title">请确认以下信息</view>
+      <view class="summary-row">
+        <text class="summary-label">企业名称</text>
+        <text class="summary-value">{{form.enterpriseName}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">信用代码</text>
+        <text class="summary-value">{{form.enterpriseCode}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">企业类型</text>
+        <text class="summary-value">{{selectedTypeIndex >= 0 ? enterpriseTypes[selectedTypeIndex] : '--'}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">联系人</text>
+        <text class="summary-value">{{form.contactPerson}} / {{form.contactPhone}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">证照</text>
+        <text class="summary-value">营业执照{{serverBusinessLicenseUrl ? '✓' : '✗'}} 许可证{{serverProductionLicenseUrl ? '✓' : '✗'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="form-actions">
+    <button class="action-btn prev-btn" wx:if="{{currentStep > 1}}" bindtap="prevStep">上一步</button>
+    <button class="action-btn next-btn" wx:if="{{currentStep < 3}}" bindtap="nextStep">下一步</button>
+    <button class="action-btn submit-btn" wx:if="{{currentStep === 3}}" bindtap="submitForm" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : (isReapply ? '保存并重新提交审核' : '提交注册申请')}}
+    </button>
+  </view>
+
+  <view class="login-link" bindtap="goLogin">
+    <text>已有账号？返回登录</text>
+  </view>
+</view>

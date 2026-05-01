@@ -1,0 +1,18 @@
+// 侧边栏配色方案
+$menuBg: #304156;
+$menuText: #bfcbd9;
+$menuActiveText: #409EFF;
+$subMenuBg: #1f2d3d;
+$subMenuHover: #001528;
+
+$sideBarWidth: 210px;
+
+// 导出变量供JS使用
+:export {
+  menuBg: $menuBg;
+  menuText: $menuText;
+  menuActiveText: $menuActiveText;
+  subMenuBg: $subMenuBg;
+  subMenuHover: $subMenuHover;
+  sideBarWidth: $sideBarWidth;
+}

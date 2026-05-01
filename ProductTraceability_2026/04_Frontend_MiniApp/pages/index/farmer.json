@@ -1,0 +1,9 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "肉鸡养殖管理",
+  "navigationBarBackgroundColor": "#2E7D32",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#E8F5E9",
+  "backgroundTextStyle": "dark"
+}

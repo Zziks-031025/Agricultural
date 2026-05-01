@@ -1,0 +1,208 @@
+<view class="profile-container">
+  <!-- 头像区域 -->
+  <view class="avatar-section">
+    <view class="avatar-wrapper" bindtap="chooseAvatar">
+      <image class="avatar" src="{{userInfo.avatar || defaultAvatar}}" mode="aspectFill"></image>
+      <view class="avatar-edit-badge">
+        <image class="edit-icon" src="/images/take-photo.png" mode="aspectFit"></image>
+      </view>
+    </view>
+    <text class="avatar-tip">点击更换头像</text>
+  </view>
+
+  <!-- 信息表单 -->
+  <view class="form-section">
+    <view class="section-title">基本信息</view>
+    
+    <view class="form-item">
+      <view class="form-label">用户名</view>
+      <view class="form-value disabled">
+        <text>{{userInfo.username || '未设置'}}</text>
+      </view>
+    </view>
+
+    <view class="form-item" bindtap="editNickname">
+      <view class="form-label">昵称</view>
+      <view class="form-value">
+        <text>{{userInfo.realName || '点击设置昵称'}}</text>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+
+    <view class="form-item" bindtap="editPhone">
+      <view class="form-label">联系电话</view>
+      <view class="form-value">
+        <text>{{userInfo.phone || '点击设置电话'}}</text>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">用户角色</view>
+      <view class="form-value disabled">
+        <text class="role-tag role-{{roleClass}}">{{roleName}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 企业信息（如果是企业用户） -->
+  <view class="form-section" wx:if="{{isEnterprise}}">
+    <view class="section-title">企业信息</view>
+    
+    <view class="form-item">
+      <view class="form-label">所属企业</view>
+      <view class="form-value disabled">
+        <text>{{userInfo.enterpriseName || '未关联企业'}}</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">企业类型</view>
+      <view class="form-value disabled">
+        <text>{{enterpriseTypeName}}</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">审核状态</view>
+      <view class="form-value disabled">
+        <text class="status-tag status-{{auditStatus}}">{{auditStatusText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 账号安全 -->
+  <view class="form-section">
+    <view class="section-title">账号安全</view>
+    
+    <view class="form-item" bindtap="changePassword">
+      <view class="form-label">修改密码</view>
+      <view class="form-value">
+        <text class="hint-text">定期修改密码，保障账号安全</text>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">注册时间</view>
+      <view class="form-value disabled">
+        <text>{{userInfo.createTime || '2026-01-01'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="action-section">
+    <button class="save-btn" bindtap="saveProfile" disabled="{{!hasChanges}}">
+      保存修改
+    </button>
+  </view>
+
+  <!-- 编辑昵称弹窗 -->
+  <view class="modal-mask" wx:if="{{showNicknameModal}}" bindtap="closeNicknameModal"></view>
+  <view class="modal-container" wx:if="{{showNicknameModal}}">
+    <view class="modal-header">
+      <text class="modal-title">修改昵称</text>
+    </view>
+    <view class="modal-body">
+      <input 
+        class="modal-input" 
+        placeholder="请输入新昵称"
+        value="{{tempNickname}}"
+        bindinput="onNicknameInput"
+        maxlength="20"
+        focus="{{showNicknameModal}}"
+      />
+      <view class="input-counter">{{tempNickname.length}}/20</view>
+    </view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="closeNicknameModal">取消</view>
+      <view class="modal-btn confirm" bindtap="confirmNickname">确定</view>
+    </view>
+  </view>
+
+  <!-- 编辑电话弹窗 -->
+  <view class="modal-mask" wx:if="{{showPhoneModal}}" bindtap="closePhoneModal"></view>
+  <view class="modal-container" wx:if="{{showPhoneModal}}">
+    <view class="modal-header">
+      <text class="modal-title">修改联系电话</text>
+    </view>
+    <view class="modal-body">
+      <input 
+        class="modal-input" 
+        type="number"
+        placeholder="请输入手机号码"
+        value="{{tempPhone}}"
+        bindinput="onPhoneInput"
+        maxlength="11"
+        focus="{{showPhoneModal}}"
+      />
+      <view class="input-hint" wx:if="{{phoneError}}">
+        <text class="error-text">{{phoneError}}</text>
+      </view>
+    </view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="closePhoneModal">取消</view>
+      <view class="modal-btn confirm" bindtap="confirmPhone">确定</view>
+    </view>
+  </view>
+
+  <!-- 修改密码弹窗 -->
+  <view class="modal-mask" wx:if="{{showPasswordModal}}" bindtap="closePasswordModal"></view>
+  <view class="modal-container password-modal" wx:if="{{showPasswordModal}}">
+    <view class="modal-header">
+      <text class="modal-title">修改密码</text>
+    </view>
+    <view class="modal-body">
+      <view class="password-field">
+        <text class="field-label">原密码</text>
+        <input 
+          class="modal-input" 
+          type="text"
+          password="{{!showOldPassword}}"
+          placeholder="请输入原密码"
+          value="{{oldPassword}}"
+          bindinput="onOldPasswordInput"
+        />
+        <view class="eye-icon-wrapper" bindtap="toggleOldPassword">
+          <image class="eye-icon-img" src="{{showOldPassword ? '/images/password-see.png' : '/images/password-invisible.png'}}" mode="aspectFit"></image>
+        </view>
+      </view>
+      <view class="password-field">
+        <text class="field-label">新密码</text>
+        <input 
+          class="modal-input" 
+          type="text"
+          password="{{!showNewPassword}}"
+          placeholder="请输入新密码（6-20位）"
+          value="{{newPassword}}"
+          bindinput="onNewPasswordInput"
+        />
+        <view class="eye-icon-wrapper" bindtap="toggleNewPassword">
+          <image class="eye-icon-img" src="{{showNewPassword ? '/images/password-see.png' : '/images/password-invisible.png'}}" mode="aspectFit"></image>
+        </view>
+      </view>
+      <view class="password-field">
+        <text class="field-label">确认密码</text>
+        <input 
+          class="modal-input" 
+          type="text"
+          password="{{!showConfirmPassword}}"
+          placeholder="请再次输入新密码"
+          value="{{confirmPassword}}"
+          bindinput="onConfirmPasswordInput"
+        />
+        <view class="eye-icon-wrapper" bindtap="toggleConfirmPassword">
+          <image class="eye-icon-img" src="{{showConfirmPassword ? '/images/password-see.png' : '/images/password-invisible.png'}}" mode="aspectFit"></image>
+        </view>
+      </view>
+      <view class="input-hint" wx:if="{{passwordError}}">
+        <text class="error-text">{{passwordError}}</text>
+      </view>
+    </view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="closePasswordModal">取消</view>
+      <view class="modal-btn confirm" bindtap="confirmPassword">确定</view>
+    </view>
+  </view>
+</view>

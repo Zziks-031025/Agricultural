@@ -1,0 +1,214 @@
+<!-- 区块链管理页面 - 毕设技术亮点展示 -->
+<view class="container">
+  <!-- 页面头部 -->
+  <view class="page-header">
+    <text class="header-title">区块链监控中心</text>
+    <text class="header-desc">实时查看链上数据与节点状态</text>
+  </view>
+
+  <!-- 节点监控区域 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">节点监控</text>
+      <view class="refresh-btn" bindtap="refreshNodeStatus">
+        <text class="refresh-icon {{refreshing ? 'rotating' : ''}}">↻</text>
+      </view>
+    </view>
+    
+    <view class="node-status-card">
+      <view class="status-header">
+        <view class="status-indicator {{nodeStatus.connected ? 'online' : 'offline'}}"></view>
+        <text class="status-text">{{nodeStatus.connected ? '已连接' : '未连接'}}</text>
+        <text class="network-name">{{nodeStatus.networkName}}</text>
+      </view>
+      
+      <view class="node-info-grid">
+        <view class="node-info-item">
+          <text class="info-label">RPC 地址</text>
+          <text class="info-value mono">{{nodeStatus.rpcUrl}}</text>
+        </view>
+        <view class="node-info-item">
+          <text class="info-label">当前区块高度</text>
+          <text class="info-value highlight">#{{nodeStatus.blockNumber}}</text>
+        </view>
+        <view class="node-info-item">
+          <text class="info-label">平均上链耗时</text>
+          <text class="info-value">{{nodeStatus.avgBlockTime}} ms</text>
+        </view>
+        <view class="node-info-item">
+          <text class="info-label">最后同步时间</text>
+          <text class="info-value">{{nodeStatus.lastSyncTime}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数据统计区域 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">数据统计</text>
+    </view>
+    
+    <view class="stats-grid">
+      <view class="stats-card">
+        <view class="stats-icon tx-icon">TX</view>
+        <view class="stats-info">
+          <text class="stats-value">{{statistics.totalTransactions}}</text>
+          <text class="stats-label">总交易数</text>
+        </view>
+      </view>
+      
+      <view class="stats-card">
+        <view class="stats-icon hash-icon">#</view>
+        <view class="stats-info">
+          <text class="stats-value">{{statistics.todayHashes}}</text>
+          <text class="stats-label">今日新增哈希</text>
+        </view>
+      </view>
+      
+      <view class="stats-card">
+        <view class="stats-icon batch-icon">B</view>
+        <view class="stats-info">
+          <text class="stats-value">{{statistics.totalBatches}}</text>
+          <text class="stats-label">溯源批次总数</text>
+        </view>
+      </view>
+      
+      <view class="stats-card">
+        <view class="stats-icon enterprise-icon">E</view>
+        <view class="stats-info">
+          <text class="stats-value">{{statistics.activeEnterprises}}</text>
+          <text class="stats-label">活跃企业数</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Gas 费用监控 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">Gas 费用监控</text>
+    </view>
+    
+    <view class="gas-monitor-card">
+      <view class="gas-main">
+        <view class="gas-total">
+          <text class="gas-value">{{gasInfo.totalGasUsed}}</text>
+          <text class="gas-unit">Gas</text>
+        </view>
+        <text class="gas-label">系统累计消耗</text>
+      </view>
+      
+      <view class="gas-details">
+        <view class="gas-item">
+          <text class="gas-item-label">估算 ETH 消耗</text>
+          <text class="gas-item-value">{{gasInfo.estimatedEth}} ETH</text>
+        </view>
+        <view class="gas-item">
+          <text class="gas-item-label">当前 Gas Price</text>
+          <text class="gas-item-value">{{gasInfo.currentGasPrice}} Gwei</text>
+        </view>
+        <view class="gas-item">
+          <text class="gas-item-label">平均单笔消耗</text>
+          <text class="gas-item-value">{{gasInfo.avgGasPerTx}} Gas</text>
+        </view>
+        <view class="gas-item">
+          <text class="gas-item-label">Gas Limit 配置</text>
+          <text class="gas-item-value">{{gasInfo.gasLimit}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 智能合约公示 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">智能合约公示</text>
+    </view>
+    
+    <view class="contract-card">
+      <view class="contract-header">
+        <text class="contract-name">{{contractInfo.name}}</text>
+        <view class="contract-badge">Solidity {{contractInfo.version}}</view>
+      </view>
+      
+      <view class="contract-address-section">
+        <text class="address-label">合约部署地址</text>
+        <view class="address-row">
+          <text class="address-value">{{contractInfo.address}}</text>
+          <view class="copy-btn" bindtap="copyContractAddress">
+            <image class="copy-icon" src="/images/copy.png" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+      
+      <view class="contract-info-list">
+        <view class="contract-info-item">
+          <text class="item-label">部署时间</text>
+          <text class="item-value">{{contractInfo.deployTime}}</text>
+        </view>
+        <view class="contract-info-item">
+          <text class="item-label">部署区块</text>
+          <text class="item-value">#{{contractInfo.deployBlock}}</text>
+        </view>
+        <view class="contract-info-item">
+          <text class="item-label">合约状态</text>
+          <text class="item-value status-active">运行中</text>
+        </view>
+      </view>
+      
+      <view class="contract-functions">
+        <text class="functions-title">核心函数</text>
+        <view class="function-list">
+          <view class="function-item">
+            <text class="function-name">uploadHash()</text>
+            <text class="function-desc">上传溯源数据哈希</text>
+          </view>
+          <view class="function-item">
+            <text class="function-name">getHash()</text>
+            <text class="function-desc">查询链上哈希记录</text>
+          </view>
+          <view class="function-item">
+            <text class="function-name">verifyHash()</text>
+            <text class="function-desc">验证数据完整性</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 技术说明 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">技术架构说明</text>
+    </view>
+    
+    <view class="tech-card">
+      <view class="tech-item">
+        <view class="tech-tag">区块链网络</view>
+        <text class="tech-value">Ethereum (Ganache 本地测试网)</text>
+      </view>
+      <view class="tech-item">
+        <view class="tech-tag">共识机制</view>
+        <text class="tech-value">PoA (Proof of Authority)</text>
+      </view>
+      <view class="tech-item">
+        <view class="tech-tag">智能合约</view>
+        <text class="tech-value">Solidity ^0.8.0</text>
+      </view>
+      <view class="tech-item">
+        <view class="tech-tag">后端交互</view>
+        <text class="tech-value">Web3j (Java)</text>
+      </view>
+      <view class="tech-item">
+        <view class="tech-tag">数据存储</view>
+        <text class="tech-value">链上哈希 + 链下原始数据</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部说明 -->
+  <view class="footer-note">
+    <text>本页面数据来源于区块链节点实时查询，确保数据的真实性与不可篡改性</text>
+  </view>
+</view>

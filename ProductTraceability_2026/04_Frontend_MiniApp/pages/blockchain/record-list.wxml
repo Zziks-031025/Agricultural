@@ -1,0 +1,90 @@
+<!-- 区块链上链记录流水页 -->
+<view class="record-list-page">
+  <!-- 顶部统计卡片 -->
+  <view class="stats-card">
+    <view class="stats-header">
+      <view class="stats-title">区块链存证统计</view>
+      <view class="stats-enterprise">{{enterpriseInfo.name}}</view>
+    </view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <view class="stats-value">{{statistics.totalCount}}</view>
+        <view class="stats-label">累计存证</view>
+      </view>
+      <view class="stats-divider"></view>
+      <view class="stats-item">
+        <view class="stats-value">{{statistics.todayCount}}</view>
+        <view class="stats-label">今日新增</view>
+      </view>
+      <view class="stats-divider"></view>
+      <view class="stats-item">
+        <view class="stats-value">{{statistics.weekCount}}</view>
+        <view class="stats-label">本周存证</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 记录列表 -->
+  <view class="record-section">
+    <view class="section-header">
+      <view class="section-title">上链记录流水</view>
+      <view class="section-tip">点击查看存证证书</view>
+    </view>
+
+    <view class="record-list">
+      <view 
+        class="record-item" 
+        wx:for="{{recordList}}" 
+        wx:key="id"
+        bindtap="viewCertificate"
+        data-item="{{item}}"
+      >
+        <!-- 中间内容 -->
+        <view class="record-content">
+          <view class="record-main">
+            <text class="record-type">{{item.recordTypeName}}</text>
+            <text class="record-batch">{{item.batchCode}}</text>
+          </view>
+          <view class="record-meta">
+            <text class="record-time">{{item.recordTime}}</text>
+            <text class="record-operator">操作人: {{item.operator}}</text>
+          </view>
+          <view class="record-hash" catchtap="copyHash" data-hash="{{item.txHash}}">
+            <text class="hash-label">TxHash:</text>
+            <text class="hash-value">{{item.txHashShort}}</text>
+            <text class="copy-hint">复制</text>
+          </view>
+        </view>
+
+        <!-- 右侧箭头 -->
+        <view class="record-arrow">
+          <text class="arrow-icon">›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-more" wx:if="{{loading}}">
+      <view class="loading-dots">
+        <view class="dot"></view>
+        <view class="dot"></view>
+        <view class="dot"></view>
+      </view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="no-more" wx:if="{{noMore && recordList.length > 0}}">
+      <view class="no-more-line"></view>
+      <text class="no-more-text">已加载全部记录</text>
+      <view class="no-more-line"></view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && recordList.length === 0}}">
+      <view class="empty-icon"></view>
+      <view class="empty-text">暂无上链记录</view>
+      <view class="empty-tip">操作记录上链后将在此显示</view>
+    </view>
+  </view>
+</view>

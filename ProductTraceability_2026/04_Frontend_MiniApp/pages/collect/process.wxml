@@ -1,0 +1,188 @@
+<view class="collect-container">
+  <view class="form-card card">
+    <!-- 批次信息 -->
+    <view class="form-section">
+      <view class="section-title">批次信息</view>
+      
+      <view class="form-item">
+        <view class="form-label required">批次编号</view>
+        <view class="form-input-group">
+          <input 
+            class="form-input" 
+            placeholder="请扫码或手动输入批次号" 
+            value="{{formData.batchCode}}"
+            bindinput="onInputChange"
+            data-field="batchCode"
+          />
+          <view class="scan-btn" bindtap="scanBatchCode">
+            <image class="scan-icon-img" src="/images/take-photo.png" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+
+      <view class="form-item" wx:if="{{batchInfo.productName}}">
+        <view class="form-label">产品名称</view>
+        <view class="form-value">{{batchInfo.productName}}</view>
+      </view>
+    </view>
+
+    <!-- 记录信息 -->
+    <view class="form-section">
+      <view class="section-title">记录信息</view>
+
+      <view class="form-item">
+        <view class="form-label required">记录日期</view>
+        <picker 
+          mode="date" 
+          value="{{formData.recordDate}}" 
+          end="{{today}}"
+          bindchange="onDateChange"
+        >
+          <view class="form-picker">
+            {{formData.recordDate || '请选择日期'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <view class="form-label required">记录类型</view>
+        <picker 
+          range="{{recordTypes}}" 
+          range-key="label"
+          value="{{recordTypeIndex}}"
+          bindchange="onRecordTypeChange"
+        >
+          <view class="form-picker">
+            {{recordTypes[recordTypeIndex].label || '请选择记录类型'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <view class="form-label required">操作人</view>
+        <input 
+          class="form-input" 
+          placeholder="请输入操作人姓名" 
+          value="{{formData.operator}}"
+          bindinput="onInputChange"
+          data-field="operator"
+        />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label required">操作内容</view>
+        <textarea 
+          class="form-textarea" 
+          placeholder="请详细描述操作内容" 
+          value="{{formData.operationContent}}"
+          bindinput="onInputChange"
+          data-field="operationContent"
+          maxlength="500"
+        />
+        <view class="char-count">{{formData.operationContent.length}}/500</view>
+      </view>
+    </view>
+
+    <!-- 环境数据（可选） -->
+    <view class="form-section">
+      <view class="section-title">环境数据（可选）</view>
+
+      <view class="form-row">
+        <view class="form-item half">
+          <view class="form-label">温度（℃）</view>
+          <input 
+            class="form-input" 
+            type="digit"
+            placeholder="请输入温度" 
+            value="{{formData.temperature}}"
+            bindinput="onInputChange"
+            data-field="temperature"
+          />
+        </view>
+
+        <view class="form-item half">
+          <view class="form-label">湿度（%）</view>
+          <input 
+            class="form-input" 
+            type="digit"
+            placeholder="请输入湿度" 
+            value="{{formData.humidity}}"
+            bindinput="onInputChange"
+            data-field="humidity"
+          />
+        </view>
+      </view>
+    </view>
+
+    <!-- 用药/施肥信息（可选） -->
+    <view class="form-section" wx:if="{{showMaterialInfo}}">
+      <view class="section-title">用药/施肥信息（可选）</view>
+
+      <view class="form-item">
+        <view class="form-label">肥料/药品名称</view>
+        <input 
+          class="form-input" 
+          placeholder="请输入名称" 
+          value="{{formData.materialName}}"
+          bindinput="onInputChange"
+          data-field="materialName"
+        />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">用量</view>
+        <input 
+          class="form-input" 
+          type="digit"
+          placeholder="请输入用量（kg）" 
+          value="{{formData.materialAmount}}"
+          bindinput="onInputChange"
+          data-field="materialAmount"
+        />
+      </view>
+    </view>
+
+    <!-- 凭证照片 -->
+    <view class="form-section">
+      <view class="section-title">凭证照片</view>
+      
+      <view class="image-upload">
+        <view class="image-list">
+          <view class="image-item" wx:for="{{formData.images}}" wx:key="index">
+            <image class="image" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}"></image>
+            <view class="image-delete" bindtap="deleteImage" data-index="{{index}}">×</view>
+          </view>
+          
+          <view class="image-add" bindtap="chooseImage" wx:if="{{formData.images.length < 9}}">
+            <text class="icon">+</text>
+            <text class="text">添加照片</text>
+          </view>
+        </view>
+        <view class="image-tip">最多上传9张照片</view>
+      </view>
+    </view>
+
+    <!-- 位置信息 -->
+    <view class="form-section">
+      <view class="section-title">位置信息</view>
+      
+      <view class="location-info" wx:if="{{formData.location}}">
+        <view class="location-text">
+          <text>{{formData.location.address || '已获取位置'}}</text>
+        </view>
+        <view class="location-btn" bindtap="getLocation">重新获取</view>
+      </view>
+      
+      <view class="location-empty" wx:else>
+        <view class="location-btn primary" bindtap="getLocation">获取当前位置</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-section">
+    <button class="submit-btn" bindtap="submitForm" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : '提交记录'}}
+    </button>
+  </view>
+</view>

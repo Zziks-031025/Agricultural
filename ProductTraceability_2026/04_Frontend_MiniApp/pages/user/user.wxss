@@ -1,0 +1,467 @@
+.user-container {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: calc(40rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+/* ========== 肉鸡养殖户(Type 1) 专属头部样式 ========== */
+.farmer-header {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  padding: 60rpx 30rpx 40rpx;
+}
+
+.farmer-info-card {
+  display: flex;
+  align-items: center;
+}
+
+.farmer-logo-wrap {
+  position: relative;
+  width: 140rpx;
+  height: 140rpx;
+  margin-right: 24rpx;
+}
+
+.farmer-logo {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 20rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.logo-edit-hint {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0 0 20rpx 20rpx;
+  padding: 6rpx 0;
+  text-align: center;
+}
+
+.edit-text {
+  font-size: 20rpx;
+  color: #fff;
+}
+
+.farmer-detail {
+  flex: 1;
+}
+
+.farmer-name {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 10rpx;
+}
+
+.farmer-role-tag {
+  margin-bottom: 12rpx;
+}
+
+.farmer-badge {
+  display: inline-block;
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1rpx solid rgba(255, 255, 255, 0.4);
+}
+
+.enterprise-code-row {
+  display: flex;
+  align-items: center;
+}
+
+.code-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-right: 8rpx;
+}
+
+.code-value {
+  font-size: 24rpx;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1rpx;
+}
+
+.copy-icon {
+  width: 28rpx;
+  height: 28rpx;
+  margin-left: 10rpx;
+  opacity: 0.8;
+}
+
+/* ========== 宰杀加工企业(Type 2) 身份标签颜色 ========== */
+/* 头部结构完全复用 farmer-*，仅通过 badge 颜色区分身份 */
+.processor-badge {
+  background: rgba(92, 182, 255, 0.9);
+  border: 1rpx solid rgba(0, 0, 0, 0.3);
+}
+
+/* ========== 检疫质检机构(Type 3) 身份标签 - 复用绿色主题，与工作台 inspector-badge 一致 ========== */
+.quarantine-badge {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1rpx solid rgba(255, 255, 255, 0.4);
+}
+
+/* 分组标签 */
+.section-label {
+  font-size: 24rpx;
+  color: #999;
+  padding: 24rpx 40rpx 12rpx;
+  background: transparent;
+}
+
+.user-header {
+  background: #4CAF50;
+  padding: 60rpx 30rpx 40rpx;
+}
+
+.user-info-card {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 70rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  margin-right: 24rpx;
+}
+
+.user-detail {
+  flex: 1;
+}
+
+.username {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 12rpx;
+}
+
+.user-role-tag {
+  margin-bottom: 8rpx;
+}
+
+.role-badge {
+  display: inline-block;
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  color: #fff;
+  border: 1rpx solid rgba(255, 255, 255, 0.4);
+}
+
+.role-admin {
+  background: rgba(244, 67, 54, 0.3);
+}
+
+.role-enterprise {
+  background: rgba(33, 150, 243, 0.3);
+}
+
+.role-consumer {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.enterprise-info {
+  margin-top: 8rpx;
+}
+
+.enterprise-name {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.guest-header {
+  background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%);
+  padding: 60rpx 30rpx 40rpx;
+}
+
+.guest-card {
+  display: flex;
+  align-items: center;
+}
+
+.guest-avatar {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 70rpx;
+  margin-right: 24rpx;
+}
+
+.guest-info {
+  flex: 1;
+}
+
+.guest-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 8rpx;
+}
+
+.guest-subtitle {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.login-btn {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 12rpx 24rpx;
+  border-radius: 40rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.4);
+}
+
+.login-text {
+  font-size: 26rpx;
+  color: #fff;
+}
+
+.audit-notice {
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+  margin: 20rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: flex-start;
+  border-left: 6rpx solid #FF9800;
+}
+
+.notice-reject {
+  background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+  border-left-color: #F44336;
+}
+
+.notice-image-audit {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-left-color: #2196F3;
+}
+
+.icon-text-warn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #2196F3;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.notice-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-right: 16rpx;
+}
+
+.icon-img {
+  width: 100%;
+  height: 100%;
+}
+
+.notice-content {
+  flex: 1;
+}
+
+.notice-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #E65100;
+  margin-bottom: 8rpx;
+}
+
+.notice-reject .notice-title {
+  color: #C62828;
+}
+
+.notice-desc {
+  font-size: 24rpx;
+  color: #F57C00;
+  line-height: 1.6;
+}
+
+.notice-reject .notice-desc {
+  color: #D32F2F;
+}
+
+.menu-section {
+  background: #fff;
+  margin: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+  position: relative;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+}
+
+.menu-icon-img {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.icon-blue {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+}
+
+.icon-orange {
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+}
+
+.icon-green {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+}
+
+.icon-purple {
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+}
+
+.icon-transparent {
+  background: transparent;
+}
+
+/* 圆角背景图标样式 - 保持与工作台页面一致的淡色风格 */
+.icon-circle {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 14rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle.purple {
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+}
+
+.icon-circle.purple .icon-text {
+  color: #9C27B0;
+}
+
+.icon-circle.blue {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+}
+
+.icon-circle.blue .icon-text {
+  color: #2196F3;
+}
+
+.icon-circle.green {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+}
+
+.icon-circle.green .icon-text {
+  color: #4CAF50;
+}
+
+.icon-text {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.menu-content {
+  flex: 1;
+}
+
+.menu-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.menu-desc {
+  display: block;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.menu-badge {
+  background: #FF5252;
+  color: #fff;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+  margin-right: 12rpx;
+  min-width: 32rpx;
+  text-align: center;
+}
+
+.menu-arrow {
+  font-size: 48rpx;
+  color: #CCC;
+  margin-left: 12rpx;
+}
+
+.action-section {
+  padding: 0 30rpx;
+  margin-top: 40rpx;
+}
+
+.action-btn {
+  padding: 28rpx 40rpx;
+  border-radius: 16rpx;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  box-shadow: 0 4rpx 20rpx rgba(76, 175, 80, 0.3);
+}
+
+.secondary-btn {
+  background: #fff;
+  border: 2rpx solid #4CAF50;
+}
+
+.logout-btn {
+  background: #fff;
+  border: 2rpx solid #F44336;
+}
+
+.btn-text {
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.primary-btn .btn-text {
+  color: #fff;
+}
+
+.secondary-btn .btn-text {
+  color: #4CAF50;
+}
+
+.logout-btn .btn-text {
+  color: #F44336;
+}

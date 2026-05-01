@@ -1,0 +1,199 @@
+<!-- 企业管理页面 -->
+<view class="container">
+  <!-- 顶部统计卡片 -->
+  <view class="stats-header">
+    <view class="stats-card">
+      <view class="stats-item">
+        <view class="stats-value">{{stats.total}}</view>
+        <view class="stats-label">企业总数</view>
+      </view>
+      <view class="stats-divider"></view>
+      <view class="stats-item">
+        <view class="stats-value pending">{{stats.pending}}</view>
+        <view class="stats-label">待审核</view>
+      </view>
+      <view class="stats-divider"></view>
+      <view class="stats-item">
+        <view class="stats-value success">{{stats.approved}}</view>
+        <view class="stats-label">已通过</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选区域 -->
+  <view class="filter-section">
+    <!-- 搜索框 -->
+    <view class="search-box">
+      <image class="search-icon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E" mode="aspectFit"></image>
+      <input class="search-input" placeholder="搜索企业名称/信用代码" value="{{searchKeyword}}" bindinput="onSearchInput" />
+      <view class="search-clear" wx:if="{{searchKeyword}}" bindtap="clearSearch">×</view>
+    </view>
+    
+    <!-- 状态筛选Tab -->
+    <view class="filter-tabs">
+      <view class="tab-item {{currentStatus === 'all' ? 'active' : ''}}" bindtap="switchStatus" data-status="all">
+        <text>全部</text>
+      </view>
+      <view class="tab-item {{currentStatus === 'pending' ? 'active' : ''}}" bindtap="switchStatus" data-status="pending">
+        <text>待审核</text>
+        <view class="badge" wx:if="{{stats.pending > 0}}">{{stats.pending}}</view>
+      </view>
+      <view class="tab-item {{currentStatus === 'approved' ? 'active' : ''}}" bindtap="switchStatus" data-status="approved">
+        <text>已通过</text>
+      </view>
+      <view class="tab-item {{currentStatus === 'rejected' ? 'active' : ''}}" bindtap="switchStatus" data-status="rejected">
+        <text>已拒绝</text>
+      </view>
+    </view>
+    
+    <!-- 企业类型筛选 -->
+    <view class="type-filter" wx:if="{{showTypeFilter}}">
+      <view class="type-item {{currentType === 'all' ? 'active' : ''}}" bindtap="switchType" data-type="all">全部类型</view>
+      <view class="type-item {{currentType === 1 ? 'active' : ''}}" bindtap="switchType" data-type="1">种植养殖</view>
+      <view class="type-item {{currentType === 2 ? 'active' : ''}}" bindtap="switchType" data-type="2">加工宰杀</view>
+      <view class="type-item {{currentType === 3 ? 'active' : ''}}" bindtap="switchType" data-type="3">检疫质检</view>
+    </view>
+  </view>
+
+  <!-- 企业列表 -->
+  <scroll-view class="enterprise-list" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="loadMore">
+    <view class="enterprise-card" wx:for="{{enterpriseList}}" wx:key="id" bindtap="goToDetail" data-item="{{item}}">
+      <!-- 卡片头部 -->
+      <view class="card-header">
+        <view class="enterprise-info">
+          <view class="enterprise-name">{{item.enterpriseName}}</view>
+          <view class="enterprise-meta">
+            <text class="enterprise-type">{{item.enterpriseTypeName}}</text>
+            <text class="meta-divider">|</text>
+            <text class="enterprise-code">{{item.enterpriseCode}}</text>
+          </view>
+        </view>
+        <view class="status-tag status-{{item.auditStatus}}">
+          {{item.auditStatus === 0 ? '待审核' : item.auditStatus === 1 ? '已通过' : '已拒绝'}}
+        </view>
+      </view>
+
+      <!-- 卡片内容 -->
+      <view class="card-body">
+        <view class="info-grid">
+          <view class="info-cell">
+            <text class="cell-label">法人代表</text>
+            <text class="cell-value">{{item.legalPerson || '-'}}</text>
+          </view>
+          <view class="info-cell">
+            <text class="cell-label">上链批次</text>
+            <text class="cell-value highlight">{{item.chainCount || 0}}</text>
+          </view>
+          <view class="info-cell">
+            <text class="cell-label">申请时间</text>
+            <text class="cell-value">{{item.applyTime}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 卡片操作区 -->
+      <view class="card-actions" catchtap="preventClose">
+        <view class="action-link" catchtap="viewLicense" data-item="{{item}}">查看资质</view>
+        <view class="action-divider"></view>
+        <view class="action-link" catchtap="callLegalPerson" data-phone="{{item.contactPhone}}">联系法人</view>
+        <view class="action-divider"></view>
+        <view class="action-link" catchtap="viewBatches" data-item="{{item}}">上链记录</view>
+      </view>
+
+      <!-- 待审核操作按钮 -->
+      <view class="audit-actions" wx:if="{{item.auditStatus === 0}}" catchtap="preventClose">
+        <view class="audit-btn reject-btn" catchtap="rejectEnterprise" data-item="{{item}}">
+          <text>拒绝</text>
+        </view>
+        <view class="audit-btn approve-btn" catchtap="approveEnterprise" data-item="{{item}}">
+          <text>通过审核</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{enterpriseList.length === 0 && !loading}}">
+      <image class="empty-icon" src="https://via.placeholder.com/200/F5F5F5/BDBDBD?text=Empty" mode="aspectFit"></image>
+      <view class="empty-text">暂无{{currentStatus === 'pending' ? '待审核' : ''}}企业数据</view>
+      <view class="empty-hint" wx:if="{{searchKeyword}}">尝试更换搜索关键词</view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="no-more" wx:if="{{noMore && enterpriseList.length > 0}}">
+      <text>— 没有更多了 —</text>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 资质查看弹窗 -->
+<view class="modal-overlay" wx:if="{{showLicenseModal}}" bindtap="closeLicenseModal" catchtouchmove="preventTouchMove">
+  <view class="modal-content license-modal" catchtap="preventClose">
+    <view class="modal-header">
+      <text class="modal-title">企业资质</text>
+      <view class="modal-close" bindtap="closeLicenseModal">×</view>
+    </view>
+    <scroll-view class="modal-body-scroll" scroll-y enhanced show-scrollbar="{{true}}" catchtouchmove="stopTouchMove">
+      <view class="license-section">
+        <view class="license-title">营业执照</view>
+        <image 
+          class="license-image" 
+          src="{{currentEnterprise.businessLicense || 'https://via.placeholder.com/600x400/E8F5E9/4CAF50?text=营业执照'}}" 
+          mode="widthFix"
+          bindtap="previewLicense"
+          data-type="business"
+        ></image>
+      </view>
+      <view class="license-section" wx:if="{{currentEnterprise.productionLicense}}">
+        <view class="license-title">行业许可证</view>
+        <image 
+          class="license-image" 
+          src="{{currentEnterprise.productionLicense}}" 
+          mode="widthFix"
+          bindtap="previewLicense"
+          data-type="production"
+        ></image>
+      </view>
+    </scroll-view>
+  </view>
+</view>
+
+<!-- 审核拒绝原因弹窗 -->
+<view class="modal-overlay" wx:if="{{showRejectModal}}" bindtap="closeRejectModal" catchtouchmove="preventTouchMove">
+  <view class="modal-content reject-modal" catchtap="preventClose" catchtouchmove="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">拒绝原因</text>
+      <view class="modal-close" bindtap="closeRejectModal">×</view>
+    </view>
+    <view class="modal-body">
+      <view class="reject-tips">请填写拒绝原因，将通知企业进行修改</view>
+      <textarea 
+        class="reject-input" 
+        placeholder="请输入拒绝原因..." 
+        value="{{rejectReason}}"
+        bindinput="onRejectReasonInput"
+        maxlength="200"
+      ></textarea>
+      <view class="char-count">{{rejectReason.length}}/200</view>
+      <view class="quick-reasons">
+        <view class="quick-title">快捷选择：</view>
+        <view class="quick-tags">
+          <view class="quick-tag" bindtap="selectQuickReason" data-reason="营业执照模糊不清">营业执照模糊不清</view>
+          <view class="quick-tag" bindtap="selectQuickReason" data-reason="企业信息不完整">企业信息不完整</view>
+          <view class="quick-tag" bindtap="selectQuickReason" data-reason="资质证书已过期">资质证书已过期</view>
+          <view class="quick-tag" bindtap="selectQuickReason" data-reason="企业类型选择错误">企业类型选择错误</view>
+        </view>
+      </view>
+    </view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="closeRejectModal">取消</view>
+      <view class="modal-btn confirm" bindtap="confirmReject">确认拒绝</view>
+    </view>
+  </view>
+</view>
+

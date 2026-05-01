@@ -1,0 +1,256 @@
+<!-- ========== 全屏 Loading 遮罩 ========== -->
+<view class="fullscreen-loading" wx:if="{{submitting}}">
+  <view class="loading-content">
+    <view class="loading-spinner-large"></view>
+    <view class="loading-chain-icon">
+      <image src="/images/Blockchain.png" mode="aspectFit" class="chain-anim-icon"></image>
+    </view>
+    <text class="loading-title">正在签发电子检疫证明</text>
+    <text class="loading-subtitle">并同步至区块链...</text>
+    <view class="loading-dots">
+      <view class="dot dot1"></view>
+      <view class="dot dot2"></view>
+      <view class="dot dot3"></view>
+    </view>
+  </view>
+</view>
+
+<!-- ========== 存证成功 - 证书展示页 ========== -->
+<view class="success-container" wx:elif="{{submitSuccess}}">
+  <!-- 顶部成功标识 -->
+  <view class="success-header">
+    <view class="success-icon-wrap">
+      <text class="success-check">✓</text>
+    </view>
+    <text class="success-title">存证成功</text>
+    <text class="success-subtitle">检疫结论已同步至以太坊区块链</text>
+  </view>
+
+  <!-- 电子检疫证书卡片 -->
+  <view class="certificate-card">
+    <view class="cert-header">
+      <view class="cert-header-line"></view>
+      <text class="cert-title">电子检疫存证证书</text>
+      <view class="cert-header-line"></view>
+    </view>
+
+    <!-- 检疫结果 -->
+    <view class="cert-result-row">
+      <text class="cert-result-label">检疫结果</text>
+      <view class="cert-result-badge {{result === 'pass' ? 'cert-pass' : 'cert-fail'}}">
+        <text class="cert-result-text">{{checkResultText}}</text>
+      </view>
+    </view>
+
+    <!-- 批次信息 -->
+    <view class="cert-info-section">
+      <view class="cert-info-row">
+        <text class="cert-info-label">批次编号</text>
+        <text class="cert-info-value cert-mono">{{batchCode}}</text>
+      </view>
+      <view class="cert-info-row">
+        <text class="cert-info-label">产品名称</text>
+        <text class="cert-info-value">{{productName}}</text>
+      </view>
+      <view class="cert-info-row">
+        <text class="cert-info-label">送检企业</text>
+        <text class="cert-info-value">{{enterpriseName}}</text>
+      </view>
+      <view class="cert-info-row">
+        <text class="cert-info-label">检疫员</text>
+        <text class="cert-info-value">{{inspector}} ({{inspectorCode}})</text>
+      </view>
+      <view class="cert-info-row">
+        <text class="cert-info-label">检疫日期</text>
+        <text class="cert-info-value">{{inspectionDate}}</text>
+      </view>
+    </view>
+
+    <!-- 分隔线 -->
+    <view class="cert-divider">
+      <view class="cert-divider-line"></view>
+      <image class="cert-divider-icon" src="/images/Blockchain.png" mode="aspectFit"></image>
+      <view class="cert-divider-line"></view>
+    </view>
+
+    <!-- 区块链存证信息（有上链数据时显示） -->
+    <view class="cert-chain-section" wx:if="{{txHash}}">
+      <text class="cert-chain-title">区块链存证信息</text>
+
+      <view class="cert-hash-row" bindtap="copyTxHash">
+        <view class="cert-hash-left">
+          <text class="cert-hash-label">交易哈希</text>
+          <text class="cert-hash-value">{{txHashShort}}</text>
+        </view>
+        <view class="cert-copy-btn">
+          <image class="cert-copy-icon" src="/images/copy.png" mode="aspectFit"></image>
+        </view>
+      </view>
+
+      <view class="cert-hash-row" bindtap="copyDataHash">
+        <view class="cert-hash-left">
+          <text class="cert-hash-label">数据指纹</text>
+          <text class="cert-hash-value">{{dataHashShort}}</text>
+        </view>
+        <view class="cert-copy-btn">
+          <image class="cert-copy-icon" src="/images/copy.png" mode="aspectFit"></image>
+        </view>
+      </view>
+
+      <view class="cert-meta-row">
+        <view class="cert-meta-item">
+          <text class="cert-meta-label">区块高度</text>
+          <text class="cert-meta-value">{{blockNumber}}</text>
+        </view>
+        <view class="cert-meta-item">
+          <text class="cert-meta-label">上链时间</text>
+          <text class="cert-meta-value">{{chainTime}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 未上链提示（检疫录入阶段不上链，需上传报告后上链） -->
+    <view class="cert-chain-section cert-chain-pending" wx:else>
+      <text class="cert-chain-title">区块链存证信息</text>
+      <view class="cert-pending-notice">
+        <text class="cert-pending-text">检疫结果已记录，请上传检疫证书原件后完成上链存证</text>
+      </view>
+    </view>
+
+    <!-- 证书底部标记 -->
+    <view class="cert-footer">
+      <text class="cert-footer-text" wx:if="{{txHash}}">本证书由以太坊智能合约自动签发，数据不可篡改</text>
+      <text class="cert-footer-text" wx:else>上传报告后将自动完成区块链存证</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="success-actions">
+    <view class="action-btn-secondary" bindtap="continueInspection">
+      <text>上传报告</text>
+    </view>
+    <view class="action-btn-primary" bindtap="goBackToList">
+      <text>返回工作台</text>
+    </view>
+  </view>
+</view>
+
+<!-- ========== 正常表单页 ========== -->
+<view class="page-container" wx:else>
+  <!-- 关联信息卡 -->
+  <view class="info-card">
+    <view class="card-title-row">
+      <text class="card-title">关联信息</text>
+      <view class="unlink-btn" wx:if="{{batchLinked}}" bindtap="unlinkBatch">
+        <text class="unlink-text">重新关联</text>
+      </view>
+    </view>
+
+    <!-- 已关联 -->
+    <block wx:if="{{batchLinked}}">
+      <view class="linked-badge">
+        <text class="linked-icon">✓</text>
+        <text class="linked-text">已关联批次</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">待检批次号</text>
+        <text class="info-value batch-code-value">{{batchCode || '—'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">所属企业</text>
+        <text class="info-value">{{enterpriseName || '—'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">产品名称</text>
+        <text class="info-value">{{productName || '—'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">送检数量</text>
+        <text class="info-value">{{quantity}} {{unit}}</text>
+      </view>
+    </block>
+
+    <!-- 未关联 -->
+    <block wx:else>
+      <view class="scan-area" bindtap="startScan">
+        <image class="scan-icon-large" src="/images/scan-icon.png" mode="aspectFit"></image>
+        <text class="scan-tip">点击扫码关联批次</text>
+        <text class="scan-sub-tip">扫描批次二维码 / 条形码</text>
+      </view>
+
+      <view class="divider-row">
+        <view class="divider-line"></view>
+        <text class="divider-text">或手动输入</text>
+        <view class="divider-line"></view>
+      </view>
+
+      <view class="manual-input-row">
+        <input class="batch-input" placeholder="请输入批次编号" value="{{manualCode}}" bindinput="onManualInput" />
+        <view class="confirm-btn-small" bindtap="confirmManualInput">
+          <text>查询</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 检疫录入表单 -->
+  <view class="form-card {{batchLinked ? '' : 'form-disabled'}}">
+    <view class="card-title">检疫结果录入</view>
+
+    <view class="disabled-overlay" wx:if="{{!batchLinked}}">
+      <text class="disabled-text">请先扫码关联批次后进行录入</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label required-label">检疫结果</text>
+      <view class="result-switch">
+        <view class="result-option {{result === 'pass' ? 'result-active-pass' : ''}}" bindtap="{{batchLinked ? 'setResult' : ''}}" data-result="pass">合格</view>
+        <view class="result-option {{result === 'fail' ? 'result-active-fail' : ''}}" bindtap="{{batchLinked ? 'setResult' : ''}}" data-result="fail">不合格</view>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label required-label">具体检测项</text>
+      <textarea class="form-textarea" placeholder="如：禽流感检测、药物残留、感官指标..." value="{{inspectionItems}}" bindinput="onInput" data-field="inspectionItems" maxlength="500" disabled="{{!batchLinked}}" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">检疫合格证号</text>
+      <input class="form-input" placeholder="输入检疫合格证编号" value="{{certificateNo}}" bindinput="onInput" data-field="certificateNo" disabled="{{!batchLinked}}" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">检疫员证号</text>
+      <view class="autofill-field">
+        <text class="autofill-value">{{inspectorCode || '—'}}</text>
+        <text class="autofill-tag">自动填充</text>
+      </view>
+      <text class="autofill-hint">检疫员：{{inspector}}</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">检疫日期</text>
+      <picker mode="date" value="{{inspectionDate}}" bindchange="onDateChange" disabled="{{!batchLinked}}">
+        <view class="form-input picker-input">
+          <text>{{inspectionDate || '选择日期'}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">备注</text>
+      <textarea class="form-textarea" placeholder="选填备注信息" value="{{remark}}" bindinput="onInput" data-field="remark" maxlength="200" disabled="{{!batchLinked}}" />
+    </view>
+  </view>
+
+  <!-- 存证提示 + 提交按钮 -->
+  <view class="submit-section">
+    <view class="chain-notice" wx:if="{{batchLinked}}">
+      <text class="chain-notice-text">检疫结果将在仓储入库时统一上链存证</text>
+    </view>
+    <view class="submit-btn {{batchLinked ? '' : 'submit-btn-disabled'}}" bindtap="{{batchLinked ? 'submitForm' : ''}}">
+      <text>提交检疫结果</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,2203 @@
+openapi: 3.0.3
+info:
+  title: Agricultural Traceability System API
+  version: 1.0.0
+  description: API specification for the agricultural product traceability system.
+
+servers:
+  - url: '{baseUrl}'
+    variables:
+      baseUrl:
+        default: http://localhost:8888
+
+paths:
+  # ==========================================
+  # Auth
+  # ==========================================
+  /auth/login:
+    post:
+      summary: "[Full] User login"
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 200 }
+                  data:
+                    type: object
+                    properties:
+                      token: { type: string }
+                      userInfo: { $ref: '#/components/schemas/UserInfo' }
+
+  /auth/info:
+    get:
+      summary: "[Full] Get current user info"
+      tags: [Auth]
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 200 }
+                  data: { $ref: '#/components/schemas/UserInfo' }
+
+  /auth/logout:
+    post:
+      summary: "[Full] Logout"
+      tags: [Auth]
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # Enterprise Audit (Admin)
+  # ==========================================
+  /api/enterprise/audit/list:
+    get:
+      summary: "[Full] Enterprise audit list"
+      tags: [Enterprise]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: pageNum, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 10 } }
+        - { name: auditStatus, in: query, schema: { type: integer }, description: "0-pending, 1-approved, 2-rejected" }
+        - { name: enterpriseType, in: query, schema: { type: integer }, description: "1-farm, 2-processor, 3-inspector" }
+        - { name: keyword, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Paginated enterprise list
+
+  /api/enterprise/audit/detail/{id}:
+    get:
+      summary: "[Full] Enterprise audit detail"
+      tags: [Enterprise]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Enterprise detail
+
+  /api/enterprise/audit/approve:
+    post:
+      summary: "[Full] Approve or reject enterprise"
+      tags: [Enterprise]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enterpriseId, auditStatus]
+              properties:
+                enterpriseId: { type: integer }
+                auditStatus: { type: integer, description: "1-approve, 2-reject" }
+                auditRemark: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/enterprise/detail/{id}:
+    get:
+      summary: "[Full] Enterprise detail by ID (includes coverImage field)"
+      tags: [Enterprise]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Enterprise detail, response data includes coverImage (enterprise background/cover image path)
+
+  # ==========================================
+  # Batch Management
+  # ==========================================
+  /api/batch/list:
+    get:
+      summary: "[Full] Batch list"
+      tags: [Batch]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: pageNum, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer } }
+        - { name: status, in: query, schema: { type: integer } }
+        - { name: keyword, in: query, schema: { type: string } }
+        - { name: productType, in: query, schema: { type: integer } }
+      responses:
+        '200':
+          description: Paginated batch list
+
+  /api/batch/detail:
+    get:
+      summary: "[Full] Batch detail"
+      tags: [Batch]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: batchCode, in: query, schema: { type: string } }
+        - { name: id, in: query, schema: { type: integer } }
+      responses:
+        '200':
+          description: Batch detail
+
+  /api/batch/status-count:
+    get:
+      summary: "[Full] Batch status count"
+      tags: [Batch]
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Count by status
+
+  /api/batch/create:
+    post:
+      summary: "[Full] Create batch - auto-generates batchCode and qrCodeUrl"
+      description: |
+        Create a new trace batch.
+        Auto-fills: batchCode, productName/unit defaults, productionDate, qrCodeUrl.
+      tags: [Batch]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productType, enterpriseId]
+              properties:
+                productType: { type: integer, description: "1-chicken, 2-tomato" }
+                productName: { type: string, description: "Auto-filled if empty" }
+                breed: { type: string }
+                quantity: { type: number }
+                unit: { type: string, description: "Auto-filled if empty" }
+                originLocation: { type: string }
+                latitude: { type: number }
+                longitude: { type: number }
+                manager: { type: string }
+                plantArea: { type: string }
+                greenhouseNo: { type: string }
+                seedSource: { type: string }
+                enterpriseId: { type: integer }
+                productionDate: { type: string, format: date, description: "Defaults to today" }
+                expectedHarvestDate: { type: string, format: date }
+      responses:
+        '200':
+          description: "Returns id, batchCode, qrCodeUrl"
+
+  /api/batch/quarantine-check/{batchCode}:
+    get:
+      summary: "[Full] Check quarantine status"
+      tags: [Batch]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: batchCode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Quarantine check result
+
+  /api/batch/receive:
+    post:
+      summary: "[Full] Receive batch (processor)"
+      tags: [Batch]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [batchCode]
+              properties:
+                batchCode: { type: string }
+                batchId: { type: integer }
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # Growth Records
+  # ==========================================
+  /api/record/list:
+    get:
+      summary: "[Partial] Growth record list - frontend implemented, backend needed"
+      tags: [Record]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: pageNum, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer } }
+        - { name: batchId, in: query, schema: { type: integer } }
+        - { name: recordType, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Paginated record list
+
+  /api/record/create:
+    post:
+      summary: "[Partial] Create growth record - frontend implemented, backend needed"
+      tags: [Record]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [batchId, recordType, recordDate, itemName]
+              properties:
+                batchId: { type: integer }
+                batchCode: { type: string }
+                recordType: { type: string, enum: [feeding, vaccine, inspect, fertilize, irrigate, pesticide] }
+                recordDate: { type: string, format: date }
+                itemName: { type: string }
+                amount: { type: string }
+                operator: { type: string }
+                description: { type: string }
+      responses:
+        '200':
+          description: Created record
+
+  /api/record/delete/{id}:
+    delete:
+      summary: "[✅ Full] Delete growth record (soft delete, files cleaned after 7 days)"
+      tags: [Record]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Deleted
+
+  # ==========================================
+  # Quarantine
+  # ==========================================
+  /api/quarantine/apply:
+    post:
+      summary: "✅ Farmer applies for quarantine inspection"
+      description: |
+        Creates a pending inspection record (checkResult=null), updates batch status to 3 (pending quarantine).
+        Uploads "QUARANTINE_APPLY" action hash to blockchain (non-blocking).
+        Does NOT fill checkResult/certNo/inspector fields.
+      tags: [Quarantine]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [batchCode]
+              properties:
+                batchCode: { type: string }
+                batchId: { type: integer }
+                applyQuantity: { type: number, description: "Number of livestock to inspect" }
+                expectedDate: { type: string, format: date, description: "Expected inspection date" }
+                enterpriseId: { type: integer }
+                inspectionEnterpriseId: { type: integer, description: "Target quarantine enterprise ID" }
+                remark: { type: string }
+      responses:
+        '200':
+          description: Apply submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 200 }
+                  message: { type: string }
+                  data:
+                    type: object
+                    properties:
+                      inspectionId: { type: integer }
+                      batchId: { type: integer }
+                      batchCode: { type: string }
+                      batchStatus: { type: integer, example: 3 }
+                      txHash: { type: string }
+
+  /api/quarantine/apply/delete/{id}:
+    delete:
+      summary: "✅ Delete quarantine apply record (pending only)"
+      description: |
+        Deletes a quarantine apply record. Only records with check_result IS NULL (pending) can be deleted.
+        After deletion, the batch status is restored to 2 (breeding).
+      tags: [Quarantine]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Deleted successfully
+
+  /api/quarantine/apply/list:
+    get:
+      summary: "✅ Query quarantine apply list by enterprise"
+      description: |
+        Returns quarantine inspection records for the given enterprise.
+        Records where check_result IS NULL are "pending", otherwise "completed".
+        Used by farming enterprises (type1) to track their quarantine applications.
+      tags: [Quarantine]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: enterpriseId, in: query, required: true, schema: { type: integer } }
+        - { name: batchCode, in: query, required: false, schema: { type: string }, description: "Fuzzy search by batch code" }
+        - { name: status, in: query, required: false, schema: { type: string, enum: [pending, completed] }, description: "pending=checkResult IS NULL, completed=checkResult IS NOT NULL" }
+      responses:
+        '200':
+          description: List of quarantine apply records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 200 }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        batchId: { type: integer }
+                        batchCode: { type: string }
+                        productName: { type: string }
+                        quantity: { type: number }
+                        unit: { type: string }
+                        inspectionDate: { type: string, format: date }
+                        checkResult: { type: integer, nullable: true, description: "null=pending, 1=pass, 0=fail" }
+                        statusText: { type: string, description: "待受理/合格/不合格" }
+                        certNo: { type: string }
+                        inspector: { type: string }
+                        txHash: { type: string }
+                        remark: { type: string }
+                        createTime: { type: string, format: date-time }
+
+  /api/quarantine/submit:
+    post:
+      summary: "[Full] Submit quarantine result"
+      tags: [Quarantine]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [batchCode, inspectionDate, checkResult, inspectionItems, certNo, inspector]
+              properties:
+                batchCode: { type: string }
+                batchId: { type: integer }
+                inspectionDate: { type: string, format: date }
+                checkResult: { type: integer, description: "1-pass, 0-fail" }
+                inspectionItems: { type: string }
+                certNo: { type: string }
+                inspector: { type: string }
+                inspectorCode: { type: string }
+                certImages: { type: array, items: { type: string } }
+      responses:
+        '200':
+          description: Submitted
+
+  # ==========================================
+  # Trace Query
+  # ==========================================
+  /api/trace/detail:
+    get:
+      summary: "[Full] Trace detail with full lifecycle timeline"
+      description: |
+        Aggregates data from trace_batch, trace_record, trace_inspection,
+        trace_processing, trace_storage, trace_transport, trace_sale.
+        Returns batchInfo + timeline[] + enterpriseInfo.
+        Each timeline node: { stage, title, time, operator, txHash, blockNumber, details{}, images[], official? }
+      tags: [Trace]
+      parameters:
+        - { name: batchId, in: query, required: true, schema: { type: string }, description: "batch ID or batch code" }
+      responses:
+        '200':
+          description: Aggregated trace timeline
+
+  /api/blockchain/verify:
+    post:
+      summary: "[Full] Verify blockchain data integrity"
+      tags: [Trace]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                batchId: { type: integer }
+                batchCode: { type: string }
+      responses:
+        '200':
+          description: Verification result
+
+  /api/blockchain/stats:
+    get:
+      summary: "[Partial] Blockchain statistics - frontend implemented, backend needed"
+      description: |
+        Returns on-chain statistics for the admin dashboard.
+        Frontend: blockchain/data.vue (ECharts)
+        Backend: NOT YET IMPLEMENTED
+      tags: [Trace]
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Blockchain stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 200 }
+                  data:
+                    type: object
+                    properties:
+                      totalOnChain: { type: integer }
+                      todayOnChain: { type: integer }
+                      successRate: { type: number }
+                      avgGas: { type: string }
+                      dailyTrend:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date: { type: string }
+                            count: { type: integer }
+                            gas: { type: number }
+                      stageDistribution:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name: { type: string }
+                            value: { type: integer }
+
+  /api/blockchain/logs:
+    get:
+      summary: "[Full] Blockchain on-chain log list"
+      description: |
+        Returns paginated on-chain transaction logs for enterprise users.
+        Aggregates from all business tables (trace_batch, trace_record, etc.)
+      tags: [Blockchain]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: pageNum, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 10 } }
+        - { name: enterpriseId, in: query, schema: { type: integer } }
+        - { name: bizType, in: query, schema: { type: string, enum: [batch_init, growth_record, quarantine, processing, storage, transport, sale] } }
+        - { name: status, in: query, schema: { type: integer, description: "1-success, 0-failed" } }
+      responses:
+        '200':
+          description: Paginated log list with summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 200 }
+                  data:
+                    type: object
+                    properties:
+                      records:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id: { type: integer }
+                            txHash: { type: string }
+                            blockHeight: { type: string }
+                            bizType: { type: string }
+                            batchCode: { type: string }
+                            enterpriseName: { type: string }
+                            contractAddress: { type: string }
+                            chainTime: { type: string, format: date-time }
+                            status: { type: integer, description: "1-success, 0-failed" }
+                      total: { type: integer }
+                      totalChained: { type: integer }
+                      todayChained: { type: integer }
+                      gasEstimate: { type: string }
+
+  /api/blockchain/retry/{id}:
+    post:
+      summary: "[Partial] Retry failed on-chain transaction - frontend implemented"
+      description: |
+        Re-submits a failed blockchain transaction.
+        Frontend: chain/upload.vue
+        Backend: NOT YET IMPLEMENTED
+      tags: [Blockchain]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Retry result
+
+  # ==========================================
+  # Processing
+  # ==========================================
+  /api/processing/create:
+    post:
+      summary: "[Full] Create processing record - resolves sourceBatchCode to batchId, auto-fills processingEnterpriseId, uploads hash to blockchain"
+      tags: [Processing]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TraceProcessing'
+      responses:
+        '200':
+          description: Processing record created, batch status updated to 5, dataHash + txHash populated
+
+  /api/processing/list:
+    get:
+      summary: "[Full] List processing records with batch info enrichment"
+      description: |
+        Returns paginated processing records enriched with batch info (batchCode, productName, breed, unit, batchStatus).
+        Supports enterpriseId and keyword filtering.
+      tags: [Processing]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: pageNum, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 10 } }
+        - { name: batchId, in: query, required: false, schema: { type: integer } }
+        - { name: enterpriseId, in: query, required: false, schema: { type: integer } }
+        - { name: keyword, in: query, required: false, schema: { type: string }, description: "Search by sourceBatchCode, processMethod, or operator" }
+      responses:
+        '200':
+          description: OK
+
+  # ==========================================
+  # Storage
+  # ==========================================
+  /api/storage/list:
+    get:
+      summary: "[Full] Query storage records with pagination"
+      tags: [Storage]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: pageNum, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 10 } }
+        - { name: batchId, in: query, schema: { type: integer } }
+        - { name: storageType, in: query, schema: { type: integer, description: "1-inbound, 2-outbound, 3-inventory" } }
+        - { name: keyword, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer }
+                  data:
+                    type: object
+                    properties:
+                      records: { type: array, items: { $ref: '#/components/schemas/TraceStorage' } }
+                      total: { type: integer }
+
+  /api/storage/create:
+    post:
+      summary: "[Full] Create a storage record - auto-fills storageUnit from batch"
+      tags: [Storage]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TraceStorage' }
+      responses:
+        '200':
+          description: OK
+
+  /api/storage/delete/{id}:
+    delete:
+      summary: "[Full] Delete a storage record"
+      tags: [Storage]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: OK
+
+  # ==========================================
+  # Transport
+  # ==========================================
+  /api/transport/create:
+    post:
+      summary: "[Full] Create transport record - auto-fills departureTime, transportUnit"
+      tags: [Transport]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TraceTransport'
+      responses:
+        '200':
+          description: Transport record created
+
+  /api/transport/list:
+    get:
+      summary: "✅ List transport records (supports receiveEnterpriseId filter)"
+      tags: [Transport]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: pageNum, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 10 } }
+        - { name: batchId, in: query, required: false, schema: { type: integer } }
+        - { name: receiveEnterpriseId, in: query, required: false, schema: { type: integer }, description: "Filter by target processing enterprise" }
+      responses:
+        '200':
+          description: OK
+
+  # ==========================================
+  # Sale
+  # ==========================================
+  /api/sale/create:
+    post:
+      summary: "[Full] Create sale record - auto updates batch status=8 and actual_harvest_date"
+      tags: [Sale]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TraceSale'
+      responses:
+        '200':
+          description: Sale record created, batch status updated to 8, actual_harvest_date set
+
+  /api/sale/list:
+    get:
+      summary: "[Full] List sale records"
+      tags: [Sale]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: pageNum, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 10 } }
+        - { name: batchId, in: query, required: false, schema: { type: integer } }
+      responses:
+        '200':
+          description: OK
+
+  # ==========================================
+  # Dashboard / Statistics
+  # ==========================================
+  /api/dashboard/farmer-stats:
+    get:
+      summary: "[Full] Farmer enterprise homepage stats"
+      tags: [Dashboard]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: enterpriseId, in: query, required: false, schema: { type: integer } }
+      responses:
+        '200':
+          description: activeBatchCount, totalLivestock, totalOnChain, warningCount, dailyTrend
+
+  /api/dashboard/processor-stats:
+    get:
+      summary: "[Full] Processor enterprise homepage stats"
+      description: |
+        Returns KPI cards for type2 (processor) enterprise dashboard:
+        todayReceived (batch count), todayProcessed (kg), pendingSaleInventory (kg),
+        totalOnChain, processingTrend (7-day line), conversionRate (pie: input vs output).
+      tags: [Dashboard]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: enterpriseId, in: query, required: false, schema: { type: integer } }
+      responses:
+        '200':
+          description: Processor dashboard stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 200 }
+                  data:
+                    type: object
+                    properties:
+                      todayReceived: { type: integer, description: "Today inbound batch count" }
+                      todayProcessed: { type: number, description: "Today output quantity (kg)" }
+                      pendingSaleInventory: { type: number, description: "Processed but unsold inventory (kg)" }
+                      totalOnChain: { type: integer }
+                      processingTrend:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date: { type: string }
+                            amount: { type: number }
+                      conversionRate:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name: { type: string }
+                            value: { type: number }
+
+  /api/dashboard/analysis-stats:
+    get:
+      summary: "[Full] Data analysis statistics page"
+      description: |
+        Returns KPI cards (activeBatchCount, totalLivestock, passRate),
+        inputTrend (30-day input usage), statusDistribution (pie),
+        chainActivity (30-day on-chain count bar).
+      tags: [Dashboard]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: enterpriseId, in: query, required: false, schema: { type: integer } }
+      responses:
+        '200':
+          description: Analysis stats aggregation
+
+  /api/dashboard/admin-stats:
+    get:
+      summary: "✅ Admin dashboard statistics"
+      tags: [Dashboard]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: role, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: type1Count, type2Count, type3Count, totalBatches, batchStatusCounts, monthlyBatches
+
+  # ==========================================
+  # Enterprise List Management (Admin)
+  # ==========================================
+  /api/enterprise/list:
+    get:
+      summary: "✅ Enterprise list with pagination (admin)"
+      tags: [Enterprise]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: current, in: query, schema: { type: integer, default: 1 } }
+        - { name: size, in: query, schema: { type: integer, default: 10 } }
+        - { name: enterpriseName, in: query, schema: { type: string } }
+        - { name: keyword, in: query, schema: { type: string }, description: "Search by name/code/contact" }
+        - { name: enterpriseType, in: query, schema: { type: integer } }
+        - { name: auditStatus, in: query, schema: { type: integer } }
+        - { name: status, in: query, schema: { type: integer } }
+      responses:
+        '200':
+          description: Paginated enterprise list (MyBatis-Plus Page)
+
+  /api/enterprise/list-by-type:
+    get:
+      summary: "✅ Query approved enterprises by type (for dropdown selection)"
+      tags: [Enterprise]
+      parameters:
+        - { name: type, in: query, required: true, schema: { type: integer }, description: "1-farm, 2-processor, 3-inspector" }
+      responses:
+        '200':
+          description: List of approved enterprises
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 200 }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        enterpriseName: { type: string }
+                        enterpriseCode: { type: string }
+
+  /api/enterprise/register:
+    post:
+      summary: "✅ Enterprise registration with full info and account creation"
+      tags: [Enterprise]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enterpriseName, enterpriseCode, enterpriseType, legalPerson, contactPerson, contactPhone, address, username, password]
+              properties:
+                enterpriseName: { type: string }
+                enterpriseCode: { type: string, description: "18-digit unified social credit code" }
+                enterpriseType: { type: integer, description: "1-farm, 2-processor, 3-inspector" }
+                legalPerson: { type: string }
+                contactPerson: { type: string }
+                contactPhone: { type: string }
+                contactEmail: { type: string }
+                province: { type: string }
+                city: { type: string }
+                district: { type: string }
+                address: { type: string }
+                introduction: { type: string }
+                logo: { type: string }
+                businessLicense: { type: string }
+                productionLicense: { type: string }
+                coverImage: { type: string }
+                username: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Registration submitted, pending admin approval
+
+  # ==========================================
+  # Image Audit
+  # ==========================================
+  /api/image-audit/submit:
+    post:
+      summary: "✅ Submit image change for audit"
+      tags: [Image-Audit]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enterpriseId, fieldName, newValue]
+              properties:
+                enterpriseId: { type: integer }
+                userId: { type: integer }
+                fieldName: { type: string, description: "logo, business_license, production_license" }
+                oldValue: { type: string }
+                newValue: { type: string }
+      responses:
+        '200':
+          description: Audit record created
+
+  /api/image-audit/list:
+    get:
+      summary: "✅ Image audit list (admin)"
+      tags: [Image-Audit]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: pageNum, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 10 } }
+        - { name: auditStatus, in: query, schema: { type: integer }, description: "0-pending, 1-approved, 2-rejected" }
+        - { name: enterpriseId, in: query, schema: { type: integer } }
+      responses:
+        '200':
+          description: Paginated audit list
+
+  /api/image-audit/approve:
+    post:
+      summary: "✅ Approve or reject image audit"
+      tags: [Image-Audit]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, auditStatus]
+              properties:
+                id: { type: integer }
+                auditStatus: { type: integer, description: "1-approve, 2-reject" }
+                remark: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/image-audit/pending-count:
+    get:
+      summary: "✅ Get pending image audit count for enterprise"
+      tags: [Image-Audit]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: enterpriseId, in: query, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Pending audit count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 200 }
+                  data: { type: integer, description: "Number of pending audits" }
+
+  /api/enterprise/toggle-status/{id}:
+    put:
+      summary: "✅ Toggle enterprise status"
+      tags: [Enterprise]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { name: status, in: query, required: true, schema: { type: integer, description: "0-disable, 1-enable" } }
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # System User Management
+  # ==========================================
+  /api/system/user/list:
+    get:
+      summary: "✅ User list with pagination"
+      tags: [System-User]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: current, in: query, schema: { type: integer, default: 1 } }
+        - { name: size, in: query, schema: { type: integer, default: 10 } }
+        - { name: username, in: query, schema: { type: string } }
+        - { name: phone, in: query, schema: { type: string } }
+        - { name: keyword, in: query, schema: { type: string }, description: "Search by username/realName/phone" }
+        - { name: userType, in: query, schema: { type: integer } }
+        - { name: status, in: query, schema: { type: integer } }
+      responses:
+        '200':
+          description: Paginated user list (password excluded)
+
+  /api/system/user/add:
+    post:
+      summary: "✅ Add user"
+      tags: [System-User]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username]
+              properties:
+                username: { type: string }
+                realName: { type: string }
+                password: { type: string, description: "Defaults to 123456 if empty" }
+                phone: { type: string }
+                email: { type: string }
+                userType: { type: integer }
+                enterpriseId: { type: integer }
+                roleIds: { type: array, items: { type: integer } }
+                remark: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/system/user/update:
+    put:
+      summary: "✅ Update user"
+      tags: [System-User]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id: { type: integer }
+                realName: { type: string }
+                phone: { type: string }
+                email: { type: string }
+                userType: { type: integer }
+                enterpriseId: { type: integer }
+                roleIds: { type: array, items: { type: integer } }
+                remark: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/system/user/delete/{id}:
+    delete:
+      summary: "✅ Delete user"
+      tags: [System-User]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  /api/system/user/reset-password/{id}:
+    put:
+      summary: "✅ Reset user password to 123456"
+      tags: [System-User]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Password reset
+
+  /api/system/user/toggle-status/{id}:
+    put:
+      summary: "✅ Toggle user status"
+      tags: [System-User]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { name: status, in: query, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # System Role Management
+  # ==========================================
+  /api/system/role/list:
+    get:
+      summary: "✅ Role list with pagination"
+      tags: [System-Role]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: current, in: query, schema: { type: integer, default: 1 } }
+        - { name: size, in: query, schema: { type: integer, default: 10 } }
+        - { name: roleName, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Paginated role list
+
+  /api/system/role/all:
+    get:
+      summary: "✅ All active roles (for dropdown)"
+      tags: [System-Role]
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: List of active roles
+
+  /api/system/role/add:
+    post:
+      summary: "✅ Add role"
+      tags: [System-Role]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [roleCode, roleName]
+              properties:
+                roleCode: { type: string }
+                roleName: { type: string }
+                roleType: { type: integer }
+                sort: { type: integer }
+                status: { type: integer }
+                remark: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/system/role/update:
+    put:
+      summary: "✅ Update role"
+      tags: [System-Role]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id: { type: integer }
+                roleName: { type: string }
+                roleType: { type: integer }
+                sort: { type: integer }
+                status: { type: integer }
+                remark: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/system/role/delete/{id}:
+    delete:
+      summary: "✅ Delete role"
+      tags: [System-Role]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  /api/system/role/menus/{roleId}:
+    get:
+      summary: "✅ Get role menu IDs"
+      tags: [System-Role]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: roleId, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Array of menu IDs
+    put:
+      summary: "✅ Save role menu permissions"
+      tags: [System-Role]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: roleId, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                menuIds: { type: array, items: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # System Menu
+  # ==========================================
+  /api/system/menu/tree:
+    get:
+      summary: "✅ Menu tree (for permission assignment)"
+      tags: [System-Role]
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Tree structure with id, label, children
+
+  # ==========================================
+  # Message Notification
+  # ==========================================
+  /api/message/list:
+    get:
+      summary: "✅ Message list with pagination"
+      description: |
+        Returns paginated messages for current user.
+        type: system (on-chain success notifications), business (quarantine audit results).
+        Triggers:
+        - system: StorageService.createStorage / SaleService.createSale on-chain success -> notify all enterprise members
+        - business: QuarantineService.submitQuarantine audit result -> notify the applicant employee
+      tags: [Message]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: current, in: query, schema: { type: integer, default: 1 } }
+        - { name: size, in: query, schema: { type: integer, default: 20 } }
+        - { name: type, in: query, required: false, schema: { type: string, enum: [system, business] } }
+      responses:
+        '200':
+          description: Paginated message list (MyBatis-Plus Page)
+
+  /api/message/detail/{id}:
+    get:
+      summary: "✅ Message detail"
+      tags: [Message]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Message detail
+
+  /api/message/unread-count:
+    get:
+      summary: "✅ Unread message count"
+      description: "Returns { all, system, business } unread counts for current user"
+      tags: [Message]
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Unread counts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 200 }
+                  data:
+                    type: object
+                    properties:
+                      all: { type: integer }
+                      system: { type: integer }
+                      business: { type: integer }
+
+  /api/message/mark-read:
+    post:
+      summary: "✅ Batch mark messages as read"
+      tags: [Message]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids: { type: array, items: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  /api/message/delete:
+    post:
+      summary: "✅ Batch delete messages"
+      tags: [Message]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids: { type: array, items: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # Trace Template Management
+  # ==========================================
+  /api/template/list:
+    get:
+      summary: "✅ Template list"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: current, in: query, schema: { type: integer, default: 1 } }
+        - { name: size, in: query, schema: { type: integer, default: 999 } }
+        - { name: templateName, in: query, schema: { type: string } }
+        - { name: templateType, in: query, schema: { type: integer } }
+      responses:
+        '200':
+          description: Paginated template list
+
+  /api/template/detail/{id}:
+    get:
+      summary: "✅ Template detail"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Template detail
+
+  /api/template/add:
+    post:
+      summary: "✅ Add template"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [templateCode, templateName, templateType]
+              properties:
+                templateCode: { type: string }
+                templateName: { type: string }
+                templateType: { type: integer }
+                productCategory: { type: string }
+                description: { type: string }
+                sort: { type: integer }
+      responses:
+        '200':
+          description: Success
+
+  /api/template/update:
+    put:
+      summary: "✅ Update template"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id: { type: integer }
+                templateName: { type: string }
+                templateType: { type: integer }
+                productCategory: { type: string }
+                description: { type: string }
+                sort: { type: integer }
+      responses:
+        '200':
+          description: Success
+
+  /api/template/delete/{id}:
+    delete:
+      summary: "✅ Delete template (cascade delete stages and fields)"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  /api/template/toggle-status/{id}:
+    put:
+      summary: "✅ Toggle template status"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { name: status, in: query, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  /api/template/stage/list/{templateId}:
+    get:
+      summary: "✅ Stage list by template"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: templateId, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: List of stages
+
+  /api/template/stage/add:
+    post:
+      summary: "✅ Add stage"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [templateId, stageCode, stageName, stageType]
+              properties:
+                templateId: { type: integer }
+                stageCode: { type: string }
+                stageName: { type: string }
+                stageType: { type: integer }
+                sort: { type: integer }
+                isRequired: { type: integer }
+                description: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/template/stage/update:
+    put:
+      summary: "✅ Update stage"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id: { type: integer }
+                stageName: { type: string }
+                stageCode: { type: string }
+                stageType: { type: integer }
+                sort: { type: integer }
+                isRequired: { type: integer }
+                description: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/template/stage/delete/{id}:
+    delete:
+      summary: "✅ Delete stage (cascade delete fields)"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  /api/template/field/list/{stageId}:
+    get:
+      summary: "✅ Field list by stage"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: stageId, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: List of fields
+
+  /api/template/field/add:
+    post:
+      summary: "✅ Add field"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [stageId, fieldCode, fieldName, fieldType]
+              properties:
+                stageId: { type: integer }
+                fieldCode: { type: string }
+                fieldName: { type: string }
+                fieldType: { type: string, enum: [text, number, date, select, image, video] }
+                fieldOptions: { type: string }
+                isRequired: { type: integer }
+                sort: { type: integer }
+                placeholder: { type: string }
+                defaultValue: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/template/field/update:
+    put:
+      summary: "✅ Update field"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id: { type: integer }
+                fieldName: { type: string }
+                fieldCode: { type: string }
+                fieldType: { type: string }
+                fieldOptions: { type: string }
+                isRequired: { type: integer }
+                sort: { type: integer }
+                placeholder: { type: string }
+                defaultValue: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/template/field/delete/{id}:
+    delete:
+      summary: "✅ Delete field"
+      tags: [Template]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # Operation & Login Logs
+  # ==========================================
+  /api/system/log/operation:
+    get:
+      summary: "✅ Operation log list"
+      tags: [System-Log]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: current, in: query, schema: { type: integer, default: 1 } }
+        - { name: size, in: query, schema: { type: integer, default: 10 } }
+        - { name: username, in: query, schema: { type: string } }
+        - { name: operation, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: integer } }
+        - { name: startDate, in: query, schema: { type: string, format: date } }
+        - { name: endDate, in: query, schema: { type: string, format: date } }
+      responses:
+        '200':
+          description: Paginated operation log list
+
+  /api/system/log/login:
+    get:
+      summary: "✅ Login log list"
+      tags: [System-Log]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: current, in: query, schema: { type: integer, default: 1 } }
+        - { name: size, in: query, schema: { type: integer, default: 10 } }
+        - { name: username, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: integer } }
+        - { name: startDate, in: query, schema: { type: string, format: date } }
+        - { name: endDate, in: query, schema: { type: string, format: date } }
+      responses:
+        '200':
+          description: Paginated login log list
+
+  # ==========================================
+  # System Config
+  # ==========================================
+  /api/system/config/list:
+    get:
+      summary: "✅ Config list with pagination"
+      tags: [System-Config]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: current, in: query, schema: { type: integer, default: 1 } }
+        - { name: size, in: query, schema: { type: integer, default: 20 } }
+        - { name: configType, in: query, schema: { type: string } }
+        - { name: keyword, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Paginated config list
+
+  /api/system/config/add:
+    post:
+      summary: "✅ Add config"
+      tags: [System-Config]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [configKey, configValue]
+              properties:
+                configKey: { type: string }
+                configValue: { type: string }
+                configType: { type: string }
+                description: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/system/config/update:
+    put:
+      summary: "✅ Update config"
+      tags: [System-Config]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id: { type: integer }
+                configValue: { type: string }
+                configType: { type: string }
+                description: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/system/config/delete/{id}:
+    delete:
+      summary: "✅ Delete config"
+      tags: [System-Config]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # Blockchain Contract Management
+  # ==========================================
+  /api/blockchain/contract/info:
+    get:
+      summary: "✅ Get active contract info"
+      tags: [Blockchain-Contract]
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Contract name, address, network, blockNumber, deployTime, ownerAddress
+
+  /api/blockchain/contract/operators:
+    get:
+      summary: "✅ Get authorized operators"
+      tags: [Blockchain-Contract]
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: List of operators with address, name, addTime, authorized
+
+  /api/blockchain/contract/operator/add:
+    post:
+      summary: "✅ Add operator"
+      tags: [Blockchain-Contract]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [address]
+              properties:
+                address: { type: string, description: "Ethereum address (0x...)" }
+                name: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  /api/blockchain/contract/operator/revoke:
+    post:
+      summary: "✅ Revoke operator authorization"
+      tags: [Blockchain-Contract]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [address]
+              properties:
+                address: { type: string }
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # Banner Management
+  # ==========================================
+  /api/banner/active:
+    get:
+      summary: "✅ Get active banners for display (public)"
+      tags: [Banner]
+      parameters:
+        - name: targetType
+          in: query
+          schema: { type: integer, default: 0 }
+          description: "0-all/guest, 1-farming, 2-processing, 3-quarantine"
+      responses:
+        '200':
+          description: List of active banners
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/SysBanner' }
+
+  /api/banner/list:
+    get:
+      summary: "✅ Banner list with pagination (admin)"
+      tags: [Banner]
+      parameters:
+        - name: current
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: size
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: targetType
+          in: query
+          schema: { type: integer }
+        - name: status
+          in: query
+          schema: { type: integer }
+        - name: keyword
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Paginated banner list
+
+  /api/banner/add:
+    post:
+      summary: "✅ Add a new banner (admin)"
+      tags: [Banner]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SysBanner' }
+      responses:
+        '200':
+          description: Success
+
+  /api/banner/update:
+    put:
+      summary: "✅ Update an existing banner (admin)"
+      tags: [Banner]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SysBanner' }
+      responses:
+        '200':
+          description: Success
+
+  /api/banner/delete/{id}:
+    delete:
+      summary: "✅ Delete a banner (admin)"
+      tags: [Banner]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Success
+
+  /api/banner/toggle-status/{id}:
+    put:
+      summary: "✅ Toggle banner enable/disable (admin)"
+      tags: [Banner]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # Education Article Management
+  # ==========================================
+  /api/edu/article/published:
+    get:
+      summary: "✅ Get published articles (public)"
+      tags: [Education]
+      parameters:
+        - name: enterpriseId
+          in: query
+          schema: { type: integer }
+        - name: category
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: List of published articles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/EduArticle' }
+
+  /api/edu/article/detail/{id}:
+    get:
+      summary: "✅ Get article detail (public)"
+      tags: [Education]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Article detail
+
+  /api/edu/article/view/{id}:
+    put:
+      summary: "✅ Increment article view count (public)"
+      tags: [Education]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Success
+
+  /api/edu/article/list:
+    get:
+      summary: "✅ Article list with pagination (admin)"
+      tags: [Education]
+      parameters:
+        - name: current
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: size
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: enterpriseId
+          in: query
+          schema: { type: integer }
+        - name: category
+          in: query
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: integer }
+        - name: keyword
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Paginated article list
+
+  /api/edu/article/add:
+    post:
+      summary: "✅ Add a new article (admin)"
+      tags: [Education]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EduArticle' }
+      responses:
+        '200':
+          description: Success
+
+  /api/edu/article/update:
+    put:
+      summary: "✅ Update an article (admin)"
+      tags: [Education]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EduArticle' }
+      responses:
+        '200':
+          description: Success
+
+  /api/edu/article/delete/{id}:
+    delete:
+      summary: "✅ Delete an article (admin)"
+      tags: [Education]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Success
+
+  /api/edu/article/toggle-status/{id}:
+    put:
+      summary: "✅ Toggle article publish/draft (admin)"
+      tags: [Education]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Success
+
+  # ==========================================
+  # Enterprise Registration (Public)
+  # ==========================================
+  /api/enterprise/register:
+    post:
+      summary: "✅ Enterprise registration (create enterprise + user account)"
+      description: |
+        Business flow: create enterprise record (auditStatus=0 pending) + create user account (userType=2, linked to enterprise).
+        No authentication required.
+      tags: [Enterprise]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enterpriseName, enterpriseCode, enterpriseType, username, password]
+              properties:
+                enterpriseName: { type: string }
+                enterpriseCode: { type: string, description: "Unified social credit code" }
+                enterpriseType: { type: integer, description: "1-farming, 2-processing, 3-quarantine" }
+                legalPerson: { type: string }
+                contactPerson: { type: string }
+                contactPhone: { type: string }
+                address: { type: string }
+                businessLicense: { type: string }
+                productionLicense: { type: string }
+                username: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Registration successful
+
+  # ==========================================
+  # User Change Password
+  # ==========================================
+  /api/system/user/change-password:
+    put:
+      summary: "✅ User change password (verify old password)"
+      tags: [System-User]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [oldPassword, newPassword]
+              properties:
+                oldPassword: { type: string }
+                newPassword: { type: string }
+      responses:
+        '200':
+          description: Password changed
+
+  # ==========================================
+  # Message Notification
+  # ==========================================
+  /api/message/list:
+    get:
+      summary: "✅ Message list with pagination"
+      tags: [Message]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { name: current, in: query, schema: { type: integer, default: 1 } }
+        - { name: size, in: query, schema: { type: integer, default: 20 } }
+        - { name: type, in: query, schema: { type: string, enum: [system, business] } }
+      responses:
+        '200':
+          description: Paginated message list
+
+  /api/message/detail/{id}:
+    get:
+      summary: "✅ Message detail"
+      tags: [Message]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Message detail
+
+  /api/message/unread-count:
+    get:
+      summary: "✅ Unread message count by type"
+      tags: [Message]
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: "{ all, system, business }"
+
+  /api/message/mark-read:
+    post:
+      summary: "✅ Batch mark messages as read"
+      tags: [Message]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids: { type: array, items: { type: integer } }
+      responses:
+        '200':
+          description: Marked as read
+
+  /api/message/delete:
+    post:
+      summary: "✅ Batch delete messages"
+      tags: [Message]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids: { type: array, items: { type: integer } }
+      responses:
+        '200':
+          description: Deleted
+
+  # ==========================================
+  # User Feedback
+  # ==========================================
+  /api/feedback/submit:
+    post:
+      summary: "✅ Submit user feedback"
+      tags: [Feedback]
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content: { type: string, description: "Feedback content, min 10 chars" }
+      responses:
+        '200':
+          description: Feedback submitted
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserInfo:
+      type: object
+      properties:
+        id: { type: integer }
+        username: { type: string }
+        realName: { type: string }
+        avatar: { type: string }
+        userType: { type: integer, description: "1-admin, 2-enterprise, 3-consumer" }
+        enterpriseId: { type: integer }
+        enterpriseType: { type: integer, description: "1-farm, 2-processor, 3-inspector" }
+        enterpriseName: { type: string }
+        roles: { type: array, items: { type: string } }
+        permissions: { type: array, items: { type: string } }
+
+    TraceProcessing:
+      type: object
+      properties:
+        id: { type: integer }
+        batchId: { type: integer, description: "Auto-resolved from sourceBatchCode" }
+        sourceBatchCode: { type: string }
+        processingEnterpriseId: { type: integer, description: "Auto-mapped from frontend enterpriseId" }
+        processingDate: { type: string, format: date }
+        processMethod: { type: string, description: "e.g. zhengji/fenqie/qugu" }
+        specs: { type: string, description: "Packaging spec e.g. 500g/bag" }
+        operator: { type: string }
+        inputQuantity: { type: number }
+        outputQuantity: { type: number }
+        images: { type: string, description: "JSON array of image URLs" }
+        dataHash: { type: string, description: "SHA-256 hash for blockchain" }
+        txHash: { type: string }
+        blockNumber: { type: integer }
+        chainTime: { type: string, format: date-time }
+        remark: { type: string }
+
+    TraceStorage:
+      type: object
+      properties:
+        id: { type: integer }
+        batchId: { type: integer }
+        batchCode: { type: string, description: "Frontend sends batchCode, backend resolves to batchId" }
+        storageEnterpriseId: { type: integer }
+        storageType: { type: integer, description: "1-inbound, 2-outbound, 3-inventory check" }
+        storageDate: { type: string, format: date }
+        warehouseName: { type: string, description: "Frontend field: warehouseName (was warehouseNo)" }
+        warehouseLocation: { type: string }
+        storageQuantity: { type: number }
+        storageUnit: { type: string }
+        temperature: { type: number, description: "Celsius" }
+        humidity: { type: number, description: "Percentage" }
+        storageCondition: { type: string }
+        operator: { type: string, description: "Frontend field: operator (was manager)" }
+        images: { type: string, description: "JSON array of image URLs" }
+        txHash: { type: string }
+        blockNumber: { type: integer }
+        chainTime: { type: string, format: date-time }
+        dataHash: { type: string }
+        remark: { type: string }
+
+    TraceTransport:
+      type: object
+      properties:
+        id: { type: integer }
+        batchId: { type: integer }
+        batchCode: { type: string, description: "Frontend sends batchCode, backend resolves to batchId" }
+        logisticsNo: { type: string }
+        transportEnterpriseId: { type: integer }
+        transportDate: { type: string, format: date }
+        plateNumber: { type: string }
+        driverName: { type: string }
+        driverPhone: { type: string }
+        receiverName: { type: string }
+        departureLocation: { type: string }
+        destination: { type: string }
+        departureTime: { type: string, format: date-time, description: "Auto-filled by backend if not provided" }
+        arrivalTime: { type: string, format: date-time }
+        transportQuantity: { type: number }
+        transportUnit: { type: string, description: "Auto-filled from batch.unit" }
+        temperature: { type: number, description: "Celsius" }
+        humidity: { type: number, description: "Percentage" }
+        transportCondition: { type: string }
+        gpsTrack: { type: string, description: "JSON with lat/lng of departure point" }
+        images: { type: string, description: "JSON array of image URLs" }
+        txHash: { type: string }
+        blockNumber: { type: integer }
+        chainTime: { type: string, format: date-time }
+        dataHash: { type: string }
+        remark: { type: string }
+
+    TraceSale:
+      type: object
+      properties:
+        id: { type: integer }
+        batchId: { type: integer }
+        batchCode: { type: string, description: "Frontend sends batchCode, backend resolves to batchId" }
+        saleEnterpriseId: { type: integer }
+        saleDate: { type: string, format: date }
+        saleTime: { type: string, description: "HH:mm:ss format" }
+        buyerName: { type: string }
+        saleQuantity: { type: number }
+        saleUnit: { type: string }
+        salePrice: { type: number }
+        totalAmount: { type: number }
+        saleVoucher: { type: string, description: "JSON array of invoice image URLs" }
+        saleChannel: { type: string }
+        destination: { type: string }
+        txHash: { type: string }
+        blockNumber: { type: integer }
+        chainTime: { type: string, format: date-time }
+        dataHash: { type: string }
+        remark: { type: string }
+
+    SysBanner:
+      type: object
+      properties:
+        id: { type: integer }
+        enterpriseId: { type: integer, description: "Enterprise ID, null for platform-level" }
+        title: { type: string }
+        description: { type: string }
+        imageUrl: { type: string }
+        linkUrl: { type: string }
+        targetType: { type: integer, description: "0-all, 1-farming, 2-processing, 3-quarantine" }
+        sortOrder: { type: integer }
+        status: { type: integer, description: "0-disabled, 1-enabled" }
+
+    EduArticle:
+      type: object
+      properties:
+        id: { type: integer }
+        enterpriseId: { type: integer, description: "Enterprise ID, null for platform-level" }
+        category: { type: string, description: "farming/vaccine/process/hygiene/quarantine/blockchain/safety" }
+        title: { type: string }
+        author: { type: string }
+        summary: { type: string }
+        coverUrl: { type: string }
+        content: { type: string, description: "JSON array of content blocks" }
+        viewCount: { type: integer }
+        sortOrder: { type: integer }
+        status: { type: integer, description: "0-draft, 1-published" }
+        publishTime: { type: string, format: date-time }

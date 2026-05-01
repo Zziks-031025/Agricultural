@@ -1,0 +1,633 @@
+openapi: 3.0.3
+info:
+  title: 农产品溯源系统 API
+  description: 基于区块链的农产品溯源模版系统接口文档
+  version: 1.0.0
+servers:
+  - url: http://localhost:8888
+    description: 本地开发环境
+
+paths:
+  /auth/login:
+    post:
+      summary: 用户登录 [已完成]
+      description: 用户通过用户名和密码登录系统，返回JWT Token。实现状态：前后端均已实现并联调通过。
+      tags:
+        - 认证模块
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: 用户名
+                  example: admin
+                password:
+                  type: string
+                  description: 密码
+                  example: admin123
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: 操作成功
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: JWT Token
+                      userInfo:
+                        $ref: '#/components/schemas/UserInfo'
+
+  /auth/info:
+    get:
+      summary: 获取当前用户信息 [已完成]
+      description: 根据Token获取当前登录用户的详细信息。实现状态：前后端均已实现并联调通过。
+      tags:
+        - 认证模块
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: 操作成功
+                  data:
+                    $ref: '#/components/schemas/UserInfo'
+
+  /auth/logout:
+    post:
+      summary: 用户登出 [已完成]
+      description: 用户退出登录。实现状态：前后端均已实现。
+      tags:
+        - 认证模块
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 登出成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: 操作成功
+
+  /api/batch/reject/{batchId}:
+    post:
+      summary: "拒绝接收批次 [Fully implemented]"
+      description: |
+        加工企业拒绝接收运输中的批次。
+        拒绝后批次状态回滚为已入库(6)，删除对应运输记录，并向养殖企业发送业务提醒消息。
+        实现状态: 前后端均已实现。
+      tags:
+        - 批次管理
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: 批次ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+                - enterpriseId
+              properties:
+                reason:
+                  type: string
+                  description: 拒绝原因
+                  example: "产品质量不符合要求"
+                enterpriseId:
+                  type: integer
+                  format: int64
+                  description: 加工企业ID
+      responses:
+        '200':
+          description: 拒绝成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "已拒绝接收"
+
+  /api/blockchain/stats:
+    get:
+      summary: "获取区块链统计数据 [Fully implemented]"
+      description: |
+        返回上链数量统计和真实Gas费用统计。
+        实现状态: 前后端均已实现。
+      tags:
+        - 区块链管理
+      parameters:
+        - name: enterpriseId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+          description: 企业ID(可选，不传则查全局)
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      totalOnChain:
+                        type: integer
+                        description: 上链总量
+                      todayOnChain:
+                        type: integer
+                        description: 今日上链
+                      weekCount:
+                        type: integer
+                        description: 本周上链
+                      dailyTrend:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: string
+                            count:
+                              type: integer
+                      stageDistribution:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            value:
+                              type: integer
+                      totalFeeEth:
+                        type: string
+                        description: 总Gas费用(ETH)
+                      todayFeeEth:
+                        type: string
+                        description: 今日Gas费用(ETH)
+                      avgGasPrice:
+                        type: string
+                        description: 平均Gas价格(Wei)
+                      gasTrend:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: string
+                            feeEth:
+                              type: string
+
+  /api/blockchain/node/status:
+    get:
+      summary: "获取区块链节点状态 [Fully implemented]"
+      description: |
+        返回节点连接状态、最新区块、合约配置等信息。
+        实现状态: 前后端均已实现。
+      tags:
+        - 区块链管理
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      rpcReachable:
+                        type: boolean
+                        description: RPC是否可达
+                      clientVersion:
+                        type: string
+                        description: 节点客户端版本
+                      chainId:
+                        type: integer
+                        description: 链ID
+                      rpcUrl:
+                        type: string
+                        description: RPC地址
+                      latestBlockNumber:
+                        type: integer
+                        description: 最新区块高度
+                      latestBlockTime:
+                        type: string
+                        description: 最新区块时间
+                      contractAddress:
+                        type: string
+                        description: 合约地址
+                      contractConfigured:
+                        type: boolean
+                        description: 合约是否已配置
+                      contractDeployed:
+                        type: boolean
+                        description: 合约是否已部署
+
+  /api/blockchain/contract/info:
+    get:
+      summary: "获取智能合约部署信息 [Fully implemented]"
+      description: |
+        返回合约名称、地址、部署交易哈希、部署区块、网络、部署时间、状态。
+        实现状态: 前后端均已实现。
+      tags:
+        - 区块链管理
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      contractName:
+                        type: string
+                        description: 合约名称
+                      contractAddress:
+                        type: string
+                        description: 合约地址
+                      deployTxHash:
+                        type: string
+                        description: 部署交易哈希
+                      deployBlockNumber:
+                        type: integer
+                        description: 部署区块高度
+                      network:
+                        type: string
+                        description: 所在网络
+                      deployTime:
+                        type: string
+                        format: date-time
+                        description: 部署时间
+                      status:
+                        type: integer
+                        description: "状态: 0-停用 1-启用"
+                      deployed:
+                        type: boolean
+                        description: 是否已部署
+
+  /api/scan-stats/overview:
+    get:
+      summary: "溯源查询统计概览 [Fully implemented]"
+      description: "统计用户扫码查询的次数和分布，包括总查询次数、今日查询、本周查询、被查询批次数、设备分布、热门产品TOP10等"
+      tags:
+        - 溯源查询统计
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalCount:
+                    type: integer
+                  todayCount:
+                    type: integer
+                  yesterdayCount:
+                    type: integer
+                  weekCount:
+                    type: integer
+                  queriedBatchCount:
+                    type: integer
+                  deviceDistribution:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: integer
+                  hotProducts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        batchCode:
+                          type: string
+                        productName:
+                          type: string
+                        queryCount:
+                          type: integer
+
+  /api/scan-stats/trend:
+    get:
+      summary: "溯源查询趋势 [Fully implemented]"
+      description: "获取近N天每日查询量趋势数据"
+      tags:
+        - 溯源查询统计
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: 成功
+
+  /api/scan-stats/logs:
+    get:
+      summary: "溯源查询日志列表 [Fully implemented]"
+      description: "分页查询扫码日志记录，支持按批次编号和设备类型筛选"
+      tags:
+        - 溯源查询统计
+      parameters:
+        - name: current
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: batchCode
+          in: query
+          schema:
+            type: string
+        - name: deviceType
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 用户ID
+        username:
+          type: string
+          description: 用户名
+        realName:
+          type: string
+          description: 真实姓名
+        avatar:
+          type: string
+          description: 头像URL
+        userType:
+          type: integer
+          description: 用户类型 1-管理员 2-企业用户 3-普通用户
+        roles:
+          type: array
+          items:
+            type: string
+          description: 角色列表
+        permissions:
+          type: array
+          items:
+            type: string
+          description: 权限列表
+
+  /api/storage/available-quantity:
+    get:
+      summary: "查询仓储可操作数量 [Fully implemented]"
+      description: |
+        根据批次ID和企业ID，返回该批次的入库/出库/盘点数量上限。
+        实现状态：后端已实现，前端 Web (storage.vue) 及小程序 (collect/storage.js) 均已对接。
+      tags:
+        - 仓储管理
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: batchId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: 批次ID
+        - name: enterpriseId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+          description: 企业ID（可选，传入则按企业过滤仓储记录）
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      totalBatch:
+                        type: number
+                        description: 批次总量
+                      totalInbound:
+                        type: number
+                        description: 已入库总量
+                      totalOutbound:
+                        type: number
+                        description: 已出库总量
+                      availableInbound:
+                        type: number
+                        description: 可入库数量 = 批次总量 - 已入库
+                      availableOutbound:
+                        type: number
+                        description: 可出库数量 = 已入库 - 已出库
+                      currentStock:
+                        type: number
+                        description: 当前库存 = 已入库 - 已出库（盘点上限）
+                      unit:
+                        type: string
+                        description: 单位
+
+  /api/transport/available-quantity:
+    get:
+      summary: "查询可运输数量 [Fully implemented]"
+      description: |
+        根据批次ID和企业ID，返回该批次的可运输数量上限。
+        可运输上限 = 已出库总量 - 已运输总量。
+        实现状态：后端已实现，前端 Web (transport.vue) 及小程序 (collect/transport.js) 均已对接。
+      tags:
+        - 运输管理
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: batchId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: 批次ID
+        - name: enterpriseId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+          description: 企业ID（可选）
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      totalOutbound:
+                        type: number
+                        description: 已出库总量
+                      totalTransported:
+                        type: number
+                        description: 已运输总量
+                      availableTransport:
+                        type: number
+                        description: 可运输数量 = 已出库 - 已运输
+                      unit:
+                        type: string
+                        description: 单位
+
+  /api/sale/available-quantity:
+    get:
+      summary: "查询可销售数量 [Fully implemented]"
+      description: |
+        根据批次ID和企业ID，返回该批次的可销售数量上限。
+        加工企业链路: 可销售 = 已运输总量 - 已销售总量。
+        养殖企业链路: 可销售 = (已入库 - 已出库) - 已销售总量。
+        实现状态：后端已实现，前端 Web (sale.vue) 已对接。
+      tags:
+        - 销售管理
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: batchId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: 批次ID
+        - name: enterpriseId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+          description: 企业ID（可选）
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      totalTransported:
+                        type: number
+                        description: 已运输总量
+                      totalInbound:
+                        type: number
+                        description: 已入库总量
+                      totalOutbound:
+                        type: number
+                        description: 已出库总量
+                      totalSold:
+                        type: number
+                        description: 已销售总量
+                      availableSale:
+                        type: number
+                        description: 可销售数量
+                      calcBasis:
+                        type: string
+                        description: 计算依据 transport=运输链路 stock=库存链路
+                      unit:
+                        type: string
+                        description: 单位

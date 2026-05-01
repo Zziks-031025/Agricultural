@@ -1,0 +1,126 @@
+<view class="sale-container">
+  <view class="form-section">
+    <view class="section-title">关联批次</view>
+    
+    <view class="tab-switcher">
+      <view class="tab-item {{activeTab === 1 ? 'active' : ''}}" data-tab="{{1}}" bindtap="switchTab">
+        <text class="tab-text">扫码</text>
+      </view>
+      <view class="tab-item {{activeTab === 2 ? 'active' : ''}}" data-tab="{{2}}" bindtap="switchTab">
+        <text class="tab-text">输入</text>
+      </view>
+    </view>
+
+    <view wx:if="{{activeTab === 1}}" class="scan-area">
+      <view class="scan-btn" bindtap="scanBatchCode">
+        <image class="scan-icon" src="/images/scan-icon.png" mode="aspectFit"></image>
+        <text class="scan-text">扫描批次码快速关联</text>
+      </view>
+    </view>
+
+    <view wx:if="{{activeTab === 2}}" class="input-area">
+      <view class="input-row">
+        <input class="batch-input" placeholder="请输入批次号" value="{{batchNo}}" bindinput="onBatchNoInput" />
+        <button class="confirm-btn" bindtap="confirmBatchNo">确认</button>
+      </view>
+    </view>
+
+    <view class="batch-info-card" wx:if="{{batchInfo}}">
+      <view class="info-row">
+        <text class="info-label">批次号</text>
+        <text class="info-value">{{batchNo}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">产品名称</text>
+        <text class="info-value">{{batchInfo.productName}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">可售数量</text>
+        <text class="info-value">{{batchInfo.currentQuantity}} {{batchInfo.unit}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">所属企业</text>
+        <text class="info-value">{{batchInfo.enterpriseName}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">销售信息</view>
+    
+    <view class="form-item">
+      <view class="form-label required">销售对象</view>
+      <input class="form-input" placeholder="如：XX超市、XX农贸市场" value="{{formData.buyerName}}" data-field="buyerName" bindinput="onInputChange" />
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">销售日期</view>
+      <picker mode="date" value="{{formData.saleDate}}" bindchange="onDateChange">
+        <view class="picker-view">{{formData.saleDate || '请选择日期'}}</view>
+      </picker>
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">销售时间</view>
+      <picker mode="time" value="{{formData.saleTime}}" bindchange="onTimeChange">
+        <view class="picker-view">{{formData.saleTime || '请选择时间'}}</view>
+      </picker>
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">销售单价</view>
+      <input class="form-input" type="digit" placeholder="请输入单价（元）" value="{{formData.unitPrice}}" data-field="unitPrice" bindinput="onInputChange" />
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">销售数量</view>
+      <input class="form-input" type="digit" placeholder="请输入销售数量" value="{{formData.quantity}}" data-field="quantity" bindinput="onInputChange" />
+    </view>
+    
+    <view class="form-item" wx:if="{{formData.totalAmount}}">
+      <view class="form-label">销售总额</view>
+      <view class="total-amount">¥ {{formData.totalAmount}}</view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">销售渠道</view>
+      <picker class="form-picker" mode="selector" range="{{saleChannels}}" value="{{saleChannelIndex}}" bindchange="onChannelChange">
+        <view class="picker-view">{{formData.saleChannel || '请选择销售渠道'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">目的地</view>
+      <input class="form-input" placeholder="请输入销售目的地" value="{{formData.destination}}" data-field="destination" bindinput="onInputChange" />
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">销售凭证</view>
+    <view class="section-subtitle">请上传销售发票或出库单（最多3张）</view>
+    
+    <view class="image-upload-area">
+      <view class="image-item" wx:for="{{invoiceImages}}" wx:key="index">
+        <image class="uploaded-image" src="{{item}}" mode="aspectFill" data-index="{{index}}" catchtap="previewImage"></image>
+        <view class="delete-btn" data-index="{{index}}" catchtap="deleteImage">×</view>
+      </view>
+      
+      <view class="upload-btn" wx:if="{{invoiceImages.length < maxImages}}" catchtap="chooseInvoiceImage">
+        <image class="upload-icon" src="/images/take-photo.png" mode="aspectFit"></image>
+        <text class="upload-text">上传凭证</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="notice-section">
+    <view class="notice-content">
+      <view class="notice-title">闭环说明</view>
+      <text class="notice-text">提交后，该批次状态将更新为"已完成/已销售"，并在区块链上完成最后一次状态变更存证，标志着产品完成全流程溯源闭环。</text>
+    </view>
+  </view>
+
+  <view class="form-actions">
+    <button class="action-btn reset-btn" bindtap="resetForm">重置</button>
+    <button class="action-btn submit-btn" bindtap="submitForm">提交并上链</button>
+  </view>
+</view>

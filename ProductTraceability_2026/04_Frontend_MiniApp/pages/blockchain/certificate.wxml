@@ -1,0 +1,116 @@
+<view class="certificate-page">
+  <view class="certificate-card {{showCard ? 'show' : ''}}">
+    <view class="cert-border-outer">
+      <view class="cert-border-inner">
+        <view class="watermark">BLOCKCHAIN</view>
+        
+        <view class="cert-header">
+          <view class="cert-title">{{certificateData.certTitle || '农产品溯源存证数字证书'}}</view>
+          <view class="cert-subtitle">AGRICULTURAL TRACEABILITY BLOCKCHAIN CERTIFICATE</view>
+          <view class="cert-divider"></view>
+        </view>
+
+        <view class="cert-body">
+          <view class="info-section">
+            <view class="section-title">存证信息</view>
+            <view class="info-grid">
+              <view class="info-item" wx:if="{{certificateData.recordTypeName}}">
+                <text class="info-label">记录类型</text>
+                <text class="info-value">{{certificateData.recordTypeName}}</text>
+              </view>
+              <view class="info-item">
+                <text class="info-label">产品名称</text>
+                <text class="info-value">{{certificateData.productName}}</text>
+              </view>
+              <view class="info-item">
+                <text class="info-label">批次编号</text>
+                <text class="info-value">{{certificateData.batchNo}}</text>
+              </view>
+              <view class="info-item full-width">
+                <text class="info-label">所属企业</text>
+                <text class="info-value">{{certificateData.enterpriseName}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="blockchain-section">
+            <view class="section-title highlight">区块链核心参数</view>
+            
+            <view class="param-item">
+              <view class="param-label">
+                <text class="label-icon">TX</text>
+                <text>交易哈希 (Transaction Hash)</text>
+              </view>
+              <view class="param-value hash-value" bindtap="copyText" data-text="{{certificateData.txHash}}">
+                <text class="hash-text">{{certificateData.txHash}}</text>
+                <image class="copy-icon" src="/images/copy.png" mode="aspectFit"></image>
+              </view>
+            </view>
+
+            <view class="param-item">
+              <view class="param-label">
+                <text class="label-icon">BH</text>
+                <text>区块高度 (Block Height)</text>
+              </view>
+              <view class="param-value">
+                <text class="value-text">{{certificateData.blockHeight}}</text>
+              </view>
+            </view>
+
+            <view class="param-item">
+              <view class="param-label">
+                <text class="label-icon">CA</text>
+                <text>合约地址 (Contract Address)</text>
+              </view>
+              <view class="param-value hash-value" bindtap="copyText" data-text="{{certificateData.contractAddress}}">
+                <text class="hash-text">{{certificateData.contractAddress}}</text>
+                <image class="copy-icon" src="/images/copy.png" mode="aspectFit"></image>
+              </view>
+            </view>
+
+            <view class="param-item">
+              <view class="param-label">
+                <text class="label-icon">TS</text>
+                <text>存证时间 (Timestamp)</text>
+              </view>
+              <view class="param-value">
+                <text class="value-text">{{certificateData.certTime}}</text>
+                <text class="timestamp-unix">Unix: {{certificateData.timestamp}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="statement-section">
+            <view class="statement-title">法律与技术声明</view>
+            <view class="statement-content">
+              本数据已通过 Web3j 协议写入以太坊公共账本，由分布式共识机制保障，任何个人或组织无法私自篡改。该存证记录具备不可逆性、时间戳证明和密码学验证特性，可作为产品溯源、质量追责和法律诉讼的有效电子证据。
+            </view>
+          </view>
+        </view>
+
+        <view class="cert-footer">
+          <view class="footer-line"></view>
+          <view class="footer-text">本证书由农产品溯源系统基于区块链技术自动生成</view>
+          <view class="footer-date">签发时间: {{certificateData.certTime}}</view>
+        </view>
+
+        <view class="seal">
+          <view class="seal-circle">
+            <text class="seal-text-top">已上链</text>
+            <text class="seal-text-center">存证</text>
+            <text class="seal-text-bottom">不可篡改</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="action-buttons">
+    <button class="action-btn save-btn" bindtap="saveCertificate">
+      <text>保存证书</text>
+    </button>
+    <button class="action-btn share-btn" open-type="share">
+      <text>分享证书</text>
+    </button>
+  </view>
+</view>

@@ -1,0 +1,130 @@
+<view class="page-container">
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-wrapper">
+      <image class="search-icon" src="/images/scan-icon.png" mode="aspectFit"></image>
+      <input class="search-input" placeholder="搜索批次号 / 产品名称" bindinput="onSearch" bindconfirm="doSearch" bindblur="doSearch" value="{{keyword}}" confirm-type="search" />
+    </view>
+  </view>
+
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{currentTab === 'pending' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="pending">
+      <text>待检疫</text>
+      <view class="tab-count" wx:if="{{pendingTotal > 0}}">{{pendingTotal > 99 ? '99+' : pendingTotal}}</view>
+    </view>
+    <view class="tab-item {{currentTab === 'completed' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="completed">
+      <text>已完成</text>
+    </view>
+  </view>
+
+  <!-- ========== 待检疫列表 ========== -->
+  <view class="list-section" wx:if="{{currentTab === 'pending'}}">
+
+    <view class="apply-card" wx:for="{{pendingList}}" wx:key="id" bindtap="goToDetail" data-item="{{item}}">
+      <!-- 卡片头部：批次号 + 状态标签 -->
+      <view class="card-header">
+        <view class="header-left">
+          <text class="batch-code">{{item.batchCode}}</text>
+          <text class="product-type-tag type-tag-{{item.productType}}">{{item.productTypeTag}}</text>
+        </view>
+        <text class="status-tag pending-tag">待检疫</text>
+      </view>
+
+      <!-- 卡片内容：关键信息 -->
+      <view class="card-body">
+        <view class="info-row">
+          <text class="info-label">申报企业</text>
+          <text class="info-value enterprise-name">{{item.enterpriseName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">产品品种</text>
+          <text class="info-value">{{item.productName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">申报数量</text>
+          <text class="info-value quantity-value">{{item.quantity}} {{item.unit}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">申报时间</text>
+          <text class="info-value time-value">{{item.applyTime}}</text>
+        </view>
+      </view>
+
+      <!-- 卡片底部：操作按钮 -->
+      <view class="card-footer">
+        <view class="footer-hint">点击查看详情</view>
+        <view class="action-btn" catchtap="handleProcess" data-item="{{item}}">去处理</view>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-tip" wx:if="{{pendingLoading}}">
+      <text>加载中...</text>
+    </view>
+    <view class="no-more-tip" wx:if="{{pendingNoMore && pendingList.length > 0}}">
+      <text>— 已加载全部 —</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!pendingLoading && pendingList.length === 0}}">
+      <image class="empty-icon" src="/images/inspection-icon.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无待检疫申报</text>
+      <text class="empty-hint">养殖企业收获出栏后将自动进入待检疫队列</text>
+    </view>
+  </view>
+
+  <!-- ========== 已完成列表 ========== -->
+  <view class="list-section" wx:if="{{currentTab === 'completed'}}">
+
+    <view class="apply-card completed-card" wx:for="{{completedList}}" wx:key="id">
+      <!-- 卡片头部 -->
+      <view class="card-header">
+        <view class="header-left">
+          <text class="batch-code">{{item.batchCode}}</text>
+        </view>
+        <text class="status-tag completed-tag">已检疫</text>
+      </view>
+
+      <!-- 卡片内容 -->
+      <view class="card-body">
+        <view class="info-row">
+          <text class="info-label">产品品种</text>
+          <text class="info-value">{{item.productName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">申报企业</text>
+          <text class="info-value">{{item.enterpriseName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">检疫结果</text>
+          <text class="info-value {{item.passed ? 'pass-text' : 'fail-text'}}">{{item.passed ? '合格' : '不合格'}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">检疫数量</text>
+          <text class="info-value">{{item.quantity}} {{item.unit}}</text>
+        </view>
+        <view class="info-row" wx:if="{{item.hasChain}}">
+          <text class="info-label">上链状态</text>
+          <text class="info-value chain-text">已存证</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-tip" wx:if="{{completedLoading}}">
+      <text>加载中...</text>
+    </view>
+    <view class="no-more-tip" wx:if="{{completedNoMore && completedList.length > 0}}">
+      <text>— 已加载全部 —</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!completedLoading && completedList.length === 0}}">
+      <image class="empty-icon" src="/images/inspection-icon.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无已完成的检疫记录</text>
+    </view>
+  </view>
+
+</view>

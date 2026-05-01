@@ -1,0 +1,169 @@
+<view class="transport-container">
+  <view class="input-mode-tabs">
+    <view class="tabs-container">
+      <view class="mode-tab {{inputMode === 'scan' ? 'active' : ''}}" bindtap="switchInputMode" data-mode="scan">
+        <text class="mode-text">扫码录入</text>
+      </view>
+      <view class="mode-tab {{inputMode === 'input' ? 'active' : ''}}" bindtap="switchInputMode" data-mode="input">
+        <text class="mode-text">手动输入</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">关联批次</view>
+    
+    <view class="batch-input-area" wx:if="{{inputMode === 'scan'}}">
+      <view class="scan-btn" bindtap="scanBatchCode">
+        <image class="scan-icon" src="/images/scan-icon.png" mode="aspectFit"></image>
+        <text class="scan-text">点击扫描批次码</text>
+      </view>
+    </view>
+
+    <view class="batch-input-area" wx:if="{{inputMode === 'input'}}">
+      <view class="input-group">
+        <input class="batch-input" placeholder="请输入批次号" value="{{batchNo}}" bindinput="onBatchNoInput" />
+        <button class="confirm-btn" bindtap="confirmBatchNo">确认</button>
+      </view>
+    </view>
+
+    <view class="batch-info-card" wx:if="{{batchInfo}}">
+      <view class="info-row">
+        <text class="info-label">批次号</text>
+        <text class="info-value">{{batchNo}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">产品名称</text>
+        <text class="info-value">{{batchInfo.productName}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">发货数量</text>
+        <text class="info-value">{{batchInfo.quantity}} {{batchInfo.unit}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">物流信息</view>
+
+    <view class="form-item" wx:if="{{!isProcessingEnterprise}}">
+      <view class="form-label required">目标加工企业</view>
+      <picker mode="selector" range="{{processingEnterpriseNames}}" value="{{selectedProcessingIndex}}" bindchange="onProcessingChange">
+        <view class="form-picker">
+          <text class="{{selectedProcessingIndex >= 0 ? '' : 'placeholder'}}">{{selectedProcessingIndex >= 0 ? processingEnterpriseNames[selectedProcessingIndex] : '请选择目标加工企业'}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">运输日期</view>
+      <picker mode="date" value="{{formData.transportDate}}" bindchange="onDateChange">
+        <view class="form-picker">
+          <text class="{{formData.transportDate ? '' : 'placeholder'}}">{{formData.transportDate || '请选择日期'}}</text>
+        </view>
+      </picker>
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">物流单号</view>
+      <input class="form-input" placeholder="请输入物流单号" value="{{formData.logisticsNo}}" data-field="logisticsNo" bindinput="onInputChange" />
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">运输车辆</view>
+      <input class="form-input" placeholder="请输入车牌号" value="{{formData.plateNumber}}" data-field="plateNumber" bindinput="onInputChange" />
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">司机姓名</view>
+      <input class="form-input" placeholder="请输入司机姓名" value="{{formData.driverName}}" data-field="driverName" bindinput="onInputChange" />
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">联系电话</view>
+      <input class="form-input" type="number" maxlength="11" placeholder="请输入11位手机号" value="{{formData.driverPhone}}" data-field="driverPhone" bindinput="onInputChange" />
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">运输详情</view>
+
+    <view class="form-item">
+      <view class="form-label">运输数量</view>
+      <input class="form-input" type="digit" placeholder="请输入运输数量" value="{{formData.transportQuantity}}" data-field="transportQuantity" bindinput="onInputChange" />
+      <view class="quantity-hint-text" wx:if="{{availableTransportHint}}">{{availableTransportHint}}</view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">运输条件</view>
+      <input class="form-input" placeholder="如: 冷链运输、常温运输" value="{{formData.transportCondition}}" data-field="transportCondition" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">车厢温度(℃)</view>
+      <input class="form-input" placeholder="如: 4 或 -18" value="{{formData.temperature}}" data-field="temperature" bindinput="onTemperatureInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">车厢湿度(%)</view>
+      <input class="form-input" type="digit" placeholder="如: 65" value="{{formData.humidity}}" data-field="humidity" bindinput="onInputChange" />
+    </view>
+
+    <view class="environment-tip">
+      <text class="tip-text">冷链运输：车厢温度应保持在 -18℃ 至 4℃</text>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">目的地信息</view>
+    
+    <view class="form-item">
+      <view class="form-label required">收货单位</view>
+      <input class="form-input" placeholder="请输入收货单位名称" value="{{formData.receiverName}}" data-field="receiverName" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">目的地</view>
+      <input class="form-input" placeholder="请输入目的地地址" value="{{formData.destination}}" data-field="destination" bindinput="onInputChange" />
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">发货位置</view>
+    
+    <view class="form-item">
+      <view class="form-label required">当前位置</view>
+      <view class="location-btn" bindtap="getLocation">
+        <image class="location-icon" src="/images/position.png" mode="aspectFit"></image>
+        <text class="location-text">{{locationText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">运输存证照片</view>
+
+    <view class="photo-area">
+      <view class="image-list">
+        <view class="image-item" wx:for="{{transportImages}}" wx:key="index">
+          <image class="photo-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}"></image>
+          <view class="delete-btn" catchtap="deleteImage" data-index="{{index}}">
+            <text class="delete-icon">x</text>
+          </view>
+        </view>
+
+        <view class="upload-btn" wx:if="{{transportImages.length < 5}}" bindtap="takePhoto">
+          <image class="camera-icon" src="/images/take-photo.png" mode="aspectFit"></image>
+          <text class="upload-text">拍摄</text>
+        </view>
+      </view>
+      <view class="upload-tip">上传运输/封条照片（最多5张）</view>
+    </view>
+  </view>
+
+  <view class="form-actions">
+    <button class="action-btn reset-btn" bindtap="resetForm">重置</button>
+    <button class="action-btn submit-btn" bindtap="submitForm">提交记录</button>
+  </view>
+</view>

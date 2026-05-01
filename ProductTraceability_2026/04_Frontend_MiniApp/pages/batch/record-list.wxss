@@ -1,0 +1,398 @@
+/* 生长记录列表页样式 */
+.container {
+  min-height: 100vh;
+  background: #F5F5F5;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* 批次信息头部 */
+.batch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  color: #FFFFFF;
+}
+
+.batch-info {
+  flex: 1;
+}
+
+.batch-code {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+  letter-spacing: 2rpx;
+}
+
+.batch-meta {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+.product-name {
+  margin-right: 24rpx;
+}
+
+.record-count {
+  padding: 4rpx 16rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  font-size: 24rpx;
+}
+
+.add-btn {
+  width: 80rpx;
+  height: 80rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  font-weight: 300;
+}
+
+/* 时间轴容器 */
+.timeline-container {
+  flex: 1;
+  padding: 24rpx;
+  padding-left: 24rpx;
+  padding-right: 24rpx;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.timeline {
+  position: relative;
+  width: 100%;
+}
+
+/* 时间轴项 */
+.timeline-item {
+  display: flex;
+  margin-bottom: 24rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 时间轴线 */
+.timeline-line {
+  width: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.timeline-dot {
+  width: 20rpx;
+  height: 20rpx;
+  background: #E0E0E0;
+  border-radius: 50%;
+  border: 3rpx solid #FFFFFF;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.timeline-dot.chained {
+  background: #4CAF50;
+}
+
+.timeline-connector {
+  flex: 1;
+  width: 3rpx;
+  background: linear-gradient(to bottom, #E0E0E0, #F5F5F5);
+  margin-top: 6rpx;
+  min-height: 40rpx;
+}
+
+/* 记录卡片 */
+.record-card {
+  flex: 1;
+  min-width: 0;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  margin-left: 12rpx;
+  box-sizing: border-box;
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 20rpx;
+  border-bottom: 1rpx solid #F5F5F5;
+  box-sizing: border-box;
+}
+
+.record-type-tag {
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.record-type-tag.feeding {
+  background: #FFF3E0;
+  color: #FF9800;
+}
+
+.record-type-tag.vaccine {
+  background: #E3F2FD;
+  color: #2196F3;
+}
+
+.record-type-tag.inspect {
+  background: #F3E5F5;
+  color: #9C27B0;
+}
+
+.record-type-tag.fertilize {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.record-type-tag.irrigate {
+  background: #E0F7FA;
+  color: #00BCD4;
+}
+
+.record-type-tag.pesticide {
+  background: #FFEBEE;
+  color: #F44336;
+}
+
+.record-type-tag.medication {
+  background: #FCE4EC;
+  color: #E91E63;
+}
+
+.record-time {
+  font-size: 22rpx;
+  color: #999999;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+
+/* 卡片内容 */
+.card-body {
+  padding: 16rpx 20rpx;
+  box-sizing: border-box;
+}
+
+.record-info {
+  margin-bottom: 12rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 6rpx;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-size: 24rpx;
+  color: #999999;
+  width: 100rpx;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 24rpx;
+  color: #333333;
+  flex: 1;
+  min-width: 0;
+  word-break: break-all;
+}
+
+.description {
+  margin-top: 10rpx;
+  padding: 12rpx;
+  background: #F8F9FA;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+/* 缩略图 */
+.record-images {
+  display: flex;
+  gap: 10rpx;
+  margin-top: 12rpx;
+  flex-wrap: wrap;
+}
+
+.thumb-image {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 8rpx;
+  background: #F5F5F5;
+  flex-shrink: 0;
+}
+
+.more-images {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 8rpx;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 24rpx;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* 卡片底部 - 区块链信息 */
+.card-footer {
+  padding: 12rpx 20rpx;
+  background: #FAFAFA;
+  border-top: 1rpx solid #F0F0F0;
+  box-sizing: border-box;
+}
+
+.chain-info {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.chain-icon {
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 6rpx;
+  flex-shrink: 0;
+}
+
+.tx-hash {
+  flex: 1;
+  font-size: 20rpx;
+  color: #2196F3;
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.view-cert {
+  font-size: 22rpx;
+  color: #2196F3;
+  padding: 4rpx 12rpx;
+  background: #E3F2FD;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  margin-left: 8rpx;
+}
+
+.card-footer.pending {
+  text-align: center;
+}
+
+.pending-text {
+  font-size: 22rpx;
+  color: #BDBDBD;
+}
+
+/* 列表底部 */
+.list-footer {
+  text-align: center;
+  padding: 32rpx 0 48rpx;
+  font-size: 24rpx;
+  color: #BDBDBD;
+}
+
+/* 空状态 */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 48rpx;
+}
+
+.empty-icon {
+  width: 240rpx;
+  height: 240rpx;
+  margin-bottom: 32rpx;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 12rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #999999;
+  margin-bottom: 48rpx;
+}
+
+.empty-action {
+  padding: 24rpx 64rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  border-radius: 44rpx;
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+/* 加载状态 */
+.loading-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 6rpx solid #E0E0E0;
+  border-top-color: #4CAF50;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 24rpx;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #999999;
+}

@@ -1,0 +1,55 @@
+<view class="manage-container">
+  <view class="page-header">
+    <view class="header-subtitle">系统用户列表</view>
+  </view>
+
+  <view class="user-list" wx:if="{{!isEmpty && !loading}}">
+    <view class="user-item" wx:for="{{userList}}" wx:key="id">
+      <view class="user-main" bindtap="showUserActions" data-user="{{item}}">
+        <image class="user-avatar" src="{{item.avatar || 'https://via.placeholder.com/100/E0E0E0/999?text=User'}}" mode="aspectFill"></image>
+        <view class="user-info">
+          <view class="user-name-row">
+            <view class="user-name">{{item.realName || item.username}}</view>
+            <view class="user-status status-{{item.status}}">{{item.statusText}}</view>
+          </view>
+          <view class="user-detail">
+            <text class="detail-item">{{item.enterpriseName || '未绑定企业'}}</text>
+          </view>
+          <view class="user-role">
+            <text class="role-badge role-{{item.userType}}">{{item.userTypeName}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{isEmpty && !loading}}">
+    <image class="empty-icon" src="https://via.placeholder.com/200/E0E0E0/999?text=Empty" mode="aspectFit"></image>
+    <view class="empty-text">暂无用户数据</view>
+  </view>
+
+  <view class="loading-state" wx:if="{{loading}}">
+    <view class="loading-text">加载中...</view>
+  </view>
+</view>
+
+<view class="action-sheet" wx:if="{{showActions}}">
+  <view class="sheet-mask" bindtap="hideUserActions"></view>
+  <view class="sheet-content">
+    <view class="sheet-header">
+      <view class="sheet-title">{{currentUser.realName || currentUser.username}}</view>
+      <view class="sheet-subtitle">{{currentUser.enterpriseName || '未绑定企业'}}</view>
+    </view>
+    <view class="sheet-actions">
+      <view class="action-item" bindtap="toggleUserStatus">
+        <text class="action-text">{{currentUser.status === 1 ? '禁用账号' : '启用账号'}}</text>
+      </view>
+      <view class="action-item" bindtap="resetPassword">
+        <text class="action-text">重置密码</text>
+      </view>
+      <view class="action-item action-cancel" bindtap="hideUserActions">
+        <text class="action-text">取消</text>
+      </view>
+    </view>
+  </view>
+</view>

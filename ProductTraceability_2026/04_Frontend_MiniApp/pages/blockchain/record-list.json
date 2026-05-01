@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "区块链存证记录",
+  "navigationBarBackgroundColor": "#4CAF50",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

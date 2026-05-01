@@ -1,0 +1,166 @@
+<!-- 记录详情页 -->
+<view class="container">
+  <!-- 记录类型头部 -->
+  <view class="record-header">
+    <view class="type-badge {{recordInfo.recordTypeClass}}">{{recordInfo.recordTypeName}}</view>
+    <view class="record-time">{{recordInfo.recordTime}}</view>
+  </view>
+
+  <!-- 基本信息卡片 -->
+  <view class="info-card">
+    <view class="card-title">基本信息</view>
+    <view class="info-list">
+      <view class="info-item">
+        <text class="info-label">操作人</text>
+        <text class="info-value">{{recordInfo.operator}}</text>
+      </view>
+      <view class="info-item" wx:if="{{recordInfo.materialName}}">
+        <text class="info-label">{{recordInfo.materialLabel}}</text>
+        <text class="info-value">{{recordInfo.materialName}}</text>
+      </view>
+      <view class="info-item" wx:if="{{recordInfo.dosage}}">
+        <text class="info-label">用量</text>
+        <text class="info-value">{{recordInfo.dosage}} {{recordInfo.dosageUnit}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">所属批次</text>
+        <text class="info-value highlight">{{recordInfo.batchCode}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作说明卡片 -->
+  <view class="info-card" wx:if="{{recordInfo.description}}">
+    <view class="card-title">操作说明</view>
+    <view class="description-content">
+      <text>{{recordInfo.description}}</text>
+    </view>
+  </view>
+
+  <!-- 现场照片卡片 -->
+  <view class="info-card" wx:if="{{recordInfo.images && recordInfo.images.length > 0}}">
+    <view class="card-title">现场照片</view>
+    <view class="photo-grid">
+      <image 
+        class="photo-item" 
+        wx:for="{{recordInfo.images}}" 
+        wx:key="*this"
+        src="{{item}}" 
+        mode="aspectFill"
+        bindtap="previewImage"
+        data-url="{{item}}"
+      ></image>
+    </view>
+  </view>
+
+  <!-- 地理位置卡片 -->
+  <view class="info-card" wx:if="{{recordInfo.location}}">
+    <view class="card-title">作业位置</view>
+    <view class="location-section">
+      <view class="location-map">
+        <map 
+          class="map"
+          longitude="{{recordInfo.location.longitude}}"
+          latitude="{{recordInfo.location.latitude}}"
+          scale="16"
+          markers="{{markers}}"
+          show-location
+        ></map>
+      </view>
+      <view class="location-info">
+        <view class="coords-row">
+          <view class="coord-item">
+            <text class="coord-label">经度</text>
+            <text class="coord-value">{{recordInfo.location.longitude}}</text>
+          </view>
+          <view class="coord-item">
+            <text class="coord-label">纬度</text>
+            <text class="coord-value">{{recordInfo.location.latitude}}</text>
+          </view>
+        </view>
+        <view class="address-row" wx:if="{{recordInfo.location.address}}">
+          <image class="address-icon" src="/images/position.png" mode="aspectFit"></image>
+          <text class="address-text">{{recordInfo.location.address}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 区块链验证卡片 -->
+  <view class="blockchain-card" wx:if="{{recordInfo.txHash}}">
+    <view class="blockchain-header">
+      <view class="blockchain-title">
+        <text class="title-text">区块链存证信息</text>
+        <text class="title-badge">已上链</text>
+      </view>
+    </view>
+    
+    <view class="blockchain-body">
+      <view class="chain-item">
+        <text class="chain-label">交易哈希 (TxHash)</text>
+        <view class="chain-value-row">
+          <text class="chain-value hash">{{recordInfo.txHash}}</text>
+          <view class="copy-btn" bindtap="copyHash" data-value="{{recordInfo.txHash}}">复制</view>
+        </view>
+      </view>
+      
+      <view class="chain-item">
+        <text class="chain-label">区块高度 (Block Number)</text>
+        <text class="chain-value">{{recordInfo.blockNumber}}</text>
+      </view>
+      
+      <view class="chain-item">
+        <text class="chain-label">数据摘要 (Data Hash)</text>
+        <view class="chain-value-row">
+          <text class="chain-value hash">{{recordInfo.dataHash}}</text>
+          <view class="copy-btn" bindtap="copyHash" data-value="{{recordInfo.dataHash}}">复制</view>
+        </view>
+      </view>
+      
+      <view class="chain-item">
+        <text class="chain-label">上链时间</text>
+        <text class="chain-value">{{recordInfo.chainTime}}</text>
+      </view>
+      
+      <view class="chain-item">
+        <text class="chain-label">Gas消耗</text>
+        <text class="chain-value">{{recordInfo.gasUsed}} wei</text>
+      </view>
+    </view>
+
+    <!-- 验真按钮 -->
+    <view class="verify-section">
+      <button 
+        class="verify-btn {{verifyStatus}}" 
+        bindtap="verifyRecord"
+        disabled="{{verifying}}"
+      >
+        <view class="loading-spinner" wx:if="{{verifying}}"></view>
+        <text>{{verifyBtnText}}</text>
+      </button>
+      
+      <view class="verify-result" wx:if="{{verifyResult}}">
+        <view class="result-text">
+          <text class="result-title {{verifyStatus}}">{{verifyResult.title}}</text>
+          <text class="result-desc">{{verifyResult.desc}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 未上链提示 -->
+  <view class="pending-card" wx:if="{{!recordInfo.txHash}}">
+    <image class="pending-icon" src="/images/Blockchain.png" mode="aspectFit"></image>
+    <view class="pending-text">
+      <text class="pending-title">数据待上链</text>
+      <text class="pending-desc">该记录尚未存证至区块链，请稍后查看</text>
+    </view>
+  </view>
+
+  <!-- 查看存证证书 -->
+  <view class="footer-action" wx:if="{{recordInfo.txHash}}">
+    <button class="cert-btn" bindtap="viewCertificate">
+      <text>查看存证证书</text>
+    </button>
+  </view>
+</view>

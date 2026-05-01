@@ -1,0 +1,56 @@
+<!-- 资质证照展示页 -->
+<view class="license-page">
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 有证照时显示 -->
+  <block wx:elif="{{licenseUrl}}">
+    <!-- 企业信息卡片 -->
+    <view class="enterprise-card">
+      <view class="card-row">
+        <text class="row-label">企业名称</text>
+        <text class="row-value">{{enterpriseInfo.name}}</text>
+      </view>
+      <view class="card-row" wx:if="{{enterpriseInfo.creditCode}}">
+        <text class="row-label">统一社会信用代码</text>
+        <text class="row-value code">{{enterpriseInfo.creditCode}}</text>
+      </view>
+    </view>
+
+    <!-- 证照图片 -->
+    <view class="license-card">
+      <view class="license-header">
+        <text class="license-title">{{config.title}}</text>
+        <text class="license-tip">点击图片可放大查看</text>
+      </view>
+      <view class="license-image-wrap" bindtap="previewLicense">
+        <image 
+          class="license-image" 
+          src="{{licenseUrl}}" 
+          mode="widthFix"
+          show-menu-by-longpress="{{true}}"
+        ></image>
+        <view class="zoom-hint">
+          <text class="zoom-text">点击放大</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-section">
+      <view class="action-btn" bindtap="saveLicense">
+        <text class="btn-text">保存到相册</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 无证照时显示 -->
+  <view class="empty-state" wx:else>
+    <view class="empty-icon"></view>
+    <view class="empty-text">{{config.emptyText}}</view>
+    <view class="empty-tip">{{config.emptyTip}}</view>
+  </view>
+</view>

@@ -1,0 +1,137 @@
+<view class="create-container">
+  <view class="template-tabs">
+    <view class="tabs-container">
+      <view class="tab-item {{templateType === 1 ? 'active' : ''}}" bindtap="switchTemplate" data-type="1">
+        <text class="tab-text">肉鸡养殖</text>
+      </view>
+      <view class="tab-item {{templateType === 2 ? 'active' : ''}}" bindtap="switchTemplate" data-type="2">
+        <text class="tab-text">西红柿种植</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-title">基本信息</view>
+    
+    <view class="form-item">
+      <view class="form-label required">批次号</view>
+      <view class="form-value">{{formData.batchNo}}</view>
+      <view class="form-hint">自动生成</view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">产品名称</view>
+      <input class="form-input" placeholder="如: 肉鸡 / 西红柿" value="{{formData.productName}}" data-field="productName" bindinput="onInputChange" />
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">品种</view>
+      <input class="form-input" placeholder="请输入品种" value="{{formData.breed}}" data-field="breed" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">苗源/种子来源</view>
+      <input class="form-input" placeholder="{{templateType === 1 ? '如: 山东优质种鸡场' : '如: 寿光优质种苗基地'}}" value="{{formData.seedSource}}" data-field="seedSource" bindinput="onInputChange" />
+    </view>
+  </view>
+
+  <view class="form-section" wx:if="{{templateType === 1}}">
+    <view class="section-title">肉鸡养殖信息</view>
+    
+    <view class="form-item">
+      <view class="form-label required">入栏数量</view>
+      <input class="form-input" type="number" placeholder="请输入入栏数量" value="{{formData.quantity}}" data-field="quantity" bindinput="onInputChange" />
+      <view class="form-hint">单位: {{formData.unit}}</view>
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">产地</view>
+      <input class="form-input" placeholder="请输入产地" value="{{formData.origin}}" data-field="origin" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">定位</view>
+      <view class="location-btn" bindtap="chooseLocation">
+        <image class="location-icon" src="/images/position.png" mode="aspectFit"></image>
+        <text class="location-text">{{locationText}}</text>
+      </view>
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">负责人</view>
+      <input class="form-input" placeholder="请输入负责人姓名" value="{{formData.manager}}" data-field="manager" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">入栏日期</view>
+      <picker mode="date" value="{{formData.productionDate}}" bindchange="onProductionDateChange">
+        <view class="form-picker">
+          <text class="{{formData.productionDate ? '' : 'placeholder'}}">{{formData.productionDate || '请选择日期'}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">预计出栏</view>
+      <picker mode="date" value="{{formData.expectedHarvestDate}}" bindchange="onExpectedDateChange">
+        <view class="form-picker">
+          <text class="{{formData.expectedHarvestDate ? '' : 'placeholder'}}">{{formData.expectedHarvestDate || '请选择日期'}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="form-section" wx:if="{{templateType === 2}}">
+    <view class="section-title">西红柿种植信息</view>
+    
+    <view class="form-item">
+      <view class="form-label required">种植面积</view>
+      <input class="form-input" type="digit" placeholder="请输入种植面积（亩）" value="{{formData.plantArea}}" data-field="plantArea" bindinput="onInputChange" />
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">大棚号</view>
+      <input class="form-input" placeholder="请输入大棚号" value="{{formData.greenhouseNo}}" data-field="greenhouseNo" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">定位</view>
+      <view class="location-btn" bindtap="chooseLocation">
+        <image class="location-icon" src="/images/position.png" mode="aspectFit"></image>
+        <text class="location-text">{{locationText}}</text>
+      </view>
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label required">负责人</view>
+      <input class="form-input" placeholder="请输入负责人姓名" value="{{formData.manager}}" data-field="manager" bindinput="onInputChange" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">种植日期</view>
+      <picker mode="date" value="{{formData.productionDate}}" bindchange="onProductionDateChange">
+        <view class="form-picker">
+          <text class="{{formData.productionDate ? '' : 'placeholder'}}">{{formData.productionDate || '请选择日期'}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">预计收获</view>
+      <picker mode="date" value="{{formData.expectedHarvestDate}}" bindchange="onExpectedDateChange">
+        <view class="form-picker">
+          <text class="{{formData.expectedHarvestDate ? '' : 'placeholder'}}">{{formData.expectedHarvestDate || '请选择日期'}}</text>
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="form-actions">
+    <button class="action-btn reset-btn" bindtap="resetForm">重置</button>
+    <button class="action-btn submit-btn" bindtap="submitForm">创建批次</button>
+  </view>
+</view>
